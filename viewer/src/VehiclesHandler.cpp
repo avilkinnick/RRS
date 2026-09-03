@@ -6,7 +6,6 @@
 #include "simulator-update-struct.h"
 #include "sound-manager.h"
 #include "VehicleExterior.h"
-#include "io-controller.h"
 
 #include <vsg/app/Viewer.h>
 #include <vsg/core/ref_ptr.h>
@@ -25,8 +24,6 @@
 #include <string>
 #include <utility>
 #include <vector>
-
-class QByteArray;
 
 //------------------------------------------------------------------------------
 //
@@ -434,21 +431,22 @@ bool VehiclesHandler::load(
         vehicle_exterior.cullnode->bound = vsg::dsphere(0.0, 0.0, 0.0, veh_len);
         vehicle_exterior.cullnode->child = vehicle_exterior.transform;
         vehicles_node->addChild(vehicle_exterior.cullnode);
-
-        if (!vehicle_exterior.io_controls.empty())
-        {
-            for (auto *io_control : vehicle_exterior.io_controls)
-            {
-                if (io_control != nullptr)
-                {
-                    connect(io_control, &IOController::sigSendVehicleControlCommand,
-                            this, &VehiclesHandler::sigSendVehicleControlCommand);
-                }
-            }
-        }
     }
 
     return true;
+}
+
+//------------------------------------------------------------------------------
+//
+//------------------------------------------------------------------------------
+void VehiclesHandler::setCurrentVehicle(int vehicle_idx)
+{
+    if (vehicle_idx < 0 || static_cast<size_t>(vehicle_idx) >= vehicles.size())
+    {
+        return;
+    }
+
+    cur_vehicle = vehicle_idx;
 }
 
 //------------------------------------------------------------------------------
@@ -473,6 +471,36 @@ void VehiclesHandler::slotGetTrainsData(QByteArray &data)
     }
     LOG_INFO("%s", msg.toStdString().c_str());
 */
+}
+
+//------------------------------------------------------------------------------
+//
+//------------------------------------------------------------------------------
+void VehiclesHandler::slotGetTrainProfileData(QByteArray &data)
+{
+    simulator_train_profile_update_t profile;
+    profile.deserialize(data);
+
+    QMutexLocker locker(&profiles_mutex);
+    train_profiles.insert(profile.train_id, profile);
+}
+
+//------------------------------------------------------------------------------
+//
+//------------------------------------------------------------------------------
+bool VehiclesHandler::getTrainProfile(int train_id,
+                                     simulator_train_profile_update_t& out) const
+{
+    QMutexLocker locker(&profiles_mutex);
+
+    auto it = train_profiles.constFind(train_id);
+    if (it == train_profiles.constEnd())
+    {
+        return false;
+    }
+
+    out = it.value();
+    return true;
 }
 
 //------------------------------------------------------------------------------

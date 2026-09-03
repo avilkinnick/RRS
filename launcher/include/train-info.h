@@ -25,6 +25,14 @@ struct train_info_t
     QString train_config_path;
     QString train_title;
     QString description;
+
+    train_info_t()
+        : train_config_path("")
+        , train_title("")
+        , description("")
+    {
+
+    }
 };
 
-#endif // TRAIN_INFO_H
+#endif // TRAININFO_H

@@ -4,10 +4,9 @@
 #include    <QScrollArea>
 #include    <QPdfDocument>
 #include    <QCache>
-
-class       QLabel;
-class       QVBoxLayout;
-class       QWheelEvent;
+#include    <QLabel>
+#include    <QVBoxLayout>
+#include    <QWheelEvent>
 
 //------------------------------------------------------------------------------
 //
@@ -47,4 +46,4 @@ private:
     qreal m_scale = 2.0; // ~144 DPI
 };
 
-#endif // PDF_VIEWER_H
+#endif

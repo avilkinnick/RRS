@@ -18,7 +18,6 @@
 #include    "ui_mainwindow.h"
 
 #include    <QPushButton>
-#include    <QToolBox>
 #include    <QDir>
 #include    <QDirIterator>
 #include    <QStringList>
@@ -45,7 +44,6 @@ const   QString MainWindow::AUTO_START_ROUTE_MAP = "AutoStartRouteMap";
 //------------------------------------------------------------------------------
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     , ui(new Ui::MainWindow)
-    , graphSettingsWindow(new GraphSettingsWindow(this))
 {
     ui->setupUi(this);
 
@@ -61,10 +59,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     connect(ui->lwTrains, &QListWidget::itemSelectionChanged,
             this, &MainWindow::slotTrainSelection);
 
-    connect(ui->cbStartDateManually, &QCheckBox::checkStateChanged,
+    connect(ui->cbStartDateManually, &QCheckBox::stateChanged,
             this, &MainWindow::slotStartDateManuallyChanged);
 
-    connect(ui->cbStartTimeManually, &QCheckBox::checkStateChanged,
+    connect(ui->cbStartTimeManually, &QCheckBox::stateChanged,
             this, &MainWindow::slotStartTimeManuallyChanged);
 
     connect(ui->pbStartServer, &QPushButton::pressed,
@@ -122,7 +120,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
             this, &MainWindow::slotChangedServerSettings);
 
     connect(ui->pbSaveServer, &QPushButton::pressed,
-            this, &MainWindow::slotSaveServer);
+            this, &MainWindow::slotSaveServer);    
 
     connect(ui->pbAddTrain, &QPushButton::released, this, &MainWindow::slotAddActiveTrain);
     connect(ui->pbDeleteTrain, &QPushButton::released, this, &MainWindow::slotDeleteActiveTrain);
@@ -205,7 +203,7 @@ void MainWindow::init()
 
     loadRoutesList(fs.getRouteRootDir());
     loadTrainsList(fs.getTrainsDir());
-    loadServersList(fs.getConfigDir());
+    loadServersList(fs.getConfigDir());    
 }
 
 //------------------------------------------------------------------------------
@@ -615,7 +613,7 @@ void MainWindow::gpuDiagnostics()
             // не запускает и падает вьювер, а драйверы не хотят устанавливаться
             // жалуясь на версию ОС.
             // TODO: протестировать это!!! иначе огребем от юзеров по полной!
-            size_t valid_gpus_count = 0;
+            size_t valid_gpus_count = 0;            
             std::vector<size_t> devices_with_problems;
 
             for (size_t i = 0; i < gpus_info.size(); ++i)
@@ -821,11 +819,11 @@ void MainWindow::centerWindow(QWidget *window)
 //------------------------------------------------------------------------------
 void MainWindow::updateOptions(FieldsDataList &fd_options)
 {
-    getSetting(AUTO_START_VIEWER, fd_options).toBool() ?
+    findSetting(AUTO_START_VIEWER, fd_options).second.toBool() ?
         ui->cbAutostartViewer->setCheckState(Qt::CheckState::Checked) :
         ui->cbAutostartViewer->setCheckState(Qt::CheckState::Unchecked);
 
-    getSetting(AUTO_START_ROUTE_MAP, fd_options).toBool() ?
+    findSetting(AUTO_START_ROUTE_MAP, fd_options).second.toBool() ?
         ui->cbAutostartMap->setCheckState(Qt::CheckState::Checked) :
         ui->cbAutostartMap->setCheckState(Qt::CheckState::Unchecked);
 }
@@ -835,8 +833,12 @@ void MainWindow::updateOptions(FieldsDataList &fd_options)
 //------------------------------------------------------------------------------
 void MainWindow::applyOptions(FieldsDataList &fd_options, Ui::MainWindow *ui)
 {
-    changeSetting(AUTO_START_VIEWER, fd_options, static_cast<int>(ui->cbAutostartViewer->checkState() == Qt::CheckState::Checked));
-    changeSetting(AUTO_START_ROUTE_MAP, fd_options, static_cast<int>(ui->cbAutostartMap->checkState() == Qt::CheckState::Checked));
+    int idx = 0;
+    findSetting(AUTO_START_VIEWER, fd_options, idx);
+    fd_options[idx] = QPair<QString, QVariant>(AUTO_START_VIEWER, static_cast<int>(ui->cbAutostartViewer->checkState() == Qt::CheckState::Checked));
+
+    findSetting(AUTO_START_ROUTE_MAP, fd_options, idx);
+    fd_options[idx] = QPair<QString, QVariant>(AUTO_START_ROUTE_MAP, static_cast<int>(ui->cbAutostartMap->checkState() == Qt::CheckState::Checked));
 }
 
 //------------------------------------------------------------------------------
@@ -1182,7 +1184,7 @@ void MainWindow::slotDeleteActiveTrain()
         delete tww;
     }
 
-    slotUpdateActiveTrains();
+    slotUpdateActiveTrains();    
 
     if (active_trains.size() == 0)
     {

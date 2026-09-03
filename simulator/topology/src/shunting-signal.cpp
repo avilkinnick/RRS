@@ -15,8 +15,8 @@ ShuntingSignal::ShuntingSignal(QObject* parent) : Signal(parent)
     signal_relay_shunt = new Relay(NUM_SRS_CONTACTS);
     lock_relay_shunt = new Relay(NUM_LRS_CONTACTS);
 
-    open_timer = new Timer(1.0, false);
-    close_timer = new Timer(1.0, false);
+    open_timer = new Timer(1.25, false);
+    close_timer = new Timer(1.25, false);
 
     connect(open_timer, &Timer::process, this, &ShuntingSignal::slotOpenTimerShunt);
     connect(close_timer, &Timer::process, this, &ShuntingSignal::slotCloseTimer);
@@ -167,7 +167,7 @@ bool ShuntingSignal::check_and_lock_switch_fwd(Switch* sw, bool lock)
             sw->setRefStateFwd(IN_ROUTE_MINUS);
             sw->setRouteBySignalFwd(this);
         }
-        else if (sw->getStateFwd() > 0)
+        if (sw->getStateFwd() > 0)
         {
             sw->setRefStateFwd(IN_ROUTE_PLUS);
             sw->setRouteBySignalFwd(this);
@@ -183,7 +183,7 @@ bool ShuntingSignal::check_and_lock_switch_fwd(Switch* sw, bool lock)
             sw->setRefStateFwd(STATE_MINUS);
             sw->setRouteBySignalFwd(nullptr);
         }
-        else if (sw->getStateFwd() > 0)
+        if (sw->getStateFwd() > 0)
         {
             sw->setRefStateFwd(STATE_PLUS);
             sw->setRouteBySignalFwd(nullptr);
@@ -226,7 +226,7 @@ bool ShuntingSignal::check_and_lock_switch_bwd(Switch* sw, bool lock)
             sw->setRefStateBwd(IN_ROUTE_MINUS);
             sw->setRouteBySignalBwd(this);
         }
-        else if (sw->getStateBwd() > 0)
+        if (sw->getStateBwd() > 0)
         {
             sw->setRefStateBwd(IN_ROUTE_PLUS);
             sw->setRouteBySignalBwd(this);
@@ -242,7 +242,7 @@ bool ShuntingSignal::check_and_lock_switch_bwd(Switch* sw, bool lock)
             sw->setRefStateBwd(STATE_MINUS);
             sw->setRouteBySignalBwd(nullptr);
         }
-        else if (sw->getStateBwd() > 0)
+        if (sw->getStateBwd() > 0)
         {
             sw->setRefStateBwd(STATE_PLUS);
             sw->setRouteBySignalBwd(nullptr);
@@ -329,7 +329,23 @@ void ShuntingSignal::check_shunt_route()
         if (traj->isBusy())
         {
             // Разрешаем маневровый маршрут до занятой траектории
-            is_shunt_route = true;
+            if (lock_relay_shunt->getContactState(LRS_NO_ROUTE))
+            {
+                // Пока светофор закрыт, разрешаем его открыть
+                is_shunt_route = true;
+
+                // По команде открыть - запоминаем, до какой занятой траектории
+                if (is_open_shunt_button_pressed)
+                    ref_trajectory_shunt = traj;
+                else
+                    ref_trajectory_shunt = nullptr;
+            }
+            else
+            {
+                // Разрешаем маневровый маршрут уже открытого светофора
+                // только до запомненной траектории, иначе закрываем
+                is_shunt_route = (ref_trajectory_shunt == traj);
+            }
             return;
         }
 

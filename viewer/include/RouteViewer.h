@@ -13,6 +13,7 @@ struct GUIParams;
 class  QByteArray;
 class  ScreenshotWriter;
 class  SoundManager;
+class  StationsHandler;
 class  Sun;
 class  TcpClient;
 class  TrafficLightsHandler;
@@ -58,7 +59,9 @@ private:
     void loadNetworkSettings(CfgReader& cfg, const QString& section);
     void loadLoggerSettings(CfgReader& cfg, const QString& section);
     void loadModelsSettings(CfgReader& cfg, const QString& section);
+    void loadStationsTextSettings(CfgReader& cfg, const QString& section);
     void loadWindowSettings(CfgReader& cfg, const QString& section);
+    void loadHUDSettings(CfgReader& cfg, const QString& section);
     void loadLightSettings(CfgReader& cfg, const QString& section);
     void loadCameraSettings(CfgReader& cfg, const QString& section);
     void loadFreeCameraSettings(CfgReader& cfg, const QString& section);
@@ -96,6 +99,8 @@ private slots:
 
     void slotGetSignalsData(QByteArray &sig_data);
 
+    void slotGetStationsData(QByteArray &stations_data);
+
     void slotGetVehicleInfoData(QByteArray &data);
 
     void slotUpdated();
@@ -105,6 +110,7 @@ private:
     bool  is_connection_abandoned = false;
     bool  is_route = false;
     bool  is_signals = false;
+    bool  is_stations = false;
     bool  is_vehicles = false;
 
     settings_t settings;
@@ -115,6 +121,7 @@ private:
     std::unique_ptr<TcpClient>             tcp_client;
     std::unique_ptr<SoundManager>          sound_manager;
     std::unique_ptr<ScreenshotWriter>      screenshot_writer;
+    std::unique_ptr<StationsHandler>       stations_handler;
     std::unique_ptr<TrafficLightsHandler>  traffic_lights_handler;
     std::unique_ptr<VehiclesHandler>       vehicles_handler;
     std::unique_ptr<NewSkybox>             skybox;
