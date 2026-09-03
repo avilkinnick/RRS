@@ -364,7 +364,9 @@ bool Route::load_topology()
     const auto directory_name = std::filesystem::path(
         route_dir).filename();
 
-    if (!context_.topology->load(directory_name.string().c_str()))
+    context_.finish_topology_thread.store(false);
+    if (!context_.topology->load(directory_name.string().c_str(), true,
+        &context_.finish_topology_thread))
     {
         Journal::instance()->error("Failed to load topology");
         return false;

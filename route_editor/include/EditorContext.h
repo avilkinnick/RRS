@@ -83,6 +83,8 @@ struct EditorContext
     std::map<std::string, WaypointData> waypoints_conf;
 
     RouteObjects deferred_selection;
+
+    std::atomic_bool finish_topology_thread;
 };
 
 #endif // EDITOR_CONTEXT_H

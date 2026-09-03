@@ -186,6 +186,8 @@ void RouteEditor::run()
         handle_deferred_selection();
     }
 
+    context_.finish_topology_thread.store(true);
+
     if (context_.load_static_objects_thread.joinable())
     {
         context_.load_static_objects_thread.join();
