@@ -40,7 +40,6 @@ void AddObject::execute()
     context_.static_objects_mutex.lock();
     context_.static_objects.emplace_back(object_to_add_);
     context_.static_objects_mutex.unlock();
-    ++context_.static_objects_count;
     ++context_.total_static_objects_count;
 
     context_.deferred_selection.emplace_back(object_to_add_);
@@ -55,7 +54,6 @@ void AddObject::undo()
     objects.erase(std::find(objects.begin(), objects.end(), object_to_add_));
     context_.static_objects_mutex.unlock();
 
-    --context_.static_objects_count;
     --context_.total_static_objects_count;
 
     route->children.erase(

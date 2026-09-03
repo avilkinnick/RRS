@@ -297,9 +297,9 @@ void Route::load_static_objects()
             context_.compile_infos.emplace_back(CompileInfo{
                 vsg::ref_ptr(this), object, vsg::MASK_ALL});
 
-            std::lock_guard<std::mutex> lock_guard(context_.static_objects_mutex);
+            context_.static_objects_mutex.lock();
             context_.static_objects.emplace_back(object);
-            ++context_.static_objects_count;
+            context_.static_objects_mutex.unlock();
 
             constexpr vsg::dvec3 X_AXIS = {1.0, 0.0, 0.0};
             constexpr vsg::dvec3 Y_AXIS = {0.0, 1.0, 0.0};
