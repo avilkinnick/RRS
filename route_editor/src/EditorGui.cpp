@@ -201,48 +201,6 @@ void EditorGui::record(vsg::CommandBuffer& command_buffer) const
             SHOW_WINDOW(show_selected_objects_properties);
             SHOW_WINDOW(show_commands);
 
-            ImGui::Begin("TestProgressBars");
-
-            context_.static_objects_mutex.lock();
-
-            float fraction = 1.0f;
-            if (context_.total_static_objects_count != 0)
-            {
-                fraction = (float)context_.static_objects.size() /
-                    context_.total_static_objects_count;
-            }
-
-            char overlay[64];
-            snprintf(overlay, 64, "%zu / %zu",
-                context_.static_objects.size(),
-                context_.total_static_objects_count.load());
-
-            context_.static_objects_mutex.unlock();
-
-            ImGui::ProgressBar(fraction, {200.0f, 30.0f}, overlay);
-
-            if (context_.topology_loaded)
-            {
-                fraction = 1.0f;
-                if (context_.total_topology_objects_count != 0)
-                {
-                    fraction = (float)context_.topology_objects_count /
-                        context_.total_topology_objects_count;
-                }
-
-                snprintf(overlay, 64, "%zu / %zu",
-                    context_.topology_objects_count.load(),
-                    context_.total_topology_objects_count.load());
-
-                ImGui::ProgressBar(fraction, {200.0f, 30.0f}, overlay);
-            }
-            else
-            {
-                ImGui::Text("Topology not yet loaded");
-            }
-
-            ImGui::End();
-
             return;
         }
     }
@@ -534,7 +492,7 @@ void EditorGui::show_topology() const
     std::lock_guard<std::mutex> lock_guard(context_.topology_mutex);
     if (!context_.topology)
     {
-        ImGui::Text("There is no topology yet");
+        ImGui::Text("Topology not yet loaded");
         ImGui::End();
         return;
     }

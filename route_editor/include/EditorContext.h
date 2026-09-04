@@ -56,7 +56,6 @@ struct EditorContext
 
     RouteObjects static_objects;
     std::mutex static_objects_mutex;
-    std::atomic_size_t total_static_objects_count = 0;
 
     RouteObjects selected_objects;
     RouteObjects copied_objects;

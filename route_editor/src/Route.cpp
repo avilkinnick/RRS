@@ -184,13 +184,6 @@ bool Route::load_route_map()
         }
     }
 
-    std::size_t total_static_objects_count = 0;
-    for (const auto& [label, transforms] : context_.route_map)
-    {
-        total_static_objects_count += transforms.size();
-    }
-    context_.total_static_objects_count = total_static_objects_count;
-
     return true;
 }
 

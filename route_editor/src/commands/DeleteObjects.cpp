@@ -36,7 +36,6 @@ void DeleteObjects::execute()
             context_.static_objects.end(), object));
 
         context_.static_objects_mutex.unlock();
-        --context_.total_static_objects_count;
 
         route->children.erase(
             std::find_if(route->children.begin(), route->children.end(),
@@ -62,8 +61,6 @@ void DeleteObjects::undo()
         context_.static_objects_mutex.lock();
         context_.static_objects.emplace_back(object);
         context_.static_objects_mutex.unlock();
-
-        ++context_.total_static_objects_count;
 
         object->select();
     }
