@@ -67,8 +67,6 @@
 #include <mutex>
 #include <string>
 
-#define SHOW_WINDOW(setting_name) if (gui_settings.setting_name) setting_name()
-
 static bool drag_double(const char* label, double* data,
     const double* min = nullptr)
 {
@@ -141,28 +139,7 @@ void EditorGui::record(vsg::CommandBuffer& command_buffer) const
 {
     (void)command_buffer;
 
-    if (ImGui::BeginMainMenuBar())
-    {
-        if (ImGui::BeginMenu("File"))
-        {
-            if (ImGui::MenuItem("New route"))
-            {
-                // TODO
-            }
-
-            if (ImGui::MenuItem("Load route"))
-            {
-                IGFD::FileDialogConfig config;
-                config.path = FileSystem::getInstance().getRouteRootDir();
-                ImGuiFileDialog::Instance()->OpenDialog("LoadRouteKey",
-                    "Load route", nullptr, config);
-            }
-
-            ImGui::EndMenu();
-        }
-        ImGui::EndMainMenuBar();
-    }
-
+    draw_main_menu_bar();
     draw_status_bar();
     draw_load_route_file_dialog();
     draw_invalid_route_popup();
@@ -191,15 +168,15 @@ void EditorGui::record(vsg::CommandBuffer& command_buffer) const
 
             ImGui::ShowDemoWindow();
 
-            SHOW_WINDOW(show_objects_ref);
-            SHOW_WINDOW(show_route_map);
-            SHOW_WINDOW(show_stations_conf);
-            SHOW_WINDOW(show_waypoints_conf);
-            SHOW_WINDOW(show_key_bindings);
-            SHOW_WINDOW(show_camera_settings);
-            SHOW_WINDOW(show_topology);
-            SHOW_WINDOW(show_selected_objects_properties);
-            SHOW_WINDOW(show_commands);
+            show_objects_ref();
+            show_route_map();
+            show_stations_conf();
+            show_waypoints_conf();
+            show_key_bindings();
+            show_camera_settings();
+            show_topology();
+            show_selected_objects_properties();
+            show_commands();
 
             return;
         }
@@ -208,6 +185,11 @@ void EditorGui::record(vsg::CommandBuffer& command_buffer) const
 
 void EditorGui::show_objects_ref() const
 {
+    if (!gui_settings.show_objects_ref)
+    {
+        return;
+    }
+
     ImGui::Begin("objects_ref", nullptr, window_flags_);
 
     if (!route)
@@ -259,6 +241,11 @@ void EditorGui::show_objects_ref() const
 
 void EditorGui::show_route_map() const
 {
+    if (!gui_settings.show_route_map)
+    {
+        return;
+    }
+
     ImGui::Begin("route1.map", nullptr, window_flags_);
 
     if (!route)
@@ -307,6 +294,11 @@ void EditorGui::show_route_map() const
 
 void EditorGui::show_stations_conf() const
 {
+    if (!gui_settings.show_stations_conf)
+    {
+        return;
+    }
+
     ImGui::Begin("stations.conf", nullptr, window_flags_);
 
     if (ImGui::BeginTable("stations_conf_table", 4,
@@ -345,6 +337,11 @@ void EditorGui::show_stations_conf() const
 // TODO: Сделать, чтобы реальные позиции грузились один раз?
 void EditorGui::show_waypoints_conf() const
 {
+    if (!gui_settings.show_waypoints_conf)
+    {
+        return;
+    }
+
     if (!context_.topology_loaded)
     {
         return;
@@ -412,6 +409,11 @@ void EditorGui::show_waypoints_conf() const
 
 void EditorGui::show_key_bindings() const
 {
+    if (!gui_settings.show_key_bindings)
+    {
+        return;
+    }
+
     ImGui::Begin("Key Bindings", nullptr, window_flags_);
 
     if (ImGui::BeginTable("key_bindings_table", 2,
@@ -454,6 +456,11 @@ void EditorGui::show_key_bindings() const
 
 void EditorGui::show_camera_settings() const
 {
+    if (!gui_settings.show_camera_settings)
+    {
+        return;
+    }
+
     ImGui::Begin("Camera Settings", nullptr, window_flags_);
 
     constexpr double min = 0.0;
@@ -480,6 +487,11 @@ void EditorGui::show_camera_settings() const
 
 void EditorGui::show_topology() const
 {
+    if (!gui_settings.show_topology)
+    {
+        return;
+    }
+
     ImGui::Begin("Topology", nullptr, window_flags_);
 
     if (!route)
@@ -596,6 +608,11 @@ void EditorGui::show_topology() const
 
 void EditorGui::show_selected_objects_properties() const
 {
+    if (!gui_settings.show_selected_objects_properties)
+    {
+        return;
+    }
+
     if (!context_.object_selector)
     {
         return;
@@ -629,6 +646,11 @@ void EditorGui::show_selected_objects_properties() const
 
 void EditorGui::show_commands() const
 {
+    if (!gui_settings.show_commands)
+    {
+        return;
+    }
+
     ImGui::Begin("Commands");
 
     command_manager.for_each_command([](const std::unique_ptr<::Command>& command) -> void {
@@ -802,6 +824,31 @@ void EditorGui::add_ttf_font(
     const std::string font_path = fs.combinePath(fs.getFontsDir(), filename);
     io.Fonts->AddFontFromFileTTF(font_path.c_str(), size_pixels, font_cfg,
         glyph_ranges);
+}
+
+void EditorGui::draw_main_menu_bar() const
+{
+    if (ImGui::BeginMainMenuBar())
+    {
+        if (ImGui::BeginMenu("File"))
+        {
+            if (ImGui::MenuItem("New route"))
+            {
+                // TODO
+            }
+
+            if (ImGui::MenuItem("Load route"))
+            {
+                IGFD::FileDialogConfig config;
+                config.path = FileSystem::getInstance().getRouteRootDir();
+                ImGuiFileDialog::Instance()->OpenDialog("LoadRouteKey",
+                    "Load route", nullptr, config);
+            }
+
+            ImGui::EndMenu();
+        }
+        ImGui::EndMainMenuBar();
+    }
 }
 
 void EditorGui::draw_status_bar() const

@@ -440,7 +440,7 @@ bool Route::load_topology()
 
     const auto group = vsg::Group::create();
 
-    const std::string shaders_dir_path = fs.getDataDir() + fs.separator() + "shaders";
+    const std::string shaders_dir_path = fs.combinePath(fs.getDataDir(), "shaders");
 
     const auto input_assembly_state = vsg::InputAssemblyState::create();
     input_assembly_state->topology = VK_PRIMITIVE_TOPOLOGY_LINE_STRIP;

@@ -112,6 +112,8 @@ private:
         const ImWchar* glyph_ranges = nullptr
     );
 
+    void draw_main_menu_bar() const;
+
     void draw_status_bar() const;
 
     void draw_load_route_file_dialog() const;
