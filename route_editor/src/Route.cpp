@@ -391,7 +391,6 @@ bool Route::load_topology()
 
             if (signal_model_name.empty() || signal_model_name == "empty_line")
             {
-                ++context_.topology_objects_count;
                 continue;
             }
 
@@ -434,14 +433,8 @@ bool Route::load_topology()
 
             context_.compile_infos.emplace_back(CompileInfo{
                 vsg::ref_ptr(this), object, vsg::MASK_ALL});
-
-            ++context_.topology_objects_count;
         }
     };
-
-    context_.total_topology_objects_count += signals_data->line_signals.size();
-    context_.total_topology_objects_count += signals_data->enter_signals.size();
-    context_.total_topology_objects_count += signals_data->exit_signals.size();
 
     load_signals(signals_data->line_signals);
     load_signals(signals_data->enter_signals);
