@@ -352,7 +352,6 @@ bool Route::load_topology()
 
     context_.topology_mutex.lock();
     context_.topology = std::make_unique<Topology>();
-    context_.topology_mutex.unlock();
 
     const auto directory_name = std::filesystem::path(
         route_dir).filename();
@@ -365,6 +364,7 @@ bool Route::load_topology()
         return false;
     }
     context_.topology_loaded = true;
+    context_.topology_mutex.unlock();
 
     PagedLodMap paged_lods;
 
