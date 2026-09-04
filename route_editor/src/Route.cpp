@@ -24,6 +24,7 @@
 #include <vsg/core/Data.h>
 #include <vsg/core/Mask.h>
 #include <vsg/core/ref_ptr.h>
+#include <vsg/io/Path.h>
 #include <vsg/io/read.h>
 #include <vsg/maths/common.h>
 #include <vsg/maths/sphere.h>
@@ -63,6 +64,18 @@ static vsg::dvec3 to_vsg_vec3(dvec3 vec)
     return vsg::dvec3{vec.x, vec.y, vec.z};
 }
 
+static vsg::ref_ptr<vsg::PagedLOD> construct_paged_lod(const vsg::Path& filename,
+    double radius, const vsg::ref_ptr<vsg::Options>& options)
+{
+    const auto paged_lod = vsg::PagedLOD::create();
+    paged_lod->filename = filename;
+    paged_lod->bound.set(vsg::dvec3(0.0, 0.0, 0.0), radius);
+    paged_lod->children[0].minimumScreenHeightRatio = 0.1;
+    paged_lod->children[0].node = nullptr;
+    paged_lod->options = options;
+    return paged_lod;
+}
+
 Route::Route(
     EditorContext& context,
     const camera_settings_t& camera_settings,
@@ -90,17 +103,9 @@ Route::Route(
 
     for (auto& [label, ref] : context.objects_ref)
     {
-        const auto paged_lod = vsg::PagedLOD::create();
-        paged_lod->filename = fs.combinePath(route_dir,
-            ref.relative_path);
-
-        paged_lod->bound = vsg::dsphere(vsg::dvec3(0.0, 0.0, 0.0),
-            camera_settings.view_distance);
-
-        paged_lod->children.front() = {0.1, nullptr};
-        paged_lod->options = vsg_options;
-
-        ref.paged_lod = paged_lod;
+        ref.paged_lod = construct_paged_lod(
+            fs.combinePath(route_dir, ref.relative_path),
+            camera_settings.view_distance, vsg_options);
     }
 
     context.load_static_objects_thread = std::thread(
@@ -318,8 +323,8 @@ bool Route::load_topology()
 {
     const FileSystem& fs = FileSystem::getInstance();
 
-    const std::string cfg_path = fs.combinePath(route_dir,
-        "topology", "models-config.xml");
+    const std::string cfg_path = fs.combinePath(route_dir, "topology",
+        "models-config.xml");
 
     CfgReader cfg;
     if (!cfg.load(QString::fromStdString(cfg_path)))
@@ -402,17 +407,10 @@ bool Route::load_topology()
             auto paged_lod_it = paged_lods.find(signal_model_path);
             if (paged_lod_it == paged_lods.end())
             {
-                const auto new_paged_lod = vsg::PagedLOD::create();
-                new_paged_lod->filename = signal_model_path;
+                const auto new_paged_lod = construct_paged_lod(signal_model_path,
+                    camera_settings.view_distance, vsg_options);
 
-                new_paged_lod->bound = vsg::dsphere(vsg::dvec3(0.0, 0.0, 0.0),
-                    camera_settings.view_distance);
-
-                new_paged_lod->children.front() = {0.1, nullptr};
-                new_paged_lod->options = vsg_options;
-
-                paged_lod_it = paged_lods.emplace(signal_model_path,
-                    new_paged_lod).first;
+                paged_lod_it = paged_lods.emplace(signal_model_path, new_paged_lod).first;
             }
 
             paged_lod = paged_lod_it->second;
