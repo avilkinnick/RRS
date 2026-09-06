@@ -19,7 +19,6 @@ struct KeyBindings;
 class Route;
 class RouteObject;
 class StateManager;
-struct camera_settings_t;
 struct gui_settings_t;
 
 namespace vsg
@@ -34,7 +33,6 @@ class EditorGui : public vsg::Inherit<vsg::Command, EditorGui>
 public:
     EditorGui(
         EditorContext& context,
-        camera_settings_t& camera_settings,
         gui_settings_t& gui_settings,
         const KeyBindings& key_bindings,
         StateManager& state_manager,
@@ -50,7 +48,6 @@ public:
 
     void record(vsg::CommandBuffer& command_buffer) const override;
 
-private:
     void show_objects_ref() const;
     void show_route_map() const;
     void show_stations_conf() const;
@@ -63,6 +60,7 @@ private:
     void show_selected_objects_properties() const;
     void show_commands() const;
 
+private:
     void add_object(
         const vsg::ref_ptr<vsg::PagedLOD>& paged_lod,
         const std::string& label
@@ -90,7 +88,6 @@ private:
 
 private:
     EditorContext& context_;
-    camera_settings_t& camera_settings;
     gui_settings_t& gui_settings;
     const KeyBindings& key_bindings;
     StateManager& state_manager;

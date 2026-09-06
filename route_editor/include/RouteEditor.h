@@ -6,11 +6,8 @@
 #include "KeyBindings.h"
 #include "ObjectManager.h"
 #include "commands/CommandManager.h"
-#include "settings/CameraSettings.h"
 #include "settings/GizmoSettings.h"
 #include "settings/GuiSettings.h"
-#include "settings/SceneSettings.h"
-#include "settings/WindowSettings.h"
 
 #include <vsg/io/Options.h>
 
@@ -56,11 +53,10 @@ private:
     vsg::ref_ptr<Mouse> mouse;
     vsg::ref_ptr<Keyboard> keyboard;
     std::unique_ptr<StateManager> state_manager;
-    camera_settings_t camera_settings;
+
     gizmo_settings_t gizmo_settings;
     gui_settings_t gui_settings;
-    scene_settings_t scene_settings;
-    window_settings_t window_settings;
+
     KeyBindings key_bindings;
     vsg::ref_ptr<Camera> camera;
     EditorState editor_state = EditorState::SELECT_ROUTE;

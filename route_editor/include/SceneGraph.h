@@ -9,7 +9,6 @@ struct EditorContext;
 class Gizmo;
 class ObjectManager;
 class Route;
-struct camera_settings_t;
 
 namespace vsg
 {
@@ -23,7 +22,6 @@ class SceneGraph : public vsg::Inherit<vsg::Switch, SceneGraph>
 public:
     SceneGraph(
         EditorContext& context,
-        const camera_settings_t& camera_settings,
         const vsg::ref_ptr<vsg::Options>& vsg_options,
         vsg::ref_ptr<Route>& route,
         const std::string& route_dir,
@@ -35,7 +33,6 @@ public:
 
 private:
     EditorContext& context_;
-    const camera_settings_t& camera_settings;
     const vsg::ref_ptr<vsg::Options>& vsg_options;
     vsg::ref_ptr<Route>& route;
     const std::string& route_dir;

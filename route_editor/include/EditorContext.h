@@ -4,6 +4,9 @@
 #include "ThreadSafeVector.h"
 #include "RouteMap.h"
 #include "RouteObjects.h"
+#include "settings/CameraSettings.h"
+#include "settings/SceneSettings.h"
+#include "settings/WindowSettings.h"
 
 #include <atomic>
 #include <mutex>
@@ -53,6 +56,10 @@ struct EditorContext
 {
     EditorContext();
     ~EditorContext();
+
+    window_settings_t window_settings;
+    camera_settings_t camera_settings;
+    scene_settings_t scene_settings;
 
     RouteObjects static_objects;
     std::mutex static_objects_mutex;

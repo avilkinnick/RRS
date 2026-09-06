@@ -66,7 +66,7 @@ bool RouteEditor::initialize()
     create_vsg_options();
     configure_shaders();
 
-    window_handler_ = WindowHandler::create(window_settings, window);
+    window_handler_ = WindowHandler::create(context_.window_settings, window);
     if (!window)
     {
         return false;
@@ -78,14 +78,14 @@ bool RouteEditor::initialize()
     auto save_handler = SaveHandler::create(keyboard,
         route_dir, context_.static_objects_mutex, context_.static_objects);
 
-    camera = Camera::create(camera_settings, window->extent2D(), mouse,
+    camera = Camera::create(context_.camera_settings, window->extent2D(), mouse,
         keyboard);
     window_handler_->set_camera(camera);
 
     object_manager = std::make_unique<ObjectManager>(1000000);
 
-    scene_graph = SceneGraph::create(context_, camera_settings, vsg_options,
-        route, route_dir, gizmo, *object_manager);
+    scene_graph = SceneGraph::create(context_, vsg_options, route,
+        route_dir, gizmo, *object_manager);
 
     context_.outline_builder = OutlineBuilder::create();
 
@@ -109,9 +109,9 @@ bool RouteEditor::initialize()
     gui_view2->mask = MASK_GUI2;
 
     state_manager = std::make_unique<StateManager>(keyboard, mouse, camera, command_manager);
-    const auto editor_gui = EditorGui::create(context_, camera_settings,
-        gui_settings, key_bindings, *state_manager, camera, editor_state,
-        command_manager, route, route_dir, gizmo);
+    const auto editor_gui = EditorGui::create(context_, gui_settings,
+        key_bindings, *state_manager, camera, editor_state, command_manager,
+        route, route_dir, gizmo);
 
     const auto render_gui = vsgImGui::RenderImGui::create(window, editor_gui);
 
@@ -150,7 +150,7 @@ bool RouteEditor::initialize()
     viewer_->assignRecordAndSubmitTaskAndPresentation({command_graph});
 
     const uint32_t num_lights = static_cast<uint32_t>(
-        scene_settings.num_lights);
+        context_.scene_settings.num_lights);
 
     auto resource_hints = vsg::ResourceHints::create();
     resource_hints->numLightsRange = {num_lights, num_lights + 1};
@@ -236,11 +236,11 @@ void RouteEditor::read_settings()
         return;
     }
 
-    camera_settings.read(cfg);
+    context_.camera_settings.read(cfg);
     gizmo_settings.read(cfg);
     gui_settings.read(cfg);
-    scene_settings.read(cfg);
-    window_settings.read(cfg);
+    context_.scene_settings.read(cfg);
+    context_.window_settings.read(cfg);
     key_bindings.read(cfg);
 }
 

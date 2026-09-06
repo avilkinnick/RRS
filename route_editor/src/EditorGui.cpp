@@ -84,7 +84,6 @@ static bool drag_double3(const char* label, double* data, float speed = 1.0f,
 
 EditorGui::EditorGui(
     EditorContext& context,
-    camera_settings_t& camera_settings,
     gui_settings_t& gui_settings,
     const KeyBindings& key_bindings,
     StateManager& state_manager,
@@ -96,7 +95,6 @@ EditorGui::EditorGui(
     const vsg::ref_ptr<Gizmo>& gizmo
 )
     : context_(context)
-    , camera_settings(camera_settings)
     , gui_settings(gui_settings)
     , key_bindings(key_bindings)
     , state_manager(state_manager)
@@ -466,20 +464,21 @@ void EditorGui::show_camera_settings() const
     constexpr double min = 0.0;
 
     ImGui::Text("Move speed:");
-    drag_double("##move_speed", &camera_settings.move_speed, &min);
+    drag_double("##move_speed", &context_.camera_settings.move_speed, &min);
 
     ImGui::Text("Rotate speed:");
-    drag_double("##rotate_speed", &camera_settings.rotate_speed, &min);
+    drag_double("##rotate_speed", &context_.camera_settings.rotate_speed, &min);
 
     ImGui::Text("Zoom power:");
-    drag_double("##zoom_power", &camera_settings.zoom_power, &min);
+    drag_double("##zoom_power", &context_.camera_settings.zoom_power, &min);
 
     ImGui::Text("FovY:");
 
-    if (ImGui::SliderScalar("##fovy", ImGuiDataType_Double, &camera_settings.fovy,
-        &camera_settings.fovy_min, &camera_settings.fovy_max, "%.3f"))
+    if (ImGui::SliderScalar("##fovy", ImGuiDataType_Double,
+        &context_.camera_settings.fovy, &context_.camera_settings.fovy_min,
+        &context_.camera_settings.fovy_max, "%.3f"))
     {
-        camera->get_perspective()->fieldOfViewY = camera_settings.fovy;
+        camera->get_perspective()->fieldOfViewY = context_.camera_settings.fovy;
     }
 
     ImGui::End();
