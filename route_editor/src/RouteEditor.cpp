@@ -109,7 +109,7 @@ bool RouteEditor::initialize()
     gui_view2->mask = MASK_GUI2;
 
     state_manager = std::make_unique<StateManager>(keyboard, mouse, camera, command_manager);
-    const auto editor_gui = EditorGui::create(context_, gui_settings,
+    const auto editor_gui = EditorGui::create(context_, context_.gui_settings,
         key_bindings, *state_manager, camera, editor_state, command_manager,
         route, route_dir, gizmo);
 
@@ -128,7 +128,7 @@ bool RouteEditor::initialize()
 
     viewer_ = vsg::Viewer::create();
 
-    gizmo = Gizmo::create(context_, gizmo_settings, camera, command_manager, mouse, window->extent2D());
+    gizmo = Gizmo::create(context_, context_.gizmo_settings, camera, command_manager, mouse, window->extent2D());
     scene_graph->addChild(vsg::Mask{MASK_GUI1 | MASK_CLICKABLE}, gizmo);
 
     context_.object_selector = ObjectSelector::create(context_, mouse, keyboard,
@@ -237,8 +237,8 @@ void RouteEditor::read_settings()
     }
 
     context_.camera_settings.read(cfg);
-    gizmo_settings.read(cfg);
-    gui_settings.read(cfg);
+    context_.gizmo_settings.read(cfg);
+    context_.gui_settings.read(cfg);
     context_.scene_settings.read(cfg);
     context_.window_settings.read(cfg);
     key_bindings.read(cfg);

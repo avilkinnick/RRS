@@ -6,8 +6,6 @@
 #include "KeyBindings.h"
 #include "ObjectManager.h"
 #include "commands/CommandManager.h"
-#include "settings/GizmoSettings.h"
-#include "settings/GuiSettings.h"
 
 #include <vsg/io/Options.h>
 
@@ -53,9 +51,6 @@ private:
     vsg::ref_ptr<Mouse> mouse;
     vsg::ref_ptr<Keyboard> keyboard;
     std::unique_ptr<StateManager> state_manager;
-
-    gizmo_settings_t gizmo_settings;
-    gui_settings_t gui_settings;
 
     KeyBindings key_bindings;
     vsg::ref_ptr<Camera> camera;

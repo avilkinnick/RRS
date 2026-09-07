@@ -5,6 +5,8 @@
 #include "RouteMap.h"
 #include "RouteObjects.h"
 #include "settings/CameraSettings.h"
+#include "settings/GizmoSettings.h"
+#include "settings/GuiSettings.h"
 #include "settings/SceneSettings.h"
 #include "settings/WindowSettings.h"
 
@@ -60,6 +62,8 @@ struct EditorContext
     window_settings_t window_settings;
     camera_settings_t camera_settings;
     scene_settings_t scene_settings;
+    gizmo_settings_t gizmo_settings;
+    gui_settings_t gui_settings;
 
     RouteObjects static_objects;
     std::mutex static_objects_mutex;
