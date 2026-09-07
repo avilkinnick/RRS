@@ -12,7 +12,6 @@ class Camera;
 class CommandManager;
 struct EditorContext;
 class Mouse;
-struct gizmo_settings_t;
 
 namespace vsg
 {
@@ -29,7 +28,6 @@ class Gizmo : public vsg::Inherit<SingleSwitch, Gizmo>
 public:
     Gizmo(
         EditorContext& context,
-        const gizmo_settings_t& gizmo_settings,
         const vsg::ref_ptr<Camera>& camera,
         CommandManager& command_manager,
         const vsg::ref_ptr<Mouse>& mouse,
@@ -48,7 +46,6 @@ public:
 
 private:
     EditorContext& context_;
-    const gizmo_settings_t& gizmo_settings;
     const vsg::ref_ptr<Camera>& camera;
     CommandManager& command_manager;
     const vsg::ref_ptr<Mouse>& mouse;

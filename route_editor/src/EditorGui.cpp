@@ -84,7 +84,6 @@ static bool drag_double3(const char* label, double* data, float speed = 1.0f,
 
 EditorGui::EditorGui(
     EditorContext& context,
-    gui_settings_t& gui_settings,
     const KeyBindings& key_bindings,
     StateManager& state_manager,
     const vsg::ref_ptr<Camera>& camera,
@@ -95,7 +94,6 @@ EditorGui::EditorGui(
     const vsg::ref_ptr<Gizmo>& gizmo
 )
     : context_(context)
-    , gui_settings(gui_settings)
     , key_bindings(key_bindings)
     , state_manager(state_manager)
     , camera(camera)
@@ -110,12 +108,12 @@ EditorGui::EditorGui(
     io.IniFilename = nullptr;
 
     add_ttf_font("JetBrainsMono-Regular.ttf",
-        gui_settings.font_size, nullptr,
+        context_.gui_settings.font_size, nullptr,
         io.Fonts->GetGlyphRangesCyrillic());
 
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 
-    if (!gui_settings.is_editable)
+    if (!context_.gui_settings.is_editable)
     {
         window_flags_ |= ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
     }
@@ -153,15 +151,15 @@ void EditorGui::record(vsg::CommandBuffer& command_buffer) const
         {
             ImGui::SetNextWindowPos(viewport->WorkPos);
             ImGui::Begin("Settings", nullptr, window_flags_ | ImGuiWindowFlags_AlwaysAutoResize);
-            ImGui::Checkbox("Show objects.ref", &gui_settings.show_objects_ref);
-            ImGui::Checkbox("Show route1.map", &gui_settings.show_route_map);
-            ImGui::Checkbox("Show stations", &gui_settings.show_stations_conf);
-            ImGui::Checkbox("Show waypoints", &gui_settings.show_waypoints_conf);
-            ImGui::Checkbox("Show key bindings", &gui_settings.show_key_bindings);
-            ImGui::Checkbox("Show camera settings", &gui_settings.show_camera_settings);
-            ImGui::Checkbox("Show topology", &gui_settings.show_topology);
-            ImGui::Checkbox("Show selected objects properties", &gui_settings.show_selected_objects_properties);
-            ImGui::Checkbox("Show commands", &gui_settings.show_commands);
+            ImGui::Checkbox("Show objects.ref", &context_.gui_settings.show_objects_ref);
+            ImGui::Checkbox("Show route1.map", &context_.gui_settings.show_route_map);
+            ImGui::Checkbox("Show stations", &context_.gui_settings.show_stations_conf);
+            ImGui::Checkbox("Show waypoints", &context_.gui_settings.show_waypoints_conf);
+            ImGui::Checkbox("Show key bindings", &context_.gui_settings.show_key_bindings);
+            ImGui::Checkbox("Show camera settings", &context_.gui_settings.show_camera_settings);
+            ImGui::Checkbox("Show topology", &context_.gui_settings.show_topology);
+            ImGui::Checkbox("Show selected objects properties", &context_.gui_settings.show_selected_objects_properties);
+            ImGui::Checkbox("Show commands", &context_.gui_settings.show_commands);
             ImGui::End();
 
             ImGui::ShowDemoWindow();
@@ -183,7 +181,7 @@ void EditorGui::record(vsg::CommandBuffer& command_buffer) const
 
 void EditorGui::show_objects_ref() const
 {
-    if (!gui_settings.show_objects_ref)
+    if (!context_.gui_settings.show_objects_ref)
     {
         return;
     }
@@ -239,7 +237,7 @@ void EditorGui::show_objects_ref() const
 
 void EditorGui::show_route_map() const
 {
-    if (!gui_settings.show_route_map)
+    if (!context_.gui_settings.show_route_map)
     {
         return;
     }
@@ -292,7 +290,7 @@ void EditorGui::show_route_map() const
 
 void EditorGui::show_stations_conf() const
 {
-    if (!gui_settings.show_stations_conf)
+    if (!context_.gui_settings.show_stations_conf)
     {
         return;
     }
@@ -335,7 +333,7 @@ void EditorGui::show_stations_conf() const
 // TODO: Сделать, чтобы реальные позиции грузились один раз?
 void EditorGui::show_waypoints_conf() const
 {
-    if (!gui_settings.show_waypoints_conf)
+    if (!context_.gui_settings.show_waypoints_conf)
     {
         return;
     }
@@ -407,7 +405,7 @@ void EditorGui::show_waypoints_conf() const
 
 void EditorGui::show_key_bindings() const
 {
-    if (!gui_settings.show_key_bindings)
+    if (!context_.gui_settings.show_key_bindings)
     {
         return;
     }
@@ -454,7 +452,7 @@ void EditorGui::show_key_bindings() const
 
 void EditorGui::show_camera_settings() const
 {
-    if (!gui_settings.show_camera_settings)
+    if (!context_.gui_settings.show_camera_settings)
     {
         return;
     }
@@ -486,7 +484,7 @@ void EditorGui::show_camera_settings() const
 
 void EditorGui::show_topology() const
 {
-    if (!gui_settings.show_topology)
+    if (!context_.gui_settings.show_topology)
     {
         return;
     }
@@ -607,7 +605,7 @@ void EditorGui::show_topology() const
 
 void EditorGui::show_selected_objects_properties() const
 {
-    if (!gui_settings.show_selected_objects_properties)
+    if (!context_.gui_settings.show_selected_objects_properties)
     {
         return;
     }
@@ -645,7 +643,7 @@ void EditorGui::show_selected_objects_properties() const
 
 void EditorGui::show_commands() const
 {
-    if (!gui_settings.show_commands)
+    if (!context_.gui_settings.show_commands)
     {
         return;
     }

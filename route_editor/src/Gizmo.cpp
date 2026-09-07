@@ -9,7 +9,6 @@
 #include "commands/CommandManager.h"
 #include "commands/TranslateObjects.h"
 #include "editor_math.h"
-#include "settings/GizmoSettings.h"
 
 #include <vsg/core/Mask.h>
 #include <vsg/core/ref_ptr.h>
@@ -46,14 +45,12 @@ static void rotate_geometry_info(
 
 Gizmo::Gizmo(
     EditorContext& context,
-    const gizmo_settings_t& gizmo_settings,
     const vsg::ref_ptr<Camera>& camera,
     CommandManager& command_manager,
     const vsg::ref_ptr<Mouse>& mouse,
     const VkExtent2D& window_extent
 )
     : context_(context)
-    , gizmo_settings(gizmo_settings)
     , camera(camera)
     , command_manager(command_manager)
     , mouse(mouse)
@@ -71,9 +68,9 @@ Gizmo::Gizmo(
     const auto create_arrow = [&](vsg::vec3 direction,
         vsg::vec3 color) -> vsg::ref_ptr<vsg::Node>
     {
-        float thickness = gizmo_settings.arrow_thickness;
-        const float length = gizmo_settings.arrow_length;
-        const float opacity = gizmo_settings.opacity;
+        float thickness = context_.gizmo_settings.arrow_thickness;
+        const float length = context_.gizmo_settings.arrow_length;
+        const float opacity = context_.gizmo_settings.opacity;
 
         vsg::box box = {
             vsg::vec3(-thickness, -thickness, 0.0f),
@@ -122,7 +119,7 @@ Gizmo::Gizmo(
     {
         const float width = plane_width;
         const float thickness = line_thickness;
-        const float opacity = gizmo_settings.opacity;
+        const float opacity = context_.gizmo_settings.opacity;
 
         const vsg::box box = {
             vsg::vec3(-thickness, -thickness, -width),
@@ -145,9 +142,9 @@ Gizmo::Gizmo(
     };
 
     const vsg::vec3 arrow_colors[3] = {
-        gizmo_settings.arrow_x_color,
-        gizmo_settings.arrow_y_color,
-        gizmo_settings.arrow_z_color
+        context_.gizmo_settings.arrow_x_color,
+        context_.gizmo_settings.arrow_y_color,
+        context_.gizmo_settings.arrow_z_color
     };
 
     for (int i = 0; i < 3; ++i)
@@ -197,10 +194,10 @@ bool Gizmo::handle_intersections()
 
     const vsg::dvec3 ray_dir = ray_end - ray_origin;
 
-    const double R_cyl = gizmo_settings.arrow_thickness * scale_;
-    const double R_cone = gizmo_settings.arrow_thickness * 3.0 * scale_;
-    const double H_cyl = gizmo_settings.arrow_length * scale_;
-    const double H_cone = gizmo_settings.arrow_thickness * 15.0 * scale_;
+    const double R_cyl = context_.gizmo_settings.arrow_thickness * scale_;
+    const double R_cone = context_.gizmo_settings.arrow_thickness * 3.0 * scale_;
+    const double H_cyl = context_.gizmo_settings.arrow_length * scale_;
+    const double H_cone = context_.gizmo_settings.arrow_thickness * 15.0 * scale_;
 
     constexpr double EPSILON = 1e-9;
     double closest_t = std::numeric_limits<double>::max();
@@ -529,7 +526,7 @@ static vsg::dvec3 calculate_position_center(
 
 void Gizmo::update_position()
 {
-    curr_pos_ = gizmo_settings.to_center
+    curr_pos_ = context_.gizmo_settings.to_center
         ? calculate_position_center(context_.selected_objects)
         : calculate_position_pivot(context_.selected_objects);
 

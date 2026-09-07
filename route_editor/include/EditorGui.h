@@ -19,7 +19,6 @@ struct KeyBindings;
 class Route;
 class RouteObject;
 class StateManager;
-struct gui_settings_t;
 
 namespace vsg
 {
@@ -33,7 +32,6 @@ class EditorGui : public vsg::Inherit<vsg::Command, EditorGui>
 public:
     EditorGui(
         EditorContext& context,
-        gui_settings_t& gui_settings,
         const KeyBindings& key_bindings,
         StateManager& state_manager,
         const vsg::ref_ptr<Camera>& camera,
@@ -88,7 +86,6 @@ private:
 
 private:
     EditorContext& context_;
-    gui_settings_t& gui_settings;
     const KeyBindings& key_bindings;
     StateManager& state_manager;
     const vsg::ref_ptr<Camera>& camera;
