@@ -50,8 +50,6 @@ private:
     vsg::ref_ptr<Camera> camera;
     EditorState editor_state = EditorState::SELECT_ROUTE;
     CommandManager command_manager;
-    vsg::ref_ptr<vsg::Options> vsg_options;
-    vsg::ref_ptr<vsg::Window> window;
     vsg::ref_ptr<SceneGraph> scene_graph;
     vsg::ref_ptr<Route> route;
     std::string route_dir;

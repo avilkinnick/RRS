@@ -84,7 +84,6 @@ static bool drag_double3(const char* label, double* data, float speed = 1.0f,
 
 EditorGui::EditorGui(
     EditorContext& context,
-    const KeyBindings& key_bindings,
     StateManager& state_manager,
     const vsg::ref_ptr<Camera>& camera,
     EditorState& editor_state,
@@ -94,7 +93,6 @@ EditorGui::EditorGui(
     const vsg::ref_ptr<Gizmo>& gizmo
 )
     : context_(context)
-    , key_bindings(key_bindings)
     , state_manager(state_manager)
     , camera(camera)
     , editor_state(editor_state)
@@ -431,14 +429,14 @@ void EditorGui::show_key_bindings() const
 
             for (const auto& [modifier, name] : test_map)
             {
-                if (key_bindings.modifiers[i] & modifier)
+                if (context_.key_bindings.modifiers[i] & modifier)
                 {
                     label += name;
                     label += " + ";
                 }
             }
 
-            label += std::toupper(key_bindings.keys[i]);
+            label += std::toupper(context_.key_bindings.keys[i]);
             ImGui::Text("%s", label.c_str());
         }
 

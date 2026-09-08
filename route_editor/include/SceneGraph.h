@@ -22,7 +22,6 @@ class SceneGraph : public vsg::Inherit<vsg::Switch, SceneGraph>
 public:
     SceneGraph(
         EditorContext& context,
-        const vsg::ref_ptr<vsg::Options>& vsg_options,
         vsg::ref_ptr<Route>& route,
         const std::string& route_dir,
         const vsg::ref_ptr<Gizmo>& gizmo,
@@ -33,7 +32,6 @@ public:
 
 private:
     EditorContext& context_;
-    const vsg::ref_ptr<vsg::Options>& vsg_options;
     vsg::ref_ptr<Route>& route;
     const std::string& route_dir;
     const vsg::ref_ptr<Gizmo>& gizmo;

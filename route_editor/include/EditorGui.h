@@ -32,7 +32,6 @@ class EditorGui : public vsg::Inherit<vsg::Command, EditorGui>
 public:
     EditorGui(
         EditorContext& context,
-        const KeyBindings& key_bindings,
         StateManager& state_manager,
         const vsg::ref_ptr<Camera>& camera,
         EditorState& editor_state,
@@ -86,7 +85,6 @@ private:
 
 private:
     EditorContext& context_;
-    const KeyBindings& key_bindings;
     StateManager& state_manager;
     const vsg::ref_ptr<Camera>& camera;
     EditorState& editor_state;

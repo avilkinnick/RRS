@@ -11,7 +11,6 @@
 class Camera;
 class CommandManager;
 struct EditorContext;
-class Mouse;
 
 namespace vsg
 {
@@ -29,9 +28,7 @@ public:
     Gizmo(
         EditorContext& context,
         const vsg::ref_ptr<Camera>& camera,
-        CommandManager& command_manager,
-        const vsg::ref_ptr<Mouse>& mouse,
-        const VkExtent2D& window_extent
+        CommandManager& command_manager
     );
 
     bool handle_intersections();
@@ -48,8 +45,6 @@ private:
     EditorContext& context_;
     const vsg::ref_ptr<Camera>& camera;
     CommandManager& command_manager;
-    const vsg::ref_ptr<Mouse>& mouse;
-    const VkExtent2D& window_extent;
 
     vsg::Builder builder_;
     vsg::ref_ptr<vsg::MatrixTransform> matrix_transform_;

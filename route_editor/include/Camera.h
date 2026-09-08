@@ -22,10 +22,7 @@ class ProjectionMatrix;
 class Camera : public vsg::Inherit<vsg::Camera, Camera>
 {
 public:
-    Camera(
-        EditorContext& editor_context,
-        const VkExtent2D& window_extent
-    );
+    Camera(EditorContext& editor_context);
 
     virtual ~Camera() = default;
 

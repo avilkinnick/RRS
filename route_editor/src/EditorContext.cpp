@@ -7,6 +7,7 @@
 #include "RouteObject.h"
 #include "topology.h"
 
+#include <vsg/app/Window.h>
 #include <vsg/commands/ClearAttachments.h>
 #include <vsg/nodes/PagedLOD.h>
 

@@ -33,6 +33,7 @@ namespace vsg
 
 class Node;
 class PagedLOD;
+class Window;
 
 }
 
@@ -71,6 +72,9 @@ struct EditorContext
 
     vsg::ref_ptr<Keyboard> keyboard;
     vsg::ref_ptr<Mouse> mouse;
+
+    vsg::ref_ptr<vsg::Options> vsg_options;
+    vsg::ref_ptr<vsg::Window> window;
 
     RouteObjects static_objects;
     std::mutex static_objects_mutex;

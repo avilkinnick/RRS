@@ -23,13 +23,11 @@
 #include <algorithm>
 #include <cmath>
 
-Camera::Camera(
-    EditorContext& editor_context,
-    const VkExtent2D& window_extent
-)
+Camera::Camera(EditorContext& editor_context)
     : editor_context(editor_context)
 {
     const auto& camera_settings = editor_context.camera_settings;
+    const auto& window_extent = editor_context.window->extent2D();
 
     const double window_width = static_cast<double>(window_extent.width);
     const double window_height = static_cast<double>(window_extent.height);

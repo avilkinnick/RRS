@@ -46,15 +46,11 @@ static void rotate_geometry_info(
 Gizmo::Gizmo(
     EditorContext& context,
     const vsg::ref_ptr<Camera>& camera,
-    CommandManager& command_manager,
-    const vsg::ref_ptr<Mouse>& mouse,
-    const VkExtent2D& window_extent
+    CommandManager& command_manager
 )
     : context_(context)
     , camera(camera)
     , command_manager(command_manager)
-    , mouse(mouse)
-    , window_extent(window_extent)
 {
     builder_.shaderSet = vsg::createFlatShadedShaderSet();
 
@@ -166,6 +162,9 @@ Gizmo::Gizmo(
 
 bool Gizmo::handle_intersections()
 {
+    const auto& mouse = context_.mouse;
+    const auto& window_extent = context_.window->extent2D();
+
     constexpr vsg::dvec3 arrow_directions[] = {
         vsg::dvec3(1.0, 0.0, 0.0),
         vsg::dvec3(0.0, 1.0, 0.0),

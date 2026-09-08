@@ -6,7 +6,7 @@
 #include <vsg/core/ref_ptr.h>
 
 class Camera;
-struct window_settings_t;
+struct EditorContext;
 
 namespace vsg
 {
@@ -14,17 +14,13 @@ namespace vsg
 class Camera;
 class ConfigureWindowEvent;
 class Perspective;
-class Window;
 
 }
 
 class WindowHandler : public vsg::Inherit<vsg::Visitor, WindowHandler>
 {
 public:
-    WindowHandler(
-        const window_settings_t& window_settings,
-        vsg::ref_ptr<vsg::Window>& window
-    );
+    WindowHandler(EditorContext& editor_context);
 
     virtual void apply(vsg::ConfigureWindowEvent& configureWindow) override;
 

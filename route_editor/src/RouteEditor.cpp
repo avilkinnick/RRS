@@ -66,8 +66,8 @@ bool RouteEditor::initialize()
     create_vsg_options();
     configure_shaders();
 
-    window_handler_ = WindowHandler::create(context_.window_settings, window);
-    if (!window)
+    window_handler_ = WindowHandler::create(context_);
+    if (!context_.window)
     {
         return false;
     }
@@ -77,12 +77,12 @@ bool RouteEditor::initialize()
 
     auto save_handler = SaveHandler::create(context_, route_dir);
 
-    camera = Camera::create(context_, window->extent2D());
+    camera = Camera::create(context_);
     window_handler_->set_camera(camera);
 
     object_manager = std::make_unique<ObjectManager>(1000000);
 
-    scene_graph = SceneGraph::create(context_, vsg_options, route,
+    scene_graph = SceneGraph::create(context_, route,
         route_dir, gizmo, *object_manager);
 
     context_.outline_builder = OutlineBuilder::create();
@@ -93,7 +93,7 @@ bool RouteEditor::initialize()
     VkClearValue clear_value{};
     clear_value.depthStencil = {0.0f, 0};
     VkClearAttachment attachment{VK_IMAGE_ASPECT_DEPTH_BIT, 1, clear_value};
-    const VkExtent2D& extent = window->extent2D();
+    const VkExtent2D& extent = context_.window->extent2D();
     VkClearRect rect{VkRect2D{VkOffset2D{0, 0}, extent}, 0, 1};
 
     const auto clear_attachments_ = vsg::ClearAttachments::create(
@@ -107,13 +107,12 @@ bool RouteEditor::initialize()
     gui_view2->mask = MASK_GUI2;
 
     state_manager = std::make_unique<StateManager>(context_, camera, command_manager);
-    const auto editor_gui = EditorGui::create(context_, context_.key_bindings,
-        *state_manager, camera, editor_state, command_manager, route,
-        route_dir, gizmo);
+    const auto editor_gui = EditorGui::create(context_, *state_manager, camera,
+        editor_state, command_manager, route, route_dir, gizmo);
 
-    const auto render_gui = vsgImGui::RenderImGui::create(window, editor_gui);
+    const auto render_gui = vsgImGui::RenderImGui::create(context_.window, editor_gui);
 
-    const auto render_graph_ = vsg::RenderGraph::create(window);
+    const auto render_graph_ = vsg::RenderGraph::create(context_.window);
     render_graph_->addChild(scene_view);
     render_graph_->addChild(clear_attachments_);
     render_graph_->addChild(gui_view1);
@@ -122,17 +121,17 @@ bool RouteEditor::initialize()
     render_graph_->addChild(clear_attachments_);
     render_graph_->addChild(render_gui);
 
-    const auto command_graph = vsg::CommandGraph::create(window, render_graph_);
+    const auto command_graph = vsg::CommandGraph::create(context_.window, render_graph_);
 
     viewer_ = vsg::Viewer::create();
 
-    gizmo = Gizmo::create(context_, camera, command_manager, context_.mouse, window->extent2D());
+    gizmo = Gizmo::create(context_, camera, command_manager);
     scene_graph->addChild(vsg::Mask{MASK_GUI1 | MASK_CLICKABLE}, gizmo);
 
     context_.object_selector = ObjectSelector::create(context_, camera,
-        command_manager, scene_graph, route, window->extent2D(), gizmo);
+        command_manager, scene_graph, route, context_.window->extent2D(), gizmo);
 
-    viewer_->addWindow(window);
+    viewer_->addWindow(context_.window);
 
     viewer_->addEventHandler(context_.keyboard);
     viewer_->addEventHandler(vsgImGui::SendEventsToImGui::create());
@@ -244,32 +243,32 @@ void RouteEditor::read_settings()
 
 void RouteEditor::create_vsg_options()
 {
-    vsg_options = vsg::Options::create();
-    vsg_options->sharedObjects = vsg::SharedObjects::create();
-    vsg_options->fileCache = vsg::getEnv("VSG_FILE_CACHE");
-    vsg_options->paths = vsg::getEnvPaths("VSG_FILE_PATH");
-    vsg_options->add(vsgXchange::all::create());
+    context_.vsg_options = vsg::Options::create();
+    context_.vsg_options->sharedObjects = vsg::SharedObjects::create();
+    context_.vsg_options->fileCache = vsg::getEnv("VSG_FILE_CACHE");
+    context_.vsg_options->paths = vsg::getEnvPaths("VSG_FILE_PATH");
+    context_.vsg_options->add(vsgXchange::all::create());
 }
 
 void RouteEditor::configure_shaders()
 {
-    const auto flat_shader = vsg::createFlatShadedShaderSet(vsg_options);
-    const auto pbr_shader = vsg::createPhysicsBasedRenderingShaderSet(vsg_options);
-    const auto phong_shader = vsg::createPhongShaderSet(vsg_options);
+    const auto flat_shader = vsg::createFlatShadedShaderSet(context_.vsg_options);
+    const auto pbr_shader = vsg::createPhysicsBasedRenderingShaderSet(context_.vsg_options);
+    const auto phong_shader = vsg::createPhongShaderSet(context_.vsg_options);
 
     const FileSystem& fs = FileSystem::getInstance();
     const auto shaders_dir = fs.combinePath(fs.getDataDir(), "shaders");
 
-    const auto vert_shader = read_shader(shaders_dir.c_str(), "standard.vert", vsg_options);
+    const auto vert_shader = read_shader(shaders_dir.c_str(), "standard.vert", context_.vsg_options);
 
     configure_shader_set(shaders_dir.c_str(), vert_shader,
-        "standard_flat_shaded.frag", vsg_options, "flat", flat_shader);
+        "standard_flat_shaded.frag", context_.vsg_options, "flat", flat_shader);
 
     configure_shader_set(shaders_dir.c_str(), vert_shader,
-        "standard_pbr.frag", vsg_options, "pbr", pbr_shader);
+        "standard_pbr.frag", context_.vsg_options, "pbr", pbr_shader);
 
     configure_shader_set(shaders_dir.c_str(), vert_shader,
-        "standard_phong.frag", vsg_options, "phong", phong_shader);
+        "standard_phong.frag", context_.vsg_options, "phong", phong_shader);
 
     const auto rasterization_state = vsg::RasterizationState::create();
     rasterization_state->cullMode = VK_CULL_MODE_NONE;
@@ -292,10 +291,10 @@ void RouteEditor::configure_shaders()
     phong_shader->defaultGraphicsPipelineStates =
         default_graphics_pipeline_states;
 
-    vsg_options->shaderSets.clear();
-    vsg_options->shaderSets["flat"] = flat_shader;
-    vsg_options->shaderSets["pbr"] = pbr_shader;
-    vsg_options->shaderSets["phong"] = phong_shader;
+    context_.vsg_options->shaderSets.clear();
+    context_.vsg_options->shaderSets["flat"] = flat_shader;
+    context_.vsg_options->shaderSets["pbr"] = pbr_shader;
+    context_.vsg_options->shaderSets["phong"] = phong_shader;
 }
 
 void RouteEditor::compile_models()

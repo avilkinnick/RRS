@@ -9,14 +9,12 @@
 
 SceneGraph::SceneGraph(
     EditorContext& context,
-    const vsg::ref_ptr<vsg::Options>& vsg_options,
     vsg::ref_ptr<Route>& route,
     const std::string& route_dir,
     const vsg::ref_ptr<Gizmo>& gizmo,
     ObjectManager& object_manager
 )
     : context_(context)
-    , vsg_options(vsg_options)
     , route(route)
     , route_dir(route_dir)
     , gizmo(gizmo)
@@ -28,7 +26,7 @@ SceneGraph::SceneGraph(
 
 void SceneGraph::load_route()
 {
-    route = Route::create(context_, context_.camera_settings, vsg_options,
+    route = Route::create(context_, context_.camera_settings, context_.vsg_options,
         route_dir, gizmo, object_manager);
 
     context_.compile_infos.emplace_back(CompileInfo{
