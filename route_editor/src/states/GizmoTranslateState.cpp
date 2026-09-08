@@ -1,11 +1,7 @@
 #include "states/GizmoTranslateState.h"
 
-GizmoTranslateState::GizmoTranslateState(
-    const vsg::ref_ptr<Mouse>& mouse,
-    const vsg::ref_ptr<Keyboard>& keyboard,
-    StateManager& state_manager
-)
-    : State(mouse, keyboard, state_manager)
+GizmoTranslateState::GizmoTranslateState(EditorContext& editor_context)
+    : State(editor_context)
 {
     name = "GizmoTranslateState";
 }

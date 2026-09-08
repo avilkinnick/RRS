@@ -3,21 +3,10 @@
 
 #include "states/State.h"
 
-#include <vsg/core/ref_ptr.h>
-
-class Keyboard;
-class Mouse;
-class StateManager;
-
 class GizmoTranslateState : public State
 {
 public:
-    GizmoTranslateState(
-        const vsg::ref_ptr<Mouse>& mouse,
-        const vsg::ref_ptr<Keyboard>& keyboard,
-        StateManager& state_manager
-    );
-
+    GizmoTranslateState(EditorContext& editor_context);
     virtual ~GizmoTranslateState() override;
 
     virtual void handle_key_press() override;

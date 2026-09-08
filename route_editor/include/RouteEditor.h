@@ -13,7 +13,6 @@
 class Gizmo;
 class Route;
 class SceneGraph;
-class StateManager;
 class WindowHandler;
 
 class RouteEditor
@@ -41,10 +40,9 @@ private:
     void handle_deferred_selection();
 
 private:
-    EditorContext context_;
+    EditorContext editor_context;
     vsg::ref_ptr<vsg::Viewer> viewer_;
     vsg::ref_ptr<WindowHandler> window_handler_;
-    std::unique_ptr<StateManager> state_manager;
 
     EditorState editor_state = EditorState::SELECT_ROUTE;
     CommandManager command_manager;

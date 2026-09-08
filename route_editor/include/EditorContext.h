@@ -27,6 +27,7 @@ class Keyboard;
 class Mouse;
 class ObjectSelector;
 class OutlineBuilder;
+class StateManager;
 class Topology;
 
 namespace vsg
@@ -77,6 +78,8 @@ struct EditorContext
     vsg::ref_ptr<vsg::Options> vsg_options;
     vsg::ref_ptr<vsg::Window> window;
     vsg::ref_ptr<Camera> camera;
+
+    std::unique_ptr<StateManager> state_manager;
 
     RouteObjects static_objects;
     std::mutex static_objects_mutex;

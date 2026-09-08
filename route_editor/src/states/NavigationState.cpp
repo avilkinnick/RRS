@@ -2,18 +2,13 @@
 
 #include "Camera.h"
 #include "Mouse.h"
+#include "EditorContext.h"
 #include "StateManager.h"
 
 #include <vsgImGui/imgui.h>
 
-NavigationState::NavigationState(
-    const vsg::ref_ptr<Mouse>& mouse,
-    const vsg::ref_ptr<Keyboard>& keyboard,
-    StateManager& state_manager,
-    const vsg::ref_ptr<Camera>& camera
-)
-    : State(mouse, keyboard, state_manager)
-    , camera(camera)
+NavigationState::NavigationState(EditorContext& editor_context)
+    : State(editor_context)
 {
     name = "NavigationState";
 }
@@ -22,33 +17,33 @@ NavigationState::~NavigationState() = default;
 
 void NavigationState::on_activate()
 {
-    camera->update_move_direction();
+    editor_context.camera->update_move_direction();
 }
 
 void NavigationState::handle_key_press()
 {
-    camera->update_move_direction();
+    editor_context.camera->update_move_direction();
 }
 
 void NavigationState::handle_key_release()
 {
-    camera->update_move_direction();
+    editor_context.camera->update_move_direction();
 }
 
 void NavigationState::handle_button_release()
 {
-    if (!mouse->is_rmb_pressed())
+    if (!editor_context.mouse->is_rmb_pressed())
     {
-        state_manager.defer_switch_to(STATE_BASIC);
+        editor_context.state_manager->defer_switch_to(STATE_BASIC);
     }
 }
 
 void NavigationState::handle_mouse_move()
 {
-    camera->handle_mouse_move();
+    editor_context.camera->handle_mouse_move();
 }
 
 void NavigationState::update(double delta_time)
 {
-    camera->update(delta_time);
+    editor_context.camera->update(delta_time);
 }

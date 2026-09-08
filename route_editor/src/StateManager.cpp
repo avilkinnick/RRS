@@ -25,19 +25,15 @@ StateManager::StateManager(
     CommandManager& command_manager
 )
 {
-    const auto& keyboard = editor_context.keyboard;
-    const auto& mouse = editor_context.mouse;
-    const auto& camera = editor_context.camera;
-
-    states[STATE_ROUTE_NOT_LOADED] = std::make_unique<RouteNotLoadedState>(mouse, keyboard, *this);
-    states[STATE_BASIC] = std::make_unique<BasicEditorState>(editor_context, *this, camera, command_manager);
-    states[STATE_NAVIGATION] = std::make_unique<NavigationState>(mouse, keyboard, *this, camera);
-    states[STATE_KEYBOARD_TRANSLATE] = std::make_unique<KeyboardTranslateState>(mouse, keyboard, *this);
-    states[STATE_KEYBOARD_ROTATE] = std::make_unique<KeyboardRotateState>(mouse, keyboard, *this);
-    states[STATE_KEYBOARD_SCALE] = std::make_unique<KeyboardScaleState>(mouse, keyboard, *this);
-    states[STATE_GIZMO_TRANSLATE] = std::make_unique<GizmoTranslateState>(mouse, keyboard, *this);
-    states[STATE_GIZMO_ROTATE] = std::make_unique<GizmoRotateState>(mouse, keyboard, *this);
-    states[STATE_GIZMO_SCALE] = std::make_unique<GizmoScaleState>(mouse, keyboard, *this);
+    states[STATE_ROUTE_NOT_LOADED] = std::make_unique<RouteNotLoadedState>(editor_context);
+    states[STATE_BASIC] = std::make_unique<BasicEditorState>(editor_context, command_manager);
+    states[STATE_NAVIGATION] = std::make_unique<NavigationState>(editor_context);
+    states[STATE_KEYBOARD_TRANSLATE] = std::make_unique<KeyboardTranslateState>(editor_context);
+    states[STATE_KEYBOARD_ROTATE] = std::make_unique<KeyboardRotateState>(editor_context);
+    states[STATE_KEYBOARD_SCALE] = std::make_unique<KeyboardScaleState>(editor_context);
+    states[STATE_GIZMO_TRANSLATE] = std::make_unique<GizmoTranslateState>(editor_context);
+    states[STATE_GIZMO_ROTATE] = std::make_unique<GizmoRotateState>(editor_context);
+    states[STATE_GIZMO_SCALE] = std::make_unique<GizmoScaleState>(editor_context);
 
     current_state = &states[STATE_ROUTE_NOT_LOADED];
     deferred_state = &states[STATE_ROUTE_NOT_LOADED];

@@ -6,6 +6,7 @@
 #include "ObjectSelector.h"
 #include "Outline.h"
 #include "RouteObject.h"
+#include "StateManager.h"
 #include "topology.h"
 
 #include <vsg/app/Window.h>

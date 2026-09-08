@@ -27,7 +27,6 @@ class Gizmo : public vsg::Inherit<SingleSwitch, Gizmo>
 public:
     Gizmo(
         EditorContext& context,
-        const vsg::ref_ptr<Camera>& camera,
         CommandManager& command_manager
     );
 
@@ -43,7 +42,6 @@ public:
 
 private:
     EditorContext& context_;
-    const vsg::ref_ptr<Camera>& camera;
     CommandManager& command_manager;
 
     vsg::Builder builder_;

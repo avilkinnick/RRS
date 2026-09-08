@@ -3,14 +3,8 @@
 #include <vsg/core/ref_ptr.h>
 #include <vsgImGui/imgui.h>
 
-State::State(
-    const vsg::ref_ptr<Mouse>& mouse,
-    const vsg::ref_ptr<Keyboard>& keyboard,
-    StateManager& state_manager
-)
-    : mouse(mouse)
-    , keyboard(keyboard)
-    , state_manager(state_manager)
+State::State(EditorContext& editor_context)
+    : editor_context(editor_context)
 {
 }
 
@@ -48,9 +42,8 @@ void State::handle_mouse_scroll()
 {
 }
 
-void State::update(double delta_time)
+void State::update([[maybe_unused]] double delta_time)
 {
-    static_cast<void>(delta_time);
 }
 
 void State::draw_gui() const

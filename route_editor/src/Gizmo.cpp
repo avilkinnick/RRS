@@ -45,11 +45,9 @@ static void rotate_geometry_info(
 
 Gizmo::Gizmo(
     EditorContext& context,
-    const vsg::ref_ptr<Camera>& camera,
     CommandManager& command_manager
 )
     : context_(context)
-    , camera(camera)
     , command_manager(command_manager)
 {
     builder_.shaderSet = vsg::createFlatShadedShaderSet();
@@ -170,6 +168,8 @@ bool Gizmo::handle_intersections()
         vsg::dvec3(0.0, 1.0, 0.0),
         vsg::dvec3(0.0, 0.0, 1.0)
     };
+
+    const auto& camera = context_.camera;
 
     double arrow_dots[3];
     for (int i = 0; i < 3; ++i)
@@ -422,6 +422,8 @@ void Gizmo::apply(const vsg::MoveEvent& moveEvent)
         return;
     }
 
+    const auto& camera = context_.camera;
+
     const auto intersector = vsg::LineSegmentIntersector::create(*camera,
         moveEvent.x, moveEvent.y);
     if (!intersector)
@@ -485,6 +487,8 @@ void Gizmo::update_visibility()
     this->mask = context_.selected_objects.empty()
         ? vsg::MASK_OFF
         : MASK_GUI1 | MASK_CLICKABLE;
+
+    const auto& camera = context_.camera;
 
     const vsg::dvec3& camera_pos = camera->get_look_at()->eye;
     const double fov_rad = vsg::radians(camera->get_perspective()->fieldOfViewY);

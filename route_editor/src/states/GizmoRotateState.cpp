@@ -1,11 +1,7 @@
 #include "states/GizmoRotateState.h"
 
-GizmoRotateState::GizmoRotateState(
-    const vsg::ref_ptr<Mouse>& mouse,
-    const vsg::ref_ptr<Keyboard>& keyboard,
-    StateManager& state_manager
-)
-    : State(mouse, keyboard, state_manager)
+GizmoRotateState::GizmoRotateState(EditorContext& editor_context)
+    : State(editor_context)
 {
     name = "GizmoRotateState";
 }
