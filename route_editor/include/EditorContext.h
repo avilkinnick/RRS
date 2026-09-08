@@ -21,6 +21,7 @@
 #include <memory>
 #include <string>
 
+class Keyboard;
 class ObjectSelector;
 class OutlineBuilder;
 class Topology;
@@ -64,6 +65,8 @@ struct EditorContext
     scene_settings_t scene_settings;
     gizmo_settings_t gizmo_settings;
     gui_settings_t gui_settings;
+
+    vsg::ref_ptr<Keyboard> keyboard;
 
     RouteObjects static_objects;
     std::mutex static_objects_mutex;

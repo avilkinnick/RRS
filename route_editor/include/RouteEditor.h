@@ -13,7 +13,6 @@
 
 class Camera;
 class Gizmo;
-class Keyboard;
 class Mouse;
 class Route;
 class SceneGraph;
@@ -49,7 +48,6 @@ private:
     vsg::ref_ptr<vsg::Viewer> viewer_;
     vsg::ref_ptr<WindowHandler> window_handler_;
     vsg::ref_ptr<Mouse> mouse;
-    vsg::ref_ptr<Keyboard> keyboard;
     std::unique_ptr<StateManager> state_manager;
 
     KeyBindings key_bindings;

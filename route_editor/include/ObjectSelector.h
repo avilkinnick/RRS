@@ -11,7 +11,6 @@ class Camera;
 class CommandManager;
 struct EditorContext;
 class Gizmo;
-class Keyboard;
 class Mouse;
 class Route;
 class RouteObject;
@@ -34,7 +33,6 @@ public:
     ObjectSelector(
         EditorContext& context,
         const vsg::ref_ptr<Mouse>& mouse,
-        const vsg::ref_ptr<Keyboard>& keyboard,
         const vsg::ref_ptr<Camera>& camera,
         CommandManager& command_manager,
         const vsg::ref_ptr<SceneGraph>& scene_graph,
@@ -67,7 +65,6 @@ private:
 
     EditorContext& context_;
     const vsg::ref_ptr<Mouse>& mouse;
-    const vsg::ref_ptr<Keyboard>& keyboard;
     const vsg::ref_ptr<Camera>& camera;
     CommandManager& command_manager;
     const vsg::ref_ptr<SceneGraph>& scene_graph;

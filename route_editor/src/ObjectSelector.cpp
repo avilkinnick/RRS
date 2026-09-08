@@ -35,7 +35,6 @@
 ObjectSelector::ObjectSelector(
     EditorContext& context,
     const vsg::ref_ptr<Mouse>& mouse,
-    const vsg::ref_ptr<Keyboard>& keyboard,
     const vsg::ref_ptr<Camera>& camera,
     CommandManager& command_manager,
     const vsg::ref_ptr<SceneGraph>& scene_graph,
@@ -45,7 +44,6 @@ ObjectSelector::ObjectSelector(
 )
     : context_(context)
     , mouse(mouse)
-    , keyboard(keyboard)
     , camera(camera)
     , command_manager(command_manager)
     , scene_graph(scene_graph)
@@ -75,19 +73,19 @@ void ObjectSelector::apply(vsg::KeyPressEvent& keyPress)
         return;
     }
 
-    if (keyboard->pressed(ACTION_COPY_OBJECTS))
+    if (context_.keyboard->pressed(ACTION_COPY_OBJECTS))
     {
         context_.copied_objects = selected_objects;
         return;
     }
-    else if (keyboard->pressed(ACTION_PASTE_OBJECTS))
+    else if (context_.keyboard->pressed(ACTION_PASTE_OBJECTS))
     {
         auto command = std::make_unique<PasteObjects>(context_, route, gizmo);
         command->execute();
         command_manager.push(std::move(command));
         return;
     }
-    else if (keyboard->pressed(ACTION_DELETE_OBJECTS))
+    else if (context_.keyboard->pressed(ACTION_DELETE_OBJECTS))
     {
         auto command = std::make_unique<DeleteObjects>(context_, route, gizmo);
         command->execute();
@@ -95,9 +93,9 @@ void ObjectSelector::apply(vsg::KeyPressEvent& keyPress)
         return;
     }
 
-    const bool pressed_action_move = keyboard->pressed(ACTION_TRANSLATE_OBJECTS);
-    const bool pressed_action_rotate = keyboard->pressed(ACTION_ROTATE_OBJECTS);
-    const bool pressed_action_scale = keyboard->pressed(ACTION_SCALE_OBJECTS);
+    const bool pressed_action_move = context_.keyboard->pressed(ACTION_TRANSLATE_OBJECTS);
+    const bool pressed_action_rotate = context_.keyboard->pressed(ACTION_ROTATE_OBJECTS);
+    const bool pressed_action_scale = context_.keyboard->pressed(ACTION_SCALE_OBJECTS);
 
     if (!pressed_action_move && !pressed_action_rotate &&
         !pressed_action_scale)
@@ -184,7 +182,7 @@ void ObjectSelector::apply(vsg::ButtonPressEvent& buttonPress)
         // If we clicked on empty space without shift
         // while there were selected objects,
         // deselect them all
-        if (!selected_objects.empty() && !keyboard->get_shift_state())
+        if (!selected_objects.empty() && !context_.keyboard->get_shift_state())
         {
             auto command = std::make_unique<SelectObjects>(context_, gizmo);
             command->objects_to_deselect = selected_objects;
@@ -324,7 +322,7 @@ void ObjectSelector::select_object(vsg::ref_ptr<RouteObject> object)
 {
     auto command = std::make_unique<SelectObjects>(context_, gizmo);
 
-    if (keyboard->get_shift_state())
+    if (context_.keyboard->get_shift_state())
     {
         if (object->get_is_selected())
         {

@@ -73,13 +73,12 @@ bool RouteEditor::initialize()
     }
 
     mouse = Mouse::create();
-    keyboard = Keyboard::create(key_bindings);
+    context_.keyboard = Keyboard::create(key_bindings);
 
-    auto save_handler = SaveHandler::create(keyboard,
-        route_dir, context_.static_objects_mutex, context_.static_objects);
+    auto save_handler = SaveHandler::create(context_, route_dir);
 
     camera = Camera::create(context_.camera_settings, window->extent2D(), mouse,
-        keyboard);
+        context_.keyboard);
     window_handler_->set_camera(camera);
 
     object_manager = std::make_unique<ObjectManager>(1000000);
@@ -108,7 +107,7 @@ bool RouteEditor::initialize()
     const auto gui_view2 = vsg::View::create(camera, scene_graph);
     gui_view2->mask = MASK_GUI2;
 
-    state_manager = std::make_unique<StateManager>(keyboard, mouse, camera, command_manager);
+    state_manager = std::make_unique<StateManager>(context_.keyboard, mouse, camera, command_manager);
     const auto editor_gui = EditorGui::create(context_, key_bindings,
         *state_manager, camera, editor_state, command_manager, route,
         route_dir, gizmo);
@@ -131,12 +130,12 @@ bool RouteEditor::initialize()
     gizmo = Gizmo::create(context_, camera, command_manager, mouse, window->extent2D());
     scene_graph->addChild(vsg::Mask{MASK_GUI1 | MASK_CLICKABLE}, gizmo);
 
-    context_.object_selector = ObjectSelector::create(context_, mouse, keyboard,
-        camera, command_manager, scene_graph, route, window->extent2D(), gizmo);
+    context_.object_selector = ObjectSelector::create(context_, mouse, camera,
+        command_manager, scene_graph, route, window->extent2D(), gizmo);
 
     viewer_->addWindow(window);
 
-    viewer_->addEventHandler(keyboard);
+    viewer_->addEventHandler(context_.keyboard);
     viewer_->addEventHandler(vsgImGui::SendEventsToImGui::create());
     viewer_->addEventHandler(vsg::CloseHandler::create(viewer_));
     viewer_->addEventHandler(window_handler_);

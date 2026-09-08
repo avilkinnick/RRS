@@ -1,6 +1,7 @@
 #include "SaveHandler.h"
 
 #include "Action.h"
+#include "EditorContext.h"
 #include "Journal.h"
 #include "Keyboard.h"
 #include "RouteObject.h"
@@ -15,15 +16,11 @@
 #include <string>
 
 SaveHandler::SaveHandler(
-    const vsg::ref_ptr<Keyboard>& keyboard,
-    const std::string& route_dir,
-    std::mutex& static_objects_mutex,
-    const RouteObjects& static_objects
+    EditorContext& editor_context,
+    const std::string& route_dir
 )
-    : keyboard_{keyboard}
+    : editor_context(editor_context)
     , route_dir_{route_dir}
-    , static_objects_mutex_{static_objects_mutex}
-    , static_objects_{static_objects}
 {
 }
 
@@ -31,7 +28,7 @@ void SaveHandler::apply(vsg::KeyPressEvent& keyPress)
 {
     (void)keyPress;
 
-    if (keyboard_->pressed_once(ACTION_SAVE_ROUTE))
+    if (editor_context.keyboard->pressed_once(ACTION_SAVE_ROUTE))
     {
         save_route();
     }
@@ -59,8 +56,8 @@ void SaveHandler::save_route() const
     // Перезаписываем рабочую копию
     std::ofstream route_map_file{fs.combinePath(save_dir, "route1.map")};
 
-    std::lock_guard<std::mutex> lock_guard{static_objects_mutex_};
-    for (const auto& object : static_objects_)
+    std::lock_guard<std::mutex> lock_guard{editor_context.static_objects_mutex};
+    for (const auto& object : editor_context.static_objects)
     {
         const vsg::dvec3& translation{object->get_translation()};
         const vsg::dvec3 rotation_deg{-object->get_rotation_deg()};

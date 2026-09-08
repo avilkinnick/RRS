@@ -1,5 +1,6 @@
 #include "EditorContext.h"
 
+#include "Keyboard.h"
 #include "ObjectSelector.h"
 #include "Outline.h"
 #include "RouteObject.h"
