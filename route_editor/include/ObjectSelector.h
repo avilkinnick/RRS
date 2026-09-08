@@ -35,7 +35,6 @@ public:
         CommandManager& command_manager,
         const vsg::ref_ptr<SceneGraph>& scene_graph,
         const vsg::ref_ptr<Route>& route,
-        const VkExtent2D& window_extent,
         const vsg::ref_ptr<Gizmo>& gizmo
     );
 
@@ -66,7 +65,6 @@ private:
     CommandManager& command_manager;
     const vsg::ref_ptr<SceneGraph>& scene_graph;
     const vsg::ref_ptr<Route>& route;
-    const VkExtent2D& window_extent;
     const vsg::ref_ptr<Gizmo>& gizmo;
 
     vsg::dvec3 prev_intersect_pos_;

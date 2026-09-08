@@ -1,5 +1,6 @@
 #include "EditorContext.h"
 
+#include "Camera.h"
 #include "Keyboard.h"
 #include "Mouse.h"
 #include "ObjectSelector.h"
@@ -12,4 +13,5 @@
 #include <vsg/nodes/PagedLOD.h>
 
 EditorContext::EditorContext() = default;
+
 EditorContext::~EditorContext() = default;

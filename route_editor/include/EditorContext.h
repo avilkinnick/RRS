@@ -22,6 +22,7 @@
 #include <memory>
 #include <string>
 
+class Camera;
 class Keyboard;
 class Mouse;
 class ObjectSelector;
@@ -75,6 +76,7 @@ struct EditorContext
 
     vsg::ref_ptr<vsg::Options> vsg_options;
     vsg::ref_ptr<vsg::Window> window;
+    vsg::ref_ptr<Camera> camera;
 
     RouteObjects static_objects;
     std::mutex static_objects_mutex;

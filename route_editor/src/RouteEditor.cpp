@@ -77,8 +77,8 @@ bool RouteEditor::initialize()
 
     auto save_handler = SaveHandler::create(context_, route_dir);
 
-    camera = Camera::create(context_);
-    window_handler_->set_camera(camera);
+    context_.camera = Camera::create(context_);
+    window_handler_->set_camera(context_.camera);
 
     object_manager = std::make_unique<ObjectManager>(1000000);
 
@@ -87,7 +87,7 @@ bool RouteEditor::initialize()
 
     context_.outline_builder = OutlineBuilder::create();
 
-    const auto scene_view = vsg::View::create(camera, scene_graph);
+    const auto scene_view = vsg::View::create(context_.camera, scene_graph);
     scene_view->mask = MASK_SCENE;
 
     VkClearValue clear_value{};
@@ -100,14 +100,14 @@ bool RouteEditor::initialize()
         vsg::ClearAttachments::Attachments{attachment},
         vsg::ClearAttachments::Rects{rect});
 
-    const auto gui_view1 = vsg::View::create(camera, scene_graph);
+    const auto gui_view1 = vsg::View::create(context_.camera, scene_graph);
     gui_view1->mask = MASK_GUI1;
 
-    const auto gui_view2 = vsg::View::create(camera, scene_graph);
+    const auto gui_view2 = vsg::View::create(context_.camera, scene_graph);
     gui_view2->mask = MASK_GUI2;
 
-    state_manager = std::make_unique<StateManager>(context_, camera, command_manager);
-    const auto editor_gui = EditorGui::create(context_, *state_manager, camera,
+    state_manager = std::make_unique<StateManager>(context_, command_manager);
+    const auto editor_gui = EditorGui::create(context_, *state_manager,
         editor_state, command_manager, route, route_dir, gizmo);
 
     const auto render_gui = vsgImGui::RenderImGui::create(context_.window, editor_gui);
@@ -125,11 +125,11 @@ bool RouteEditor::initialize()
 
     viewer_ = vsg::Viewer::create();
 
-    gizmo = Gizmo::create(context_, camera, command_manager);
+    gizmo = Gizmo::create(context_, context_.camera, command_manager);
     scene_graph->addChild(vsg::Mask{MASK_GUI1 | MASK_CLICKABLE}, gizmo);
 
-    context_.object_selector = ObjectSelector::create(context_, camera,
-        command_manager, scene_graph, route, context_.window->extent2D(), gizmo);
+    context_.object_selector = ObjectSelector::create(context_, context_.camera,
+        command_manager, scene_graph, route, gizmo);
 
     viewer_->addWindow(context_.window);
 

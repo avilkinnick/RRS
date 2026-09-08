@@ -10,7 +10,6 @@
 
 #include <memory>
 
-class Camera;
 class Gizmo;
 class Route;
 class SceneGraph;
@@ -47,7 +46,6 @@ private:
     vsg::ref_ptr<WindowHandler> window_handler_;
     std::unique_ptr<StateManager> state_manager;
 
-    vsg::ref_ptr<Camera> camera;
     EditorState editor_state = EditorState::SELECT_ROUTE;
     CommandManager command_manager;
     vsg::ref_ptr<SceneGraph> scene_graph;

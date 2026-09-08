@@ -38,7 +38,6 @@ ObjectSelector::ObjectSelector(
     CommandManager& command_manager,
     const vsg::ref_ptr<SceneGraph>& scene_graph,
     const vsg::ref_ptr<Route>& route,
-    const VkExtent2D& window_extent,
     const vsg::ref_ptr<Gizmo>& gizmo
 )
     : context_(context)
@@ -46,7 +45,6 @@ ObjectSelector::ObjectSelector(
     , command_manager(command_manager)
     , scene_graph(scene_graph)
     , route(route)
-    , window_extent(window_extent)
     , gizmo(gizmo)
 {
 }
@@ -96,7 +94,7 @@ void ObjectSelector::apply([[maybe_unused]] vsg::KeyPressEvent& keyPress)
     }
 
     calculate_intersection_mouse_and_plane(mouse->get_x(), mouse->get_y(),
-        window_extent, camera->get_inverse_view_matrix(),
+        context_.window->extent2D(), camera->get_inverse_view_matrix(),
         camera->get_inverse_projection_matrix(), gizmo->get_curr_pos(),
         camera->get_front(), prev_intersect_pos_);
 
@@ -220,7 +218,7 @@ void ObjectSelector::apply(vsg::MoveEvent& moveEvent)
 
     vsg::dvec3 world_intersection;
     calculate_intersection_mouse_and_plane(mouse->get_x(), mouse->get_y(),
-        window_extent, camera->get_inverse_view_matrix(),
+        context_.window->extent2D(), camera->get_inverse_view_matrix(),
         camera->get_inverse_projection_matrix(), gizmo->get_curr_pos(),
         camera->get_front(), world_intersection);
 

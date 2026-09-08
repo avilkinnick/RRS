@@ -6,7 +6,6 @@
 #include <array>
 #include <memory>
 
-class Camera;
 class CommandManager;
 struct EditorContext;
 class State;
@@ -30,7 +29,6 @@ class StateManager
 public:
     StateManager(
         EditorContext& editor_context,
-        const vsg::ref_ptr<Camera>& camera,
         CommandManager& command_manager
     );
 

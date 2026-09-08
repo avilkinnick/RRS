@@ -33,7 +33,6 @@ public:
     EditorGui(
         EditorContext& context,
         StateManager& state_manager,
-        const vsg::ref_ptr<Camera>& camera,
         EditorState& editor_state,
         CommandManager& command_manager,
         const vsg::ref_ptr<Route>& route,
@@ -86,7 +85,6 @@ private:
 private:
     EditorContext& context_;
     StateManager& state_manager;
-    const vsg::ref_ptr<Camera>& camera;
     EditorState& editor_state;
     CommandManager& command_manager;
     const vsg::ref_ptr<Route>& route;

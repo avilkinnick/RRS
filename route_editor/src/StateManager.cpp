@@ -22,12 +22,12 @@
 
 StateManager::StateManager(
     EditorContext& editor_context,
-    const vsg::ref_ptr<Camera>& camera,
     CommandManager& command_manager
 )
 {
     const auto& keyboard = editor_context.keyboard;
     const auto& mouse = editor_context.mouse;
+    const auto& camera = editor_context.camera;
 
     states[STATE_ROUTE_NOT_LOADED] = std::make_unique<RouteNotLoadedState>(mouse, keyboard, *this);
     states[STATE_BASIC] = std::make_unique<BasicEditorState>(editor_context, *this, camera, command_manager);

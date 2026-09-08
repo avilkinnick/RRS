@@ -85,7 +85,6 @@ static bool drag_double3(const char* label, double* data, float speed = 1.0f,
 EditorGui::EditorGui(
     EditorContext& context,
     StateManager& state_manager,
-    const vsg::ref_ptr<Camera>& camera,
     EditorState& editor_state,
     CommandManager& command_manager,
     const vsg::ref_ptr<Route>& route,
@@ -94,7 +93,6 @@ EditorGui::EditorGui(
 )
     : context_(context)
     , state_manager(state_manager)
-    , camera(camera)
     , editor_state(editor_state)
     , command_manager(command_manager)
     , route(route)
@@ -291,6 +289,8 @@ void EditorGui::show_stations_conf() const
         return;
     }
 
+    const auto& camera = context_.camera;
+
     ImGui::Begin("stations.conf", nullptr, window_flags_);
 
     if (ImGui::BeginTable("stations_conf_table", 4,
@@ -338,6 +338,8 @@ void EditorGui::show_waypoints_conf() const
     {
         return;
     }
+
+    const auto& camera = context_.camera;
 
     ImGui::Begin("waypoints.conf", nullptr, window_flags_);
 
@@ -467,6 +469,8 @@ void EditorGui::show_camera_settings() const
     drag_double("##zoom_power", &context_.camera_settings.zoom_power, &min);
 
     ImGui::Text("FovY:");
+
+    const auto& camera = context_.camera;
 
     if (ImGui::SliderScalar("##fovy", ImGuiDataType_Double,
         &context_.camera_settings.fovy, &context_.camera_settings.fovy_min,
@@ -665,6 +669,8 @@ void EditorGui::add_object(
     const std::string& label
 ) const
 {
+    const auto& camera = context_.camera;
+
     const auto object = RouteObject::create(context_, paged_lod, gizmo, label,
         camera->get_look_at()->eye +
         camera->get_front() * 20.0);
