@@ -1,5 +1,6 @@
 #include "StateManager.h"
 
+#include "EditorContext.h"
 #include "states/NavigationState.h"
 #include "states/GizmoRotateState.h"
 #include "states/GizmoScaleState.h"
@@ -20,14 +21,16 @@
 #include <memory>
 
 StateManager::StateManager(
-    const vsg::ref_ptr<Keyboard>& keyboard,
-    const vsg::ref_ptr<Mouse>& mouse,
+    EditorContext& editor_context,
     const vsg::ref_ptr<Camera>& camera,
     CommandManager& command_manager
 )
 {
+    const auto& keyboard = editor_context.keyboard;
+    const auto& mouse = editor_context.mouse;
+
     states[STATE_ROUTE_NOT_LOADED] = std::make_unique<RouteNotLoadedState>(mouse, keyboard, *this);
-    states[STATE_BASIC] = std::make_unique<BasicEditorState>(mouse, keyboard, *this, camera, command_manager);
+    states[STATE_BASIC] = std::make_unique<BasicEditorState>(editor_context, *this, camera, command_manager);
     states[STATE_NAVIGATION] = std::make_unique<NavigationState>(mouse, keyboard, *this, camera);
     states[STATE_KEYBOARD_TRANSLATE] = std::make_unique<KeyboardTranslateState>(mouse, keyboard, *this);
     states[STATE_KEYBOARD_ROTATE] = std::make_unique<KeyboardRotateState>(mouse, keyboard, *this);

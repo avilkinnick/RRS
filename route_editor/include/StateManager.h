@@ -8,8 +8,7 @@
 
 class Camera;
 class CommandManager;
-class Keyboard;
-class Mouse;
+struct EditorContext;
 class State;
 
 enum StateEnum
@@ -30,8 +29,7 @@ class StateManager
 {
 public:
     StateManager(
-        const vsg::ref_ptr<Keyboard>& keyboard,
-        const vsg::ref_ptr<Mouse>& mouse,
+        EditorContext& editor_context,
         const vsg::ref_ptr<Camera>& camera,
         CommandManager& command_manager
     );

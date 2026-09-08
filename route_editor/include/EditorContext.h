@@ -22,6 +22,7 @@
 #include <string>
 
 class Keyboard;
+class Mouse;
 class ObjectSelector;
 class OutlineBuilder;
 class Topology;
@@ -67,6 +68,7 @@ struct EditorContext
     gui_settings_t gui_settings;
 
     vsg::ref_ptr<Keyboard> keyboard;
+    vsg::ref_ptr<Mouse> mouse;
 
     RouteObjects static_objects;
     std::mutex static_objects_mutex;

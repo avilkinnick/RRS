@@ -2,6 +2,7 @@
 
 #include "Action.h"
 #include "Camera.h"
+#include "EditorContext.h"
 #include "Keyboard.h"
 #include "Mouse.h"
 #include "StateManager.h"
@@ -11,13 +12,12 @@
 #include <vsgImGui/imgui.h>
 
 BasicEditorState::BasicEditorState(
-    const vsg::ref_ptr<Mouse>& mouse,
-    const vsg::ref_ptr<Keyboard>& keyboard,
+    EditorContext& editor_context,
     StateManager& state_manager,
     const vsg::ref_ptr<Camera>& camera,
     CommandManager& command_manager
 )
-    : State(mouse, keyboard, state_manager)
+    : State(editor_context.mouse, editor_context.keyboard, state_manager)
     , camera(camera)
     , command_manager(command_manager)
 {

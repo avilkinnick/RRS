@@ -72,13 +72,12 @@ bool RouteEditor::initialize()
         return false;
     }
 
-    mouse = Mouse::create();
+    context_.mouse = Mouse::create();
     context_.keyboard = Keyboard::create(key_bindings);
 
     auto save_handler = SaveHandler::create(context_, route_dir);
 
-    camera = Camera::create(context_.camera_settings, window->extent2D(), mouse,
-        context_.keyboard);
+    camera = Camera::create(context_, window->extent2D());
     window_handler_->set_camera(camera);
 
     object_manager = std::make_unique<ObjectManager>(1000000);
@@ -107,7 +106,7 @@ bool RouteEditor::initialize()
     const auto gui_view2 = vsg::View::create(camera, scene_graph);
     gui_view2->mask = MASK_GUI2;
 
-    state_manager = std::make_unique<StateManager>(context_.keyboard, mouse, camera, command_manager);
+    state_manager = std::make_unique<StateManager>(context_, camera, command_manager);
     const auto editor_gui = EditorGui::create(context_, key_bindings,
         *state_manager, camera, editor_state, command_manager, route,
         route_dir, gizmo);
@@ -127,10 +126,10 @@ bool RouteEditor::initialize()
 
     viewer_ = vsg::Viewer::create();
 
-    gizmo = Gizmo::create(context_, camera, command_manager, mouse, window->extent2D());
+    gizmo = Gizmo::create(context_, camera, command_manager, context_.mouse, window->extent2D());
     scene_graph->addChild(vsg::Mask{MASK_GUI1 | MASK_CLICKABLE}, gizmo);
 
-    context_.object_selector = ObjectSelector::create(context_, mouse, camera,
+    context_.object_selector = ObjectSelector::create(context_, context_.mouse, camera,
         command_manager, scene_graph, route, window->extent2D(), gizmo);
 
     viewer_->addWindow(window);
@@ -139,7 +138,7 @@ bool RouteEditor::initialize()
     viewer_->addEventHandler(vsgImGui::SendEventsToImGui::create());
     viewer_->addEventHandler(vsg::CloseHandler::create(viewer_));
     viewer_->addEventHandler(window_handler_);
-    viewer_->addEventHandler(mouse);
+    viewer_->addEventHandler(context_.mouse);
     viewer_->addEventHandler(save_handler);
 
     viewer_->addEventHandler(EventHandler::create(*state_manager));

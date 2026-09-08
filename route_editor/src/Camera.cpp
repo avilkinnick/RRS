@@ -1,9 +1,9 @@
 #include "Camera.h"
 
 #include "Action.h"
+#include "EditorContext.h"
 #include "Keyboard.h"
 #include "Mouse.h"
-#include "settings/CameraSettings.h"
 
 #include <vsg/app/Camera.h>
 #include <vsg/app/ProjectionMatrix.h>
@@ -24,15 +24,13 @@
 #include <cmath>
 
 Camera::Camera(
-    const camera_settings_t& camera_settings,
-    const VkExtent2D& window_extent,
-    const vsg::ref_ptr<Mouse>& mouse,
-    const vsg::ref_ptr<Keyboard>& keyboard
+    EditorContext& editor_context,
+    const VkExtent2D& window_extent
 )
-    : camera_settings(camera_settings)
-    , mouse(mouse)
-    , keyboard(keyboard)
+    : editor_context(editor_context)
 {
+    const auto& camera_settings = editor_context.camera_settings;
+
     const double window_width = static_cast<double>(window_extent.width);
     const double window_height = static_cast<double>(window_extent.height);
     const double aspect_ratio = window_width / window_height;
@@ -68,7 +66,7 @@ Camera::Camera(
 
 void Camera::handle_key_press()
 {
-    if (keyboard->pressed_once(ACTION_CHANGE_PROJECTION_MATRIX))
+    if (editor_context.keyboard->pressed_once(ACTION_CHANGE_PROJECTION_MATRIX))
     {
         std::swap(projectionMatrix, another_projection_matrix);
         calculate_inverse_projection_matrix();
@@ -77,6 +75,8 @@ void Camera::handle_key_press()
 
 void Camera::update_move_direction()
 {
+    const auto& keyboard = editor_context.keyboard;
+
     const int forward_move_direction =
         static_cast<int>(keyboard->pressed(ACTION_MOVE_CAMERA_FORWARD)) -
         static_cast<int>(keyboard->pressed(ACTION_MOVE_CAMERA_BACKWARD));
@@ -105,7 +105,9 @@ void Camera::update_move_direction()
 
 void Camera::handle_mouse_move()
 {
-    const double rotate_speed = camera_settings.rotate_speed;
+    const auto& mouse = editor_context.mouse;
+
+    const double rotate_speed = editor_context.camera_settings.rotate_speed;
 
     yaw_degrees += mouse->get_delta_x() * rotate_speed;
     pitch_degrees -= mouse->get_delta_y() * rotate_speed;
@@ -120,6 +122,9 @@ void Camera::handle_mouse_move()
 
 void Camera::handle_mouse_scroll()
 {
+    const auto& camera_settings = editor_context.camera_settings;
+    const auto& mouse = editor_context.mouse;
+
     double& fovy = perspective->fieldOfViewY;
     fovy -= mouse->get_scroll() * camera_settings.zoom_power;
     fovy = std::clamp(fovy, camera_settings.fovy_min, camera_settings.fovy_max);
@@ -128,6 +133,8 @@ void Camera::handle_mouse_scroll()
 
 void Camera::update(double delta_time)
 {
+    const auto& camera_settings = editor_context.camera_settings;
+
     look_at->eye += camera_settings.move_speed * delta_time * move_direction;
     look_at->center = look_at->eye + front;
     calculate_inverse_view_matrix();
@@ -176,7 +183,7 @@ const vsg::dmat4& Camera::get_inverse_view_matrix() const
 void Camera::create_orthographic_projection(double window_width,
     double window_height, double aspect_ratio)
 {
-    const double radius = camera_settings.view_distance;
+    const double radius = editor_context.camera_settings.view_distance;
 
     const double halfDim = 100.0;
     double halfHeight, halfWidth;

@@ -7,9 +7,7 @@
 #include <vsg/maths/mat4.h>
 #include <vsg/maths/vec3.h>
 
-class Keyboard;
-class Mouse;
-struct camera_settings_t;
+struct EditorContext;
 
 namespace vsg
 {
@@ -25,10 +23,8 @@ class Camera : public vsg::Inherit<vsg::Camera, Camera>
 {
 public:
     Camera(
-        const camera_settings_t& camera_settings,
-        const VkExtent2D& window_extent,
-        const vsg::ref_ptr<Mouse>& mouse,
-        const vsg::ref_ptr<Keyboard>& keyboard
+        EditorContext& editor_context,
+        const VkExtent2D& window_extent
     );
 
     virtual ~Camera() = default;
@@ -74,9 +70,7 @@ private:
     void calculate_inverse_view_matrix();
 
 private:
-    const camera_settings_t& camera_settings;
-    const vsg::ref_ptr<Mouse>& mouse;
-    const vsg::ref_ptr<Keyboard>& keyboard;
+    EditorContext& editor_context;
 
     vsg::ref_ptr<vsg::ProjectionMatrix> another_projection_matrix;
     vsg::ref_ptr<vsg::Perspective> perspective;

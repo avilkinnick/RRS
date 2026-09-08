@@ -7,16 +7,14 @@
 
 class Camera;
 class CommandManager;
-class Keyboard;
-class Mouse;
+struct EditorContext;
 class StateManager;
 
 class BasicEditorState : public State
 {
 public:
     BasicEditorState(
-        const vsg::ref_ptr<Mouse>& mouse,
-        const vsg::ref_ptr<Keyboard>& keyboard,
+        EditorContext& editor_context,
         StateManager& state_manager,
         const vsg::ref_ptr<Camera>& camera,
         CommandManager& command_manager
