@@ -3,7 +3,6 @@
 
 #include "EditorContext.h"
 #include "EditorState.h"
-#include "KeyBindings.h"
 #include "ObjectManager.h"
 #include "commands/CommandManager.h"
 
@@ -48,7 +47,6 @@ private:
     vsg::ref_ptr<WindowHandler> window_handler_;
     std::unique_ptr<StateManager> state_manager;
 
-    KeyBindings key_bindings;
     vsg::ref_ptr<Camera> camera;
     EditorState editor_state = EditorState::SELECT_ROUTE;
     CommandManager command_manager;

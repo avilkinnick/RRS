@@ -1,6 +1,7 @@
 #ifndef EDITOR_CONTEXT_H
 #define EDITOR_CONTEXT_H
 
+#include "KeyBindings.h"
 #include "ThreadSafeVector.h"
 #include "RouteMap.h"
 #include "RouteObjects.h"
@@ -66,6 +67,7 @@ struct EditorContext
     scene_settings_t scene_settings;
     gizmo_settings_t gizmo_settings;
     gui_settings_t gui_settings;
+    KeyBindings key_bindings;
 
     vsg::ref_ptr<Keyboard> keyboard;
     vsg::ref_ptr<Mouse> mouse;
