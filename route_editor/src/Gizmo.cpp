@@ -43,12 +43,8 @@ static void rotate_geometry_info(
     }
 }
 
-Gizmo::Gizmo(
-    EditorContext& context,
-    CommandManager& command_manager
-)
+Gizmo::Gizmo(EditorContext& context)
     : context_(context)
-    , command_manager(command_manager)
 {
     builder_.shaderSet = vsg::createFlatShadedShaderSet();
 
@@ -406,7 +402,7 @@ void Gizmo::apply(const vsg::ButtonReleaseEvent& buttonRelease)
 
     auto command = std::make_unique<TranslateObjects>(context_,
         context_.selected_objects, total_translation_);
-    command_manager.push(std::move(command));
+    context_.command_manager->push(std::move(command));
 
     plane_switches[active_plain_index]->mask = vsg::MASK_OFF;
     line_switches[active_arrow_index]->mask = vsg::MASK_OFF;

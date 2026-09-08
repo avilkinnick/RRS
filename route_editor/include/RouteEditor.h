@@ -4,7 +4,6 @@
 #include "EditorContext.h"
 #include "EditorState.h"
 #include "ObjectManager.h"
-#include "commands/CommandManager.h"
 
 #include <vsg/io/Options.h>
 
@@ -45,7 +44,6 @@ private:
     vsg::ref_ptr<WindowHandler> window_handler_;
 
     EditorState editor_state = EditorState::SELECT_ROUTE;
-    CommandManager command_manager;
     vsg::ref_ptr<SceneGraph> scene_graph;
     vsg::ref_ptr<Route> route;
     std::string route_dir;

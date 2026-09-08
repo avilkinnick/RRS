@@ -25,10 +25,7 @@ class Node;
 class Gizmo : public vsg::Inherit<SingleSwitch, Gizmo>
 {
 public:
-    Gizmo(
-        EditorContext& context,
-        CommandManager& command_manager
-    );
+    Gizmo(EditorContext& context);
 
     bool handle_intersections();
 
@@ -42,7 +39,6 @@ public:
 
 private:
     EditorContext& context_;
-    CommandManager& command_manager;
 
     vsg::Builder builder_;
     vsg::ref_ptr<vsg::MatrixTransform> matrix_transform_;

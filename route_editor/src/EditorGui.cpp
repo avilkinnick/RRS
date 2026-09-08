@@ -84,17 +84,13 @@ static bool drag_double3(const char* label, double* data, float speed = 1.0f,
 
 EditorGui::EditorGui(
     EditorContext& context,
-    StateManager& state_manager,
     EditorState& editor_state,
-    CommandManager& command_manager,
     const vsg::ref_ptr<Route>& route,
     std::string& route_dir,
     const vsg::ref_ptr<Gizmo>& gizmo
 )
     : context_(context)
-    , state_manager(state_manager)
     , editor_state(editor_state)
-    , command_manager(command_manager)
     , route(route)
     , route_dir(route_dir)
     , gizmo(gizmo)
@@ -103,13 +99,14 @@ EditorGui::EditorGui(
     ImGuiIO& io = ImGui::GetIO();
     io.IniFilename = nullptr;
 
-    add_ttf_font("JetBrainsMono-Regular.ttf",
-        context_.gui_settings.font_size, nullptr,
-        io.Fonts->GetGlyphRangesCyrillic());
+    const auto& gui_settings = context.gui_settings;
+
+    add_ttf_font("JetBrainsMono-Regular.ttf", gui_settings.font_size,
+        nullptr, io.Fonts->GetGlyphRangesCyrillic());
 
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 
-    if (!context_.gui_settings.is_editable)
+    if (!gui_settings.is_editable)
     {
         window_flags_ |= ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
     }
@@ -133,7 +130,11 @@ void EditorGui::record([[maybe_unused]] vsg::CommandBuffer& command_buffer) cons
     draw_status_bar();
     draw_load_route_file_dialog();
     draw_invalid_route_popup();
-    state_manager.get_editor_state()->draw_gui();
+
+    const auto& state_manager = context_.state_manager;
+    state_manager->get_editor_state()->draw_gui();
+
+    auto& gui_settings = context_.gui_settings;
 
     switch (editor_state)
     {
@@ -145,15 +146,15 @@ void EditorGui::record([[maybe_unused]] vsg::CommandBuffer& command_buffer) cons
         {
             ImGui::SetNextWindowPos(viewport->WorkPos);
             ImGui::Begin("Settings", nullptr, window_flags_ | ImGuiWindowFlags_AlwaysAutoResize);
-            ImGui::Checkbox("Show objects.ref", &context_.gui_settings.show_objects_ref);
-            ImGui::Checkbox("Show route1.map", &context_.gui_settings.show_route_map);
-            ImGui::Checkbox("Show stations", &context_.gui_settings.show_stations_conf);
-            ImGui::Checkbox("Show waypoints", &context_.gui_settings.show_waypoints_conf);
-            ImGui::Checkbox("Show key bindings", &context_.gui_settings.show_key_bindings);
-            ImGui::Checkbox("Show camera settings", &context_.gui_settings.show_camera_settings);
-            ImGui::Checkbox("Show topology", &context_.gui_settings.show_topology);
-            ImGui::Checkbox("Show selected objects properties", &context_.gui_settings.show_selected_objects_properties);
-            ImGui::Checkbox("Show commands", &context_.gui_settings.show_commands);
+            ImGui::Checkbox("Show objects.ref", &gui_settings.show_objects_ref);
+            ImGui::Checkbox("Show route1.map", &gui_settings.show_route_map);
+            ImGui::Checkbox("Show stations", &gui_settings.show_stations_conf);
+            ImGui::Checkbox("Show waypoints", &gui_settings.show_waypoints_conf);
+            ImGui::Checkbox("Show key bindings", &gui_settings.show_key_bindings);
+            ImGui::Checkbox("Show camera settings", &gui_settings.show_camera_settings);
+            ImGui::Checkbox("Show topology", &gui_settings.show_topology);
+            ImGui::Checkbox("Show selected objects properties", &gui_settings.show_selected_objects_properties);
+            ImGui::Checkbox("Show commands", &gui_settings.show_commands);
             ImGui::End();
 
             ImGui::ShowDemoWindow();
@@ -650,12 +651,14 @@ void EditorGui::show_commands() const
 
     ImGui::Begin("Commands");
 
-    command_manager.for_each_command([](const std::unique_ptr<::Command>& command) -> void {
+    const auto& command_manager = context_.command_manager;
+
+    command_manager->for_each_command([](const std::unique_ptr<::Command>& command) -> void {
         ImGui::Text("%s", command->get_description());
         ImGui::Separator();
     });
 
-    command_manager.for_each_undone([](const std::unique_ptr<::Command>& command) -> void {
+    command_manager->for_each_undone([](const std::unique_ptr<::Command>& command) -> void {
         ImGui::TextColored(ImVec4{0.3f, 0.3f, 0.3f, 1.0f}, "%s",
             command->get_description());
         ImGui::Separator();
@@ -677,7 +680,7 @@ void EditorGui::add_object(
 
     auto command = std::make_unique<AddObject>(context_, object, route, gizmo);
     command->execute();
-    command_manager.push(std::move(command));
+    context_.command_manager->push(std::move(command));
 }
 
 void EditorGui::save_objects_matrixes() const
@@ -714,7 +717,7 @@ void EditorGui::handle_translation_drag(
     {
         auto command = std::make_unique<TranslateObjects>(context_,
             RouteObjects{object}, total_translation);
-        command_manager.push(std::move(command));
+        context_.command_manager->push(std::move(command));
 
         dragging = false;
     }
@@ -768,7 +771,7 @@ void EditorGui::handle_rotation_drag(
 
         auto command = std::make_unique<RotateObjects>(context_,
             RouteObjects{object}, gizmo->get_curr_pos(), axis, radians);
-        command_manager.push(std::move(command));
+        context_.command_manager->push(std::move(command));
 
         dragging = false;
     }
@@ -805,7 +808,7 @@ void EditorGui::handle_scale_drag(
     {
         auto command = std::make_unique<ScaleObjects>(context_,
             RouteObjects{object}, gizmo->get_curr_pos(), total_scale);
-        command_manager.push(std::move(command));
+        context_.command_manager->push(std::move(command));
 
         dragging = false;
     }
@@ -871,7 +874,7 @@ void EditorGui::draw_status_bar() const
 
     if (ImGui::Begin("StatusBar", nullptr, flags))
     {
-        state_manager.get_editor_state()->fill_status_bar();
+        context_.state_manager->get_editor_state()->fill_status_bar();
         ImGui::End();
     }
 }
@@ -903,7 +906,7 @@ void EditorGui::draw_load_route_file_dialog() const
             }
             else
             {
-                state_manager.defer_switch_to(STATE_BASIC);
+                context_.state_manager->defer_switch_to(STATE_BASIC);
                 editor_state = EditorState::LOAD_ROUTE;
                 ImGuiFileDialog::Instance()->Close();
             }

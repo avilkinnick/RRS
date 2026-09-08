@@ -1,6 +1,7 @@
 #include "EditorContext.h"
 
 #include "Camera.h"
+#include "commands/CommandManager.h"
 #include "Keyboard.h"
 #include "Mouse.h"
 #include "ObjectSelector.h"

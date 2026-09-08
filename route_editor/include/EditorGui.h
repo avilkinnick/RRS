@@ -32,9 +32,7 @@ class EditorGui : public vsg::Inherit<vsg::Command, EditorGui>
 public:
     EditorGui(
         EditorContext& context,
-        StateManager& state_manager,
         EditorState& editor_state,
-        CommandManager& command_manager,
         const vsg::ref_ptr<Route>& route,
         std::string& route_dir,
         const vsg::ref_ptr<Gizmo>& gizmo
@@ -84,9 +82,7 @@ private:
 
 private:
     EditorContext& context_;
-    StateManager& state_manager;
     EditorState& editor_state;
-    CommandManager& command_manager;
     const vsg::ref_ptr<Route>& route;
     std::string& route_dir;
     const vsg::ref_ptr<Gizmo>& gizmo;

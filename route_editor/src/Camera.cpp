@@ -64,7 +64,9 @@ Camera::Camera(EditorContext& editor_context)
 
 void Camera::handle_key_press()
 {
-    if (editor_context.keyboard->pressed_once(ACTION_CHANGE_PROJECTION_MATRIX))
+    const auto& keyboard = editor_context.keyboard;
+
+    if (keyboard->pressed_once(ACTION_CHANGE_PROJECTION_MATRIX))
     {
         std::swap(projectionMatrix, another_projection_matrix);
         calculate_inverse_projection_matrix();
@@ -86,26 +88,26 @@ void Camera::update_move_direction()
     if ((forward_move_direction == 0) && (right_move_direction == 0))
     {
         move_direction = {0.0, 0.0, 0.0};
+        return;
     }
-    else
+
+    move_direction = front * forward_move_direction +
+        right * right_move_direction;
+
+    if (projectionMatrix == orthographic)
     {
-        move_direction = front * forward_move_direction +
-            right * right_move_direction;
-
-        if (projectionMatrix == orthographic)
-        {
-            move_direction.z = 0.0;
-        }
-
-        move_direction = vsg::normalize(move_direction);
+        move_direction.z = 0.0;
     }
+
+    move_direction = vsg::normalize(move_direction);
 }
 
 void Camera::handle_mouse_move()
 {
+    const auto& camera_settings = editor_context.camera_settings;
     const auto& mouse = editor_context.mouse;
 
-    const double rotate_speed = editor_context.camera_settings.rotate_speed;
+    const double rotate_speed = camera_settings.rotate_speed;
 
     yaw_degrees += mouse->get_delta_x() * rotate_speed;
     pitch_degrees -= mouse->get_delta_y() * rotate_speed;
@@ -181,7 +183,9 @@ const vsg::dmat4& Camera::get_inverse_view_matrix() const
 void Camera::create_orthographic_projection(double window_width,
     double window_height, double aspect_ratio)
 {
-    const double radius = editor_context.camera_settings.view_distance;
+    const auto& camera_settings = editor_context.camera_settings;
+
+    const double radius = camera_settings.view_distance;
 
     const double halfDim = 100.0;
     double halfHeight, halfWidth;

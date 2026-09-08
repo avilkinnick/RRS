@@ -106,9 +106,9 @@ bool RouteEditor::initialize()
     const auto gui_view2 = vsg::View::create(editor_context.camera, scene_graph);
     gui_view2->mask = MASK_GUI2;
 
-    editor_context.state_manager = std::make_unique<StateManager>(editor_context, command_manager);
-    const auto editor_gui = EditorGui::create(editor_context, *editor_context.state_manager,
-        editor_state, command_manager, route, route_dir, gizmo);
+    editor_context.state_manager = std::make_unique<StateManager>(editor_context);
+    const auto editor_gui = EditorGui::create(editor_context, editor_state,
+        route, route_dir, gizmo);
 
     const auto render_gui = vsgImGui::RenderImGui::create(editor_context.window, editor_gui);
 
@@ -125,11 +125,11 @@ bool RouteEditor::initialize()
 
     viewer_ = vsg::Viewer::create();
 
-    gizmo = Gizmo::create(editor_context, command_manager);
+    gizmo = Gizmo::create(editor_context);
     scene_graph->addChild(vsg::Mask{MASK_GUI1 | MASK_CLICKABLE}, gizmo);
 
-    editor_context.object_selector = ObjectSelector::create(editor_context, editor_context.camera,
-        command_manager, scene_graph, route, gizmo);
+    editor_context.object_selector = ObjectSelector::create(editor_context,
+        scene_graph, route, gizmo);
 
     viewer_->addWindow(editor_context.window);
 

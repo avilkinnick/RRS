@@ -20,13 +20,10 @@
 
 #include <memory>
 
-StateManager::StateManager(
-    EditorContext& editor_context,
-    CommandManager& command_manager
-)
+StateManager::StateManager(EditorContext& editor_context)
 {
     states[STATE_ROUTE_NOT_LOADED] = std::make_unique<RouteNotLoadedState>(editor_context);
-    states[STATE_BASIC] = std::make_unique<BasicEditorState>(editor_context, command_manager);
+    states[STATE_BASIC] = std::make_unique<BasicEditorState>(editor_context);
     states[STATE_NAVIGATION] = std::make_unique<NavigationState>(editor_context);
     states[STATE_KEYBOARD_TRANSLATE] = std::make_unique<KeyboardTranslateState>(editor_context);
     states[STATE_KEYBOARD_ROTATE] = std::make_unique<KeyboardRotateState>(editor_context);

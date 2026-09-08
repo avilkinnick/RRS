@@ -23,6 +23,7 @@
 #include <string>
 
 class Camera;
+class CommandManager;
 class Keyboard;
 class Mouse;
 class ObjectSelector;
@@ -80,6 +81,7 @@ struct EditorContext
     vsg::ref_ptr<Camera> camera;
 
     std::unique_ptr<StateManager> state_manager;
+    std::unique_ptr<CommandManager> command_manager;
 
     RouteObjects static_objects;
     std::mutex static_objects_mutex;

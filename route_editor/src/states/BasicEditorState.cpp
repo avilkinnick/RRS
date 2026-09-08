@@ -11,12 +11,8 @@
 #include <vsg/ui/PointerEvent.h>
 #include <vsgImGui/imgui.h>
 
-BasicEditorState::BasicEditorState(
-    EditorContext& editor_context,
-    CommandManager& command_manager
-)
+BasicEditorState::BasicEditorState(EditorContext& editor_context)
     : State(editor_context)
-    , command_manager(command_manager)
 {
     name = "BasicEditorState";
 }
@@ -27,14 +23,15 @@ void BasicEditorState::handle_key_press()
 {
     const auto& keyboard = editor_context.keyboard;
     const auto& camera = editor_context.camera;
+    const auto& command_manager = editor_context.command_manager;
 
     if (keyboard->pressed_once(ACTION_UNDO_COMMAND))
     {
-        command_manager.undo();
+        command_manager->undo();
     }
     else if (keyboard->pressed_once(ACTION_REDO_COMMAND))
     {
-        command_manager.redo();
+        command_manager->redo();
     }
     else
     {
