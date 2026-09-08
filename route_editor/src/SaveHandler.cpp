@@ -24,10 +24,8 @@ SaveHandler::SaveHandler(
 {
 }
 
-void SaveHandler::apply(vsg::KeyPressEvent& keyPress)
+void SaveHandler::apply([[maybe_unused]] vsg::KeyPressEvent& keyPress)
 {
-    (void)keyPress;
-
     if (editor_context.keyboard->pressed_once(ACTION_SAVE_ROUTE))
     {
         save_route();

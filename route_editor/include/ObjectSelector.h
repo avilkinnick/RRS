@@ -11,7 +11,6 @@ class Camera;
 class CommandManager;
 struct EditorContext;
 class Gizmo;
-class Mouse;
 class Route;
 class RouteObject;
 class SceneGraph;
@@ -32,7 +31,6 @@ class ObjectSelector : public vsg::Inherit<vsg::Visitor, ObjectSelector>
 public:
     ObjectSelector(
         EditorContext& context,
-        const vsg::ref_ptr<Mouse>& mouse,
         const vsg::ref_ptr<Camera>& camera,
         CommandManager& command_manager,
         const vsg::ref_ptr<SceneGraph>& scene_graph,
@@ -64,7 +62,6 @@ private:
     State state_ = State::INITIAL;
 
     EditorContext& context_;
-    const vsg::ref_ptr<Mouse>& mouse;
     const vsg::ref_ptr<Camera>& camera;
     CommandManager& command_manager;
     const vsg::ref_ptr<SceneGraph>& scene_graph;

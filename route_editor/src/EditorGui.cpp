@@ -131,10 +131,8 @@ EditorGui::~EditorGui()
     // ImGui::DestroyContext();
 }
 
-void EditorGui::record(vsg::CommandBuffer& command_buffer) const
+void EditorGui::record([[maybe_unused]] vsg::CommandBuffer& command_buffer) const
 {
-    (void)command_buffer;
-
     draw_main_menu_bar();
     draw_status_bar();
     draw_load_route_file_dialog();

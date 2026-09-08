@@ -129,7 +129,7 @@ bool RouteEditor::initialize()
     gizmo = Gizmo::create(context_, camera, command_manager, context_.mouse, window->extent2D());
     scene_graph->addChild(vsg::Mask{MASK_GUI1 | MASK_CLICKABLE}, gizmo);
 
-    context_.object_selector = ObjectSelector::create(context_, context_.mouse, camera,
+    context_.object_selector = ObjectSelector::create(context_, camera,
         command_manager, scene_graph, route, window->extent2D(), gizmo);
 
     viewer_->addWindow(window);
