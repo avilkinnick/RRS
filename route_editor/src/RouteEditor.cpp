@@ -21,6 +21,7 @@
 #include "StateManager.h"
 #include "SaveHandler.h"
 #include "WindowHandler.h"
+#include "commands/CommandManager.h"
 #include "filesystem.h"
 #include "graphics/common.h"
 #include "graphics/shader_funcs.h"
@@ -75,6 +76,8 @@ bool RouteEditor::initialize()
     editor_context.mouse = Mouse::create();
     editor_context.keyboard = Keyboard::create(editor_context.key_bindings);
 
+    editor_context.command_manager = std::make_unique<CommandManager>();
+
     auto save_handler = SaveHandler::create(editor_context, route_dir);
 
     editor_context.camera = Camera::create(editor_context);
@@ -82,12 +85,12 @@ bool RouteEditor::initialize()
 
     object_manager = std::make_unique<ObjectManager>(1000000);
 
-    scene_graph = SceneGraph::create(editor_context, route,
+    editor_context.scene_graph = SceneGraph::create(editor_context, route,
         route_dir, gizmo, *object_manager);
 
     editor_context.outline_builder = OutlineBuilder::create();
 
-    const auto scene_view = vsg::View::create(editor_context.camera, scene_graph);
+    const auto scene_view = vsg::View::create(editor_context.camera, editor_context.scene_graph);
     scene_view->mask = MASK_SCENE;
 
     VkClearValue clear_value{};
@@ -100,10 +103,10 @@ bool RouteEditor::initialize()
         vsg::ClearAttachments::Attachments{attachment},
         vsg::ClearAttachments::Rects{rect});
 
-    const auto gui_view1 = vsg::View::create(editor_context.camera, scene_graph);
+    const auto gui_view1 = vsg::View::create(editor_context.camera, editor_context.scene_graph);
     gui_view1->mask = MASK_GUI1;
 
-    const auto gui_view2 = vsg::View::create(editor_context.camera, scene_graph);
+    const auto gui_view2 = vsg::View::create(editor_context.camera, editor_context.scene_graph);
     gui_view2->mask = MASK_GUI2;
 
     editor_context.state_manager = std::make_unique<StateManager>(editor_context);
@@ -126,10 +129,9 @@ bool RouteEditor::initialize()
     viewer_ = vsg::Viewer::create();
 
     gizmo = Gizmo::create(editor_context);
-    scene_graph->addChild(vsg::Mask{MASK_GUI1 | MASK_CLICKABLE}, gizmo);
+    editor_context.scene_graph->addChild(vsg::Mask{MASK_GUI1 | MASK_CLICKABLE}, gizmo);
 
-    editor_context.object_selector = ObjectSelector::create(editor_context,
-        scene_graph, route, gizmo);
+    editor_context.object_selector = ObjectSelector::create(editor_context, route, gizmo);
 
     viewer_->addWindow(editor_context.window);
 
@@ -168,7 +170,7 @@ void RouteEditor::run()
 
         if (editor_state == EditorState::LOAD_ROUTE)
         {
-            scene_graph->load_route();
+            editor_context.scene_graph->load_route();
             editor_state = EditorState::EDIT_ROUTE;
         }
 

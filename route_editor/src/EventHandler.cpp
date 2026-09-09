@@ -10,40 +10,34 @@ EventHandler::EventHandler(StateManager& state_manager)
 
 EventHandler::~EventHandler() = default;
 
-void EventHandler::apply(vsg::KeyPressEvent& keyPress)
+void EventHandler::apply([[maybe_unused]] vsg::KeyPressEvent& keyPress)
 {
-    static_cast<void>(keyPress);
     state_manager.get_editor_state()->handle_key_press();
 }
 
-void EventHandler::apply(vsg::KeyReleaseEvent& keyRelease)
+void EventHandler::apply([[maybe_unused]] vsg::KeyReleaseEvent& keyRelease)
 {
-    static_cast<void>(keyRelease);
     state_manager.get_editor_state()->handle_key_release();
 }
 
-void EventHandler::apply(vsg::ButtonPressEvent& buttonPress)
+void EventHandler::apply([[maybe_unused]] vsg::ButtonPressEvent& buttonPress)
 {
-    static_cast<void>(buttonPress);
     state_manager.get_editor_state()->handle_button_press();
 }
 
-void EventHandler::apply(vsg::ButtonReleaseEvent& buttonRelease)
+void EventHandler::apply([[maybe_unused]] vsg::ButtonReleaseEvent& buttonRelease)
 {
-    static_cast<void>(buttonRelease);
     state_manager.get_editor_state()->handle_button_release();
 }
 
 
-void EventHandler::apply(vsg::MoveEvent& moveEvent)
+void EventHandler::apply([[maybe_unused]] vsg::MoveEvent& moveEvent)
 {
-    static_cast<void>(moveEvent);
     state_manager.get_editor_state()->handle_mouse_move();
 }
 
-void EventHandler::apply(vsg::ScrollWheelEvent& scrollWheel)
+void EventHandler::apply([[maybe_unused]] vsg::ScrollWheelEvent& scrollWheel)
 {
-    static_cast<void>(scrollWheel);
     state_manager.get_editor_state()->handle_mouse_scroll();
 }
 

@@ -7,6 +7,7 @@
 #include "ObjectSelector.h"
 #include "Outline.h"
 #include "RouteObject.h"
+#include "SceneGraph.h"
 #include "StateManager.h"
 #include "topology.h"
 

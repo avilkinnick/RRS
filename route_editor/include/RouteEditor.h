@@ -11,7 +11,6 @@
 
 class Gizmo;
 class Route;
-class SceneGraph;
 class WindowHandler;
 
 class RouteEditor
@@ -44,7 +43,6 @@ private:
     vsg::ref_ptr<WindowHandler> window_handler_;
 
     EditorState editor_state = EditorState::SELECT_ROUTE;
-    vsg::ref_ptr<SceneGraph> scene_graph;
     vsg::ref_ptr<Route> route;
     std::string route_dir;
     vsg::ref_ptr<Gizmo> gizmo;

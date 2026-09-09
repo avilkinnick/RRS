@@ -16,23 +16,28 @@
 #include <map>
 #include <string>
 
-static constexpr const char* action_setting_names[TOTAL_ACTIONS] = {
-    "MoveCameraForward",
-    "MoveCameraBackward",
-    "MoveCameraLeft",
-    "MoveCameraRight",
-    "MoveObjects",
-    "RotateObjects",
-    "ScaleObjects",
-    "CopyObjects",
-    "PasteObjects",
-    "HideObjects",
-    "ShowObjects",
-    "DeleteObjects",
-    "UndoCommand",
-    "RedoCommand",
-    "SaveRoute",
-    "ChangeProjectionMatrix"
+static std::array<std::string, TOTAL_ACTIONS> get_action_setting_names()
+{
+    std::array<std::string, TOTAL_ACTIONS> action_setting_names;
+
+    action_setting_names[ACTION_MOVE_CAMERA_FORWARD]      = "MoveCameraForward";
+    action_setting_names[ACTION_MOVE_CAMERA_BACKWARD]     = "MoveCameraBackward";
+    action_setting_names[ACTION_MOVE_CAMERA_LEFT]         = "MoveCameraLeft";
+    action_setting_names[ACTION_MOVE_CAMERA_RIGHT]        = "MoveCameraRight";
+    action_setting_names[ACTION_TRANSLATE_OBJECTS]        = "MoveObjects";
+    action_setting_names[ACTION_ROTATE_OBJECTS]           = "RotateObjects";
+    action_setting_names[ACTION_SCALE_OBJECTS]            = "ScaleObjects";
+    action_setting_names[ACTION_COPY_OBJECTS]             = "CopyObjects";
+    action_setting_names[ACTION_PASTE_OBJECTS]            = "PasteObjects";
+    action_setting_names[ACTION_HIDE_OBJECTS]             = "HideObjects";
+    action_setting_names[ACTION_SHOW_OBJECTS]             = "ShowObjects";
+    action_setting_names[ACTION_DELETE_OBJECTS]           = "DeleteObjects";
+    action_setting_names[ACTION_UNDO_COMMAND]             = "UndoCommand";
+    action_setting_names[ACTION_REDO_COMMAND]             = "RedoCommand";
+    action_setting_names[ACTION_SAVE_ROUTE]               = "SaveRoute";
+    action_setting_names[ACTION_CHANGE_PROJECTION_MATRIX] = "ChangeProjectionMatrix";
+
+    return action_setting_names;
 };
 
 static const std::map<std::string, vsg::KeyModifier> modifier_map = {
@@ -52,15 +57,17 @@ KeyBindings::KeyBindings()
 
 void KeyBindings::read(CfgReader& cfg)
 {
+    const auto action_setting_names = get_action_setting_names();
+
     for (int i = 0; i < TOTAL_ACTIONS; ++i)
     {
-        const char* const setting_name = action_setting_names[i];
+        const auto action_setting_name = action_setting_names[i].c_str();
 
         QString line;
-        if (!cfg.getString("Keys", setting_name, line))
+        if (!cfg.getString("Keys", action_setting_name, line))
         {
             Journal::instance()->error(QString("Failed to find key binding %1")
-                .arg(setting_name));
+                .arg(action_setting_name));
             continue;
         }
 
@@ -69,20 +76,19 @@ void KeyBindings::read(CfgReader& cfg)
         const QStringList strings = line.split(QRegularExpression("[ +]"),
             Qt::SkipEmptyParts);
 
-        const qsizetype strings_size = strings.size();
-        if (strings_size <= 0)
+        if (strings.size() <= 0)
         {
             continue;
         }
 
         keys[i] = static_cast<vsg::KeySymbol>(strings.back().front().toLatin1());
 
-        for (qsizetype j = 0; j < strings_size; ++j)
+        for (const auto& qstr : strings)
         {
-            const auto found_it = modifier_map.find(strings[j].toStdString());
-            if (found_it != modifier_map.cend())
+            const auto found_it = modifier_map.find(qstr.toStdString());
+            if (found_it != modifier_map.end())
             {
-                modifiers[i] |= found_it->second;
+                modifiers[i] = found_it->second;
             }
         }
     }

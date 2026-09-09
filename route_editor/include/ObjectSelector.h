@@ -13,7 +13,6 @@ struct EditorContext;
 class Gizmo;
 class Route;
 class RouteObject;
-class SceneGraph;
 class SingleSwitch;
 
 namespace vsg
@@ -31,7 +30,6 @@ class ObjectSelector : public vsg::Inherit<vsg::Visitor, ObjectSelector>
 public:
     ObjectSelector(
         EditorContext& context,
-        const vsg::ref_ptr<SceneGraph>& scene_graph,
         const vsg::ref_ptr<Route>& route,
         const vsg::ref_ptr<Gizmo>& gizmo
     );
@@ -59,7 +57,6 @@ private:
     State state_ = State::INITIAL;
 
     EditorContext& context_;
-    const vsg::ref_ptr<SceneGraph>& scene_graph;
     const vsg::ref_ptr<Route>& route;
     const vsg::ref_ptr<Gizmo>& gizmo;
 

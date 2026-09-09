@@ -34,12 +34,10 @@
 
 ObjectSelector::ObjectSelector(
     EditorContext& context,
-    const vsg::ref_ptr<SceneGraph>& scene_graph,
     const vsg::ref_ptr<Route>& route,
     const vsg::ref_ptr<Gizmo>& gizmo
 )
     : context_(context)
-    , scene_graph(scene_graph)
     , route(route)
     , gizmo(gizmo)
 {
@@ -167,7 +165,7 @@ void ObjectSelector::apply(vsg::ButtonPressEvent& buttonPress)
     }
     intersector->traversalMask = MASK_CLICKABLE;
 
-    scene_graph->accept(*intersector);
+    context_.scene_graph->accept(*intersector);
 
     auto& intersections = intersector->intersections;
     if (intersections.empty())
