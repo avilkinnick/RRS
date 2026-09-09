@@ -7,8 +7,6 @@
 #include <vsg/core/ref_ptr.h>
 
 struct EditorContext;
-class Gizmo;
-class Route;
 
 namespace vsg
 {
@@ -20,12 +18,7 @@ class RouteObject;
 class AddObject : public Command
 {
 public:
-    AddObject(
-        EditorContext& context,
-        vsg::ref_ptr<RouteObject> object,
-        const vsg::ref_ptr<Route>& route,
-        const vsg::ref_ptr<Gizmo>& gizmo
-    );
+    AddObject(EditorContext& context, vsg::ref_ptr<RouteObject> object);
 
     virtual ~AddObject() override = default;
 
@@ -38,8 +31,6 @@ public:
 private:
     const vsg::ref_ptr<RouteObject> object_to_add_;
     const RouteObjects objects_to_deselect_;
-    const vsg::ref_ptr<Route>& route;
-    const vsg::ref_ptr<Gizmo>& gizmo;
 };
 
 #endif // ADD_OBJECT_H

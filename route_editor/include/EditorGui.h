@@ -30,13 +30,7 @@ class CommandBuffer;
 class EditorGui : public vsg::Inherit<vsg::Command, EditorGui>
 {
 public:
-    EditorGui(
-        EditorContext& context,
-        EditorState& editor_state,
-        const vsg::ref_ptr<Route>& route,
-        std::string& route_dir,
-        const vsg::ref_ptr<Gizmo>& gizmo
-    );
+    EditorGui(EditorContext& context, EditorState& editor_state, std::string& route_dir);
 
     ~EditorGui();
 
@@ -83,9 +77,7 @@ private:
 private:
     EditorContext& context_;
     EditorState& editor_state;
-    const vsg::ref_ptr<Route>& route;
     std::string& route_dir;
-    const vsg::ref_ptr<Gizmo>& gizmo;
 
     ImGuiWindowFlags window_flags_;
     ImGuiViewport* viewport;

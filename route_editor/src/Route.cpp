@@ -78,41 +78,52 @@ static vsg::ref_ptr<vsg::PagedLOD> construct_paged_lod(const vsg::Path& filename
 
 Route::Route(
     EditorContext& context,
-    const camera_settings_t& camera_settings,
-    const vsg::ref_ptr<vsg::Options>& vsg_options,
     const std::string& route_dir,
     const vsg::ref_ptr<Gizmo>& gizmo,
     ObjectManager& object_manager
 )
     : context_(context)
-    , camera_settings(camera_settings)
-    , vsg_options(vsg_options)
     , route_dir(route_dir)
     , gizmo(gizmo)
     , object_manager(object_manager)
 {
-    const bool success = load_objects_ref() && load_route_map()
-        && load_stations_conf() && load_waypoints_conf();
+}
 
-    if (!success)
+void Route::load()
+{
+    if (!load_objects_ref())
     {
         return;
     }
 
-    const FileSystem& fs = FileSystem::getInstance();
+    if (!load_route_map())
+    {
+        return;
+    }
 
-    for (auto& [label, ref] : context.objects_ref)
+    if (!load_stations_conf())
+    {
+        return;
+    }
+
+    if (!load_waypoints_conf())
+    {
+        return;
+    }
+
+    const auto& fs = FileSystem::getInstance();
+    const auto& camera_settings = context_.camera_settings;
+    const auto& vsg_options = context_.vsg_options;
+
+    for (auto& [label, ref] : context_.objects_ref)
     {
         ref.paged_lod = construct_paged_lod(
             fs.combinePath(route_dir, ref.relative_path),
             camera_settings.view_distance, vsg_options);
     }
 
-    context.load_static_objects_thread = std::thread(
-        &Route::load_static_objects, this);
-
-    context.load_topology_thread = std::thread(
-        &Route::load_topology, this);
+    context_.load_static_objects_thread = std::thread(&Route::load_static_objects, this);
+    context_.load_topology_thread = std::thread(&Route::load_topology, this);
 }
 
 bool Route::load_objects_ref()
@@ -378,6 +389,9 @@ bool Route::load_topology()
     {
         return false;
     }
+
+    const auto& camera_settings = context_.camera_settings;
+    const auto& vsg_options = context_.vsg_options;
 
     const auto load_signals = [&](const std::vector<Signal*>& signals_) -> void
     {

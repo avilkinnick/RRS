@@ -28,11 +28,7 @@ class MoveEvent;
 class ObjectSelector : public vsg::Inherit<vsg::Visitor, ObjectSelector>
 {
 public:
-    ObjectSelector(
-        EditorContext& context,
-        const vsg::ref_ptr<Route>& route,
-        const vsg::ref_ptr<Gizmo>& gizmo
-    );
+    ObjectSelector(EditorContext& context);
 
     void apply(vsg::KeyPressEvent& keyPress) override;
     void apply(vsg::ButtonPressEvent& buttonPress) override;
@@ -57,8 +53,6 @@ private:
     State state_ = State::INITIAL;
 
     EditorContext& context_;
-    const vsg::ref_ptr<Route>& route;
-    const vsg::ref_ptr<Gizmo>& gizmo;
 
     vsg::dvec3 prev_intersect_pos_;
     vsg::dvec3 total_translation_;

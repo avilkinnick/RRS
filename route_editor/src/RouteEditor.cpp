@@ -38,6 +38,7 @@
 #include <vsg/core/ref_ptr.h>
 #include <vsg/io/FileSystem.h>
 #include <vsg/io/Options.h>
+#include <vsg/lighting/AmbientLight.h>
 #include <vsg/state/ColorBlendState.h>
 #include <vsg/state/DepthStencilState.h>
 #include <vsg/state/GraphicsPipeline.h>
@@ -85,12 +86,17 @@ bool RouteEditor::initialize()
 
     object_manager = std::make_unique<ObjectManager>(1000000);
 
-    editor_context.scene_graph = SceneGraph::create(editor_context, route,
-        route_dir, gizmo, *object_manager);
+    editor_context.scene_graph = SceneGraph::create(editor_context, route_dir, *object_manager);
 
     editor_context.outline_builder = OutlineBuilder::create();
 
-    const auto scene_view = vsg::View::create(editor_context.camera, editor_context.scene_graph);
+    const auto ambient_light = vsg::AmbientLight::create();
+
+    const auto scene_graph = vsg::Group::create();
+    scene_graph->addChild(ambient_light);
+    scene_graph->addChild(editor_context.scene_graph);
+
+    const auto scene_view = vsg::View::create(editor_context.camera, scene_graph);
     scene_view->mask = MASK_SCENE;
 
     VkClearValue clear_value{};
@@ -110,8 +116,7 @@ bool RouteEditor::initialize()
     gui_view2->mask = MASK_GUI2;
 
     editor_context.state_manager = std::make_unique<StateManager>(editor_context);
-    const auto editor_gui = EditorGui::create(editor_context, editor_state,
-        route, route_dir, gizmo);
+    const auto editor_gui = EditorGui::create(editor_context, editor_state, route_dir);
 
     const auto render_gui = vsgImGui::RenderImGui::create(editor_context.window, editor_gui);
 
@@ -128,10 +133,10 @@ bool RouteEditor::initialize()
 
     viewer_ = vsg::Viewer::create();
 
-    gizmo = Gizmo::create(editor_context);
-    editor_context.scene_graph->addChild(vsg::Mask{MASK_GUI1 | MASK_CLICKABLE}, gizmo);
+    editor_context.gizmo = Gizmo::create(editor_context);
+    editor_context.scene_graph->addChild(vsg::Mask{MASK_GUI1 | MASK_CLICKABLE}, editor_context.gizmo);
 
-    editor_context.object_selector = ObjectSelector::create(editor_context, route, gizmo);
+    editor_context.object_selector = ObjectSelector::create(editor_context);
 
     viewer_->addWindow(editor_context.window);
 
@@ -348,6 +353,6 @@ void RouteEditor::handle_deferred_selection()
 
     if (editor_context.deferred_selection.size() != size)
     {
-        gizmo->update_visibility();
+        editor_context.gizmo->update_visibility();
     }
 }

@@ -10,21 +10,12 @@ class Gizmo;
 class ObjectManager;
 class Route;
 
-namespace vsg
-{
-
-class AmbientLight;
-
-}
-
 class SceneGraph : public vsg::Inherit<vsg::Switch, SceneGraph>
 {
 public:
     SceneGraph(
         EditorContext& context,
-        vsg::ref_ptr<Route>& route,
         const std::string& route_dir,
-        const vsg::ref_ptr<Gizmo>& gizmo,
         ObjectManager& object_manager
     );
 
@@ -32,12 +23,6 @@ public:
 
 private:
     EditorContext& context_;
-    vsg::ref_ptr<Route>& route;
-    const std::string& route_dir;
-    const vsg::ref_ptr<Gizmo>& gizmo;
-    ObjectManager& object_manager;
-
-    vsg::ref_ptr<vsg::AmbientLight> ambient_light_;
 };
 
 #endif // SCENE_GRAPH_H

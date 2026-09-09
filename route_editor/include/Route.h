@@ -16,12 +16,13 @@ class Route : public vsg::Inherit<vsg::Switch, Route>
 public:
     Route(
         EditorContext& context,
-        const camera_settings_t& camera_settings,
-        const vsg::ref_ptr<vsg::Options>& vsg_options,
         const std::string& route_dir,
         const vsg::ref_ptr<Gizmo>& gizmo,
         ObjectManager& object_manager
     );
+
+public:
+    void load();
 
 private:
     bool load_objects_ref();
@@ -34,8 +35,6 @@ private:
 
 private:
     EditorContext& context_;
-    const camera_settings_t& camera_settings;
-    const vsg::ref_ptr<vsg::Options>& vsg_options;
     const std::string& route_dir;
     const vsg::ref_ptr<Gizmo>& gizmo;
     ObjectManager& object_manager;

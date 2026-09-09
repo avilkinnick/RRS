@@ -13,15 +13,11 @@
 #include <cstdio>
 
 PasteObjects::PasteObjects(
-    EditorContext& context,
-    const vsg::ref_ptr<Route>& route,
-    const vsg::ref_ptr<Gizmo>& gizmo
+    EditorContext& context
 )
     : Command(context)
     , objects_to_paste_(context.copied_objects)
     , objects_to_deselect_(context.selected_objects)
-    , route(route)
-    , gizmo(gizmo)
 {
     update_description();
 }
@@ -44,7 +40,7 @@ void PasteObjects::execute()
     for (const auto& pasted_object : pasted_objects_)
     {
         context_.compile_infos.emplace_back(CompileInfo{
-            route, pasted_object, vsg::MASK_ALL});
+            context_.route, pasted_object, vsg::MASK_ALL});
 
         context_.static_objects_mutex.lock();
         context_.static_objects.emplace_back(pasted_object);
@@ -53,7 +49,7 @@ void PasteObjects::execute()
         pasted_object->select();
     }
 
-    gizmo->update_visibility();
+    context_.gizmo->update_visibility();
 }
 
 void PasteObjects::undo()
@@ -67,8 +63,8 @@ void PasteObjects::undo()
         objects.erase(std::find(objects.begin(), objects.end(), pasted_object));
         context_.static_objects_mutex.unlock();
 
-        route->children.erase(
-            std::find_if(route->children.begin(), route->children.end(),
+        context_.route->children.erase(
+            std::find_if(context_.route->children.begin(), context_.route->children.end(),
                 [pasted_object](const vsg::Switch::Child& child) {
                     return child.node == pasted_object;
                 }
@@ -81,9 +77,9 @@ void PasteObjects::undo()
         object->select();
     }
 
-    context_.compile_infos.emplace_back(CompileInfo{nullptr, route});
+    context_.compile_infos.emplace_back(CompileInfo{nullptr, context_.route});
 
-    gizmo->update_visibility();
+    context_.gizmo->update_visibility();
 }
 
 void PasteObjects::update_description()

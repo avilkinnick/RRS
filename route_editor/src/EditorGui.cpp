@@ -82,18 +82,10 @@ static bool drag_double3(const char* label, double* data, float speed = 1.0f,
         speed, min, max, "%.3f", flags);
 }
 
-EditorGui::EditorGui(
-    EditorContext& context,
-    EditorState& editor_state,
-    const vsg::ref_ptr<Route>& route,
-    std::string& route_dir,
-    const vsg::ref_ptr<Gizmo>& gizmo
-)
+EditorGui::EditorGui(EditorContext& context, EditorState& editor_state, std::string& route_dir)
     : context_(context)
     , editor_state(editor_state)
-    , route(route)
     , route_dir(route_dir)
-    , gizmo(gizmo)
 {
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
@@ -183,7 +175,7 @@ void EditorGui::show_objects_ref() const
 
     ImGui::Begin("objects_ref", nullptr, window_flags_);
 
-    if (!route)
+    if (!context_.route)
     {
         ImGui::Text("There is no route yet");
         ImGui::End();
@@ -239,7 +231,7 @@ void EditorGui::show_route_map() const
 
     ImGui::Begin("route1.map", nullptr, window_flags_);
 
-    if (!route)
+    if (!context_.route)
     {
         ImGui::Text("There is no route yet");
         ImGui::End();
@@ -492,7 +484,7 @@ void EditorGui::show_topology() const
 
     ImGui::Begin("Topology", nullptr, window_flags_);
 
-    if (!route)
+    if (!context_.route)
     {
         ImGui::Text("There is no route yet");
         ImGui::End();
@@ -674,11 +666,11 @@ void EditorGui::add_object(
 {
     const auto& camera = context_.camera;
 
-    const auto object = RouteObject::create(context_, paged_lod, gizmo, label,
+    const auto object = RouteObject::create(context_, paged_lod, context_.gizmo, label,
         camera->get_look_at()->eye +
         camera->get_front() * 20.0);
 
-    auto command = std::make_unique<AddObject>(context_, object, route, gizmo);
+    auto command = std::make_unique<AddObject>(context_, object);
     command->execute();
     context_.command_manager->push(std::move(command));
 }
@@ -770,7 +762,7 @@ void EditorGui::handle_rotation_drag(
         }
 
         auto command = std::make_unique<RotateObjects>(context_,
-            RouteObjects{object}, gizmo->get_curr_pos(), axis, radians);
+            RouteObjects{object}, context_.gizmo->get_curr_pos(), axis, radians);
         context_.command_manager->push(std::move(command));
 
         dragging = false;
@@ -807,7 +799,7 @@ void EditorGui::handle_scale_drag(
     if (ImGui::IsItemDeactivatedAfterEdit())
     {
         auto command = std::make_unique<ScaleObjects>(context_,
-            RouteObjects{object}, gizmo->get_curr_pos(), total_scale);
+            RouteObjects{object}, context_.gizmo->get_curr_pos(), total_scale);
         context_.command_manager->push(std::move(command));
 
         dragging = false;

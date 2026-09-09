@@ -12,17 +12,10 @@
 #include <algorithm>
 #include <cstdio>
 
-AddObject::AddObject(
-    EditorContext& context,
-    vsg::ref_ptr<RouteObject> object,
-    const vsg::ref_ptr<Route>& route,
-    const vsg::ref_ptr<Gizmo>& gizmo
-)
+AddObject::AddObject(EditorContext& context, vsg::ref_ptr<RouteObject> object)
     : Command(context)
     , object_to_add_(object)
     , objects_to_deselect_(context.selected_objects)
-    , route(route)
-    , gizmo(gizmo)
 {
     update_description();
 }
@@ -35,7 +28,7 @@ void AddObject::execute()
     }
 
     context_.compile_infos.emplace_back(CompileInfo{
-        route, object_to_add_, vsg::MASK_ALL});
+        context_.route, object_to_add_, vsg::MASK_ALL});
 
     context_.static_objects_mutex.lock();
     context_.static_objects.emplace_back(object_to_add_);
@@ -53,8 +46,8 @@ void AddObject::undo()
     objects.erase(std::find(objects.begin(), objects.end(), object_to_add_));
     context_.static_objects_mutex.unlock();
 
-    route->children.erase(
-        std::find_if(route->children.begin(), route->children.end(),
+    context_.route->children.erase(
+        std::find_if(context_.route->children.begin(), context_.route->children.end(),
             [this](const vsg::Switch::Child& child) {
                 return child.node == object_to_add_;
             }
@@ -66,9 +59,9 @@ void AddObject::undo()
         object->select();
     }
 
-    context_.compile_infos.emplace_back(CompileInfo{nullptr, route});
+    context_.compile_infos.emplace_back(CompileInfo{nullptr, context_.route});
 
-    gizmo->update_visibility();
+    context_.gizmo->update_visibility();
 }
 
 void AddObject::update_description()

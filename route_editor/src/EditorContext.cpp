@@ -1,14 +1,16 @@
 #include "EditorContext.h"
 
 #include "Camera.h"
-#include "commands/CommandManager.h"
+#include "Gizmo.h"
 #include "Keyboard.h"
 #include "Mouse.h"
 #include "ObjectSelector.h"
 #include "Outline.h"
+#include "Route.h"
 #include "RouteObject.h"
 #include "SceneGraph.h"
 #include "StateManager.h"
+#include "commands/CommandManager.h"
 #include "topology.h"
 
 #include <vsg/app/Window.h>

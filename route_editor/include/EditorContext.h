@@ -24,10 +24,12 @@
 
 class Camera;
 class CommandManager;
+class Gizmo;
 class Keyboard;
 class Mouse;
 class ObjectSelector;
 class OutlineBuilder;
+class Route;
 class SceneGraph;
 class StateManager;
 class Topology;
@@ -81,6 +83,8 @@ struct EditorContext
     vsg::ref_ptr<vsg::Window> window;
     vsg::ref_ptr<Camera> camera;
     vsg::ref_ptr<SceneGraph> scene_graph;
+    vsg::ref_ptr<Route> route;
+    vsg::ref_ptr<Gizmo> gizmo;
 
     std::unique_ptr<StateManager> state_manager;
     std::unique_ptr<CommandManager> command_manager;

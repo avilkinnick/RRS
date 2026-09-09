@@ -5,17 +5,11 @@
 #include "commands/Command.h"
 
 struct EditorContext;
-class Gizmo;
-class Route;
 
 class PasteObjects : public Command
 {
 public:
-    PasteObjects(
-        EditorContext& context,
-        const vsg::ref_ptr<Route>& route,
-        const vsg::ref_ptr<Gizmo>& gizmo
-    );
+    explicit PasteObjects(EditorContext& context);
 
     virtual ~PasteObjects() override = default;
 
@@ -29,8 +23,6 @@ private:
     const RouteObjects objects_to_paste_;
     RouteObjects pasted_objects_;
     const RouteObjects objects_to_deselect_;
-    const vsg::ref_ptr<Route>& route;
-    const vsg::ref_ptr<Gizmo>& gizmo;
 };
 
 #endif // PASTE_OBJECTS_H

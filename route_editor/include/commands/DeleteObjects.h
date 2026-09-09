@@ -5,17 +5,11 @@
 #include "commands/Command.h"
 
 struct EditorContext;
-class Gizmo;
-class Route;
 
 class DeleteObjects : public Command
 {
 public:
-    DeleteObjects(
-        EditorContext& context,
-        const vsg::ref_ptr<Route>& route,
-        const vsg::ref_ptr<Gizmo>& gizmo
-    );
+    explicit DeleteObjects(EditorContext& context);
 
     virtual ~DeleteObjects() override = default;
 
@@ -27,8 +21,6 @@ public:
 
 private:
     const RouteObjects objects_;
-    const vsg::ref_ptr<Route>& route;
-    const vsg::ref_ptr<Gizmo>& gizmo;
 };
 
 #endif // DELETE_OBJECTS_H

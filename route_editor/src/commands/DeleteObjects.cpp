@@ -12,15 +12,9 @@
 #include <algorithm>
 #include <cstdio>
 
-DeleteObjects::DeleteObjects(
-    EditorContext& context,
-    const vsg::ref_ptr<Route>& route,
-    const vsg::ref_ptr<Gizmo>& gizmo
-)
+DeleteObjects::DeleteObjects(EditorContext& context)
     : Command(context)
     , objects_(context.selected_objects)
-    , route(route)
-    , gizmo(gizmo)
 {
     update_description();
 }
@@ -37,8 +31,8 @@ void DeleteObjects::execute()
 
         context_.static_objects_mutex.unlock();
 
-        route->children.erase(
-            std::find_if(route->children.begin(), route->children.end(),
+        context_.route->children.erase(
+            std::find_if(context_.route->children.begin(), context_.route->children.end(),
                 [object](const vsg::Switch::Child& child) {
                     return child.node == object;
                 }
@@ -46,9 +40,9 @@ void DeleteObjects::execute()
         );
     }
 
-    context_.compile_infos.emplace_back(CompileInfo{nullptr, route});
+    context_.compile_infos.emplace_back(CompileInfo{nullptr, context_.route});
 
-    gizmo->update_visibility();
+    context_.gizmo->update_visibility();
 }
 
 void DeleteObjects::undo()
@@ -56,7 +50,7 @@ void DeleteObjects::undo()
     for (const auto& object : objects_)
     {
         context_.compile_infos.emplace_back(CompileInfo{
-            route, object, vsg::MASK_ALL});
+            context_.route, object, vsg::MASK_ALL});
 
         context_.static_objects_mutex.lock();
         context_.static_objects.emplace_back(object);
@@ -65,7 +59,7 @@ void DeleteObjects::undo()
         object->select();
     }
 
-    gizmo->update_visibility();
+    context_.gizmo->update_visibility();
 }
 
 void DeleteObjects::update_description()
