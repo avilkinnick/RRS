@@ -26,6 +26,7 @@
 #include "graphics/common.h"
 #include "graphics/shader_funcs.h"
 
+#include <algorithm>
 #include <core/string_funcs.h>
 
 #include <vsg/app/CloseHandler.h>
@@ -306,14 +307,16 @@ void RouteEditor::configure_shaders()
 
 void RouteEditor::compile_models()
 {
-    if (editor_context.compile_infos.empty())
+    auto compile_infos = editor_context.compile_infos.lock();
+    if (compile_infos->empty())
     {
         return;
     }
 
     vsg::CompileResult compile_result;
 
-    editor_context.compile_infos.for_each([&](const CompileInfo& compile_info) -> void {
+    std::for_each(compile_infos->begin(), compile_infos->end(),
+        [&](const CompileInfo& compile_info) {
         const auto& group_node = compile_info.group_node;
         const vsg::Mask mask = compile_info.mask;
         const auto& node = compile_info.node;
@@ -338,7 +341,7 @@ void RouteEditor::compile_models()
     });
 
     vsg::updateViewer(*viewer_, compile_result);
-    editor_context.compile_infos.clear();
+    compile_infos->clear();
 }
 
 void RouteEditor::handle_deferred_selection()

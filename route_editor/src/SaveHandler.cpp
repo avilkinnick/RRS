@@ -12,7 +12,6 @@
 
 #include <filesystem>
 #include <fstream>
-#include <mutex>
 #include <string>
 
 SaveHandler::SaveHandler(
@@ -54,8 +53,7 @@ void SaveHandler::save_route() const
     // Перезаписываем рабочую копию
     std::ofstream route_map_file{fs.combinePath(save_dir, "route1.map")};
 
-    std::lock_guard<std::mutex> lock_guard{editor_context.static_objects_mutex};
-    for (const auto& object : editor_context.static_objects)
+    for (const auto& object : *editor_context.static_objects.lock())
     {
         const vsg::dvec3& translation{object->get_translation()};
         const vsg::dvec3 rotation_deg{-object->get_rotation_deg()};

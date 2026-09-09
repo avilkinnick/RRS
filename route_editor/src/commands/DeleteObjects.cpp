@@ -25,11 +25,10 @@ void DeleteObjects::execute()
     {
         object->deselect();
 
-        context_.static_objects_mutex.lock();
-        context_.static_objects.erase(std::find(context_.static_objects.begin(),
-            context_.static_objects.end(), object));
-
-        context_.static_objects_mutex.unlock();
+        {
+            auto static_objects = context_.static_objects.lock();
+            static_objects->erase(std::find(static_objects->begin(), static_objects->end(), object));
+        }
 
         context_.route->children.erase(
             std::find_if(context_.route->children.begin(), context_.route->children.end(),
@@ -40,7 +39,7 @@ void DeleteObjects::execute()
         );
     }
 
-    context_.compile_infos.emplace_back(CompileInfo{nullptr, context_.route});
+    context_.compile_infos.lock()->emplace_back(CompileInfo{nullptr, context_.route});
 
     context_.gizmo->update_visibility();
 }
@@ -49,12 +48,10 @@ void DeleteObjects::undo()
 {
     for (const auto& object : objects_)
     {
-        context_.compile_infos.emplace_back(CompileInfo{
+        context_.compile_infos.lock()->emplace_back(CompileInfo{
             context_.route, object, vsg::MASK_ALL});
 
-        context_.static_objects_mutex.lock();
-        context_.static_objects.emplace_back(object);
-        context_.static_objects_mutex.unlock();
+        context_.static_objects.lock()->emplace_back(object);
 
         object->select();
     }

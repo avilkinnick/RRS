@@ -18,6 +18,7 @@
 
 #include <CfgReader.h>
 
+#include <memory>
 #include <vsg/app/RecordTraversal.h>
 #include <vsg/commands/DrawIndexed.h>
 #include <vsg/core/Array.h>
@@ -54,7 +55,6 @@
 #include <cstdio>
 #include <filesystem>
 #include <fstream>
-#include <mutex>
 #include <sstream>
 #include <string>
 #include <thread>
@@ -303,12 +303,10 @@ void Route::load_static_objects()
                 ref_it->second.paged_lod, gizmo, label, transform.translation,
                 -transform.rotation_deg);
 
-            context_.compile_infos.emplace_back(CompileInfo{
+            context_.compile_infos.lock()->emplace_back(CompileInfo{
                 vsg::ref_ptr(this), object, vsg::MASK_ALL});
 
-            context_.static_objects_mutex.lock();
-            context_.static_objects.emplace_back(object);
-            context_.static_objects_mutex.unlock();
+            context_.static_objects.lock()->emplace_back(object);
 
             constexpr vsg::dvec3 X_AXIS = {1.0, 0.0, 0.0};
             constexpr vsg::dvec3 Y_AXIS = {0.0, 1.0, 0.0};
@@ -366,29 +364,31 @@ bool Route::load_topology()
 
     Journal::instance()->info(QString("Signals directory %1").arg(models_dir.c_str()));
 
-    context_.topology_mutex.lock();
-    context_.topology = std::make_unique<Topology>();
+    const signals_data_t* signals_data = nullptr;
 
-    const auto directory_name = std::filesystem::path(
-        route_dir).filename();
-
-    context_.finish_topology_thread.store(false);
-    if (!context_.topology->load(directory_name.string().c_str(), true,
-        &context_.finish_topology_thread))
     {
-        Journal::instance()->error("Failed to load topology");
-        return false;
+        auto topology = context_.topology.lock();
+        *topology = std::make_unique<Topology>();
+
+        const auto directory_name = std::filesystem::path(route_dir).filename();
+
+        context_.finish_topology_thread.store(false);
+        if (!(*topology)->load(directory_name.string().c_str(), true,
+            &context_.finish_topology_thread))
+        {
+            Journal::instance()->error("Failed to load topology");
+            return false;
+        }
+        context_.topology_loaded = true;
+
+        signals_data = (*topology)->getSignalsData();
+        if (!signals_data)
+        {
+            return false;
+        }
     }
-    context_.topology_loaded = true;
-    context_.topology_mutex.unlock();
 
     PagedLodMap paged_lods;
-
-    const signals_data_t* const signals_data = context_.topology->getSignalsData();
-    if (!signals_data)
-    {
-        return false;
-    }
 
     const auto& camera_settings = context_.camera_settings;
     const auto& vsg_options = context_.vsg_options;
@@ -443,7 +443,7 @@ bool Route::load_topology()
             const auto object = RouteObject::create(context_, paged_lod, gizmo,
                 signal_model_name, pos, -rotation_deg);
 
-            context_.compile_infos.emplace_back(CompileInfo{
+            context_.compile_infos.lock()->emplace_back(CompileInfo{
                 vsg::ref_ptr(this), object, vsg::MASK_ALL});
         }
     };
@@ -484,7 +484,8 @@ bool Route::load_topology()
         vsg::DepthStencilState::create()
     );
 
-    const traj_list_t* traj_list = context_.topology->getTrajectoriesList();
+    auto topology = context_.topology.lock();
+    const traj_list_t* traj_list = (*topology)->getTrajectoriesList();
     for (const Trajectory* trajectory : *traj_list)
     {
         const auto& tracks = trajectory->getTracks();
@@ -531,8 +532,8 @@ bool Route::load_topology()
 
     group->addChild(state_group);
 
-    context_.compile_infos.emplace_back(CompileInfo{vsg::ref_ptr(this),
-        group, vsg::Mask{MASK_GUI2}});
+    context_.compile_infos.lock()->emplace_back(CompileInfo{
+        vsg::ref_ptr(this), group, vsg::Mask{MASK_GUI2}});
 
     return true;
 }

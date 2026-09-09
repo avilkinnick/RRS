@@ -2,9 +2,9 @@
 #define EDITOR_CONTEXT_H
 
 #include "KeyBindings.h"
-#include "ThreadSafeVector.h"
 #include "RouteMap.h"
 #include "RouteObjects.h"
+#include <core/ThreadSafe.h>
 #include "settings/CameraSettings.h"
 #include "settings/GizmoSettings.h"
 #include "settings/GuiSettings.h"
@@ -12,9 +12,9 @@
 #include "settings/WindowSettings.h"
 
 #include <atomic>
-#include <mutex>
 #include <thread>
 
+#include <vector>
 #include <vsg/core/Mask.h>
 #include <vsg/core/ref_ptr.h>
 
@@ -89,17 +89,15 @@ struct EditorContext
     std::unique_ptr<StateManager> state_manager;
     std::unique_ptr<CommandManager> command_manager;
 
-    RouteObjects static_objects;
-    std::mutex static_objects_mutex;
+    ThreadSafe<RouteObjects> static_objects;
 
     RouteObjects selected_objects;
     RouteObjects copied_objects;
     RouteObjects hidden_objects;
 
-    ThreadSafeVector<CompileInfo> compile_infos;
+    ThreadSafe<std::vector<CompileInfo>> compile_infos;
 
-    std::unique_ptr<Topology> topology;
-    std::mutex topology_mutex;
+    ThreadSafe<std::unique_ptr<Topology>> topology;
     std::atomic_bool topology_loaded = false;
 
     std::thread load_static_objects_thread;

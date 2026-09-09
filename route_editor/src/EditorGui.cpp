@@ -64,7 +64,6 @@
 #include <cstdio>
 #include <functional>
 #include <memory>
-#include <mutex>
 #include <string>
 
 static bool drag_double(const char* label, double* data,
@@ -346,8 +345,9 @@ void EditorGui::show_waypoints_conf() const
             ImGui::TableNextColumn();
             if (ImGui::Button(label.c_str()))
             {
+                auto topology = context_.topology.lock();
                 const traj_list_t* const traj_list =
-                    context_.topology->getTrajectoriesList();
+                    (*topology)->getTrajectoriesList();
 
                 const QString traj_name = QString::fromStdString(
                     data.trajectory_name);
@@ -491,20 +491,20 @@ void EditorGui::show_topology() const
         return;
     }
 
-    std::lock_guard<std::mutex> lock_guard(context_.topology_mutex);
-    if (!context_.topology)
+    auto topology = context_.topology.lock();
+    if (!*topology)
     {
         ImGui::Text("Topology not yet loaded");
         ImGui::End();
         return;
     }
 
-    const auto route_name = context_.topology->getRouteName().toStdString();
+    const auto route_name = (*topology)->getRouteName().toStdString();
     ImGui::Text("Route name: %s", route_name.c_str());
 
     if (ImGui::CollapsingHeader("Trajectories"))
     {
-        const auto* trajectories = context_.topology->getTrajectoriesList();
+        const auto* trajectories = (*topology)->getTrajectoriesList();
         for (const Trajectory* trajectory : *trajectories)
         {
             if (ImGui::TreeNode(trajectory->getName().toStdString().c_str()))
@@ -569,7 +569,8 @@ void EditorGui::show_topology() const
             }
         };
 
-        const sw_list_t* const connectors = context_.topology->getConnectorsList();
+        auto topology = context_.topology.lock();
+        const sw_list_t* const connectors = (*topology)->getConnectorsList();
         for (auto it = connectors->constBegin(); it != connectors->constEnd(); ++it)
         {
             const Switch* const switch_ = dynamic_cast<Switch*>(*it);
