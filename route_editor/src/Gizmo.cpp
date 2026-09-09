@@ -44,7 +44,7 @@ static void rotate_geometry_info(
 }
 
 Gizmo::Gizmo(EditorContext& context)
-    : context_(context)
+    : editor_context(context)
 {
     builder_.shaderSet = vsg::createFlatShadedShaderSet();
 
@@ -58,9 +58,9 @@ Gizmo::Gizmo(EditorContext& context)
     const auto create_arrow = [&](vsg::vec3 direction,
         vsg::vec3 color) -> vsg::ref_ptr<vsg::Node>
     {
-        float thickness = context_.gizmo_settings.arrow_thickness;
-        const float length = context_.gizmo_settings.arrow_length;
-        const float opacity = context_.gizmo_settings.opacity;
+        float thickness = editor_context.gizmo_settings.arrow_thickness;
+        const float length = editor_context.gizmo_settings.arrow_length;
+        const float opacity = editor_context.gizmo_settings.opacity;
 
         vsg::box box = {
             vsg::vec3(-thickness, -thickness, 0.0f),
@@ -109,7 +109,7 @@ Gizmo::Gizmo(EditorContext& context)
     {
         const float width = plane_width;
         const float thickness = line_thickness;
-        const float opacity = context_.gizmo_settings.opacity;
+        const float opacity = editor_context.gizmo_settings.opacity;
 
         const vsg::box box = {
             vsg::vec3(-thickness, -thickness, -width),
@@ -132,9 +132,9 @@ Gizmo::Gizmo(EditorContext& context)
     };
 
     const vsg::vec3 arrow_colors[3] = {
-        context_.gizmo_settings.arrow_x_color,
-        context_.gizmo_settings.arrow_y_color,
-        context_.gizmo_settings.arrow_z_color
+        editor_context.gizmo_settings.arrow_x_color,
+        editor_context.gizmo_settings.arrow_y_color,
+        editor_context.gizmo_settings.arrow_z_color
     };
 
     for (int i = 0; i < 3; ++i)
@@ -156,8 +156,8 @@ Gizmo::Gizmo(EditorContext& context)
 
 bool Gizmo::handle_intersections()
 {
-    const auto& mouse = context_.mouse;
-    const auto& window_extent = context_.window->extent2D();
+    const auto& mouse = editor_context.mouse;
+    const auto& window_extent = editor_context.window->extent2D();
 
     constexpr vsg::dvec3 arrow_directions[] = {
         vsg::dvec3(1.0, 0.0, 0.0),
@@ -165,7 +165,7 @@ bool Gizmo::handle_intersections()
         vsg::dvec3(0.0, 0.0, 1.0)
     };
 
-    const auto& camera = context_.camera;
+    const auto& camera = editor_context.camera;
 
     double arrow_dots[3];
     for (int i = 0; i < 3; ++i)
@@ -189,10 +189,10 @@ bool Gizmo::handle_intersections()
 
     const vsg::dvec3 ray_dir = ray_end - ray_origin;
 
-    const double R_cyl = context_.gizmo_settings.arrow_thickness * scale_;
-    const double R_cone = context_.gizmo_settings.arrow_thickness * 3.0 * scale_;
-    const double H_cyl = context_.gizmo_settings.arrow_length * scale_;
-    const double H_cone = context_.gizmo_settings.arrow_thickness * 15.0 * scale_;
+    const double R_cyl = editor_context.gizmo_settings.arrow_thickness * scale_;
+    const double R_cone = editor_context.gizmo_settings.arrow_thickness * 3.0 * scale_;
+    const double H_cyl = editor_context.gizmo_settings.arrow_length * scale_;
+    const double H_cone = editor_context.gizmo_settings.arrow_thickness * 15.0 * scale_;
 
     constexpr double EPSILON = 1e-9;
     double closest_t = std::numeric_limits<double>::max();
@@ -382,7 +382,7 @@ bool Gizmo::handle_intersections()
         plane_switches[active_plain_index]->mask = MASK_CLICKABLE;
         line_switches[active_arrow_index]->mask = MASK_GUI1;
 
-        for (const auto& object : context_.selected_objects)
+        for (const auto& object : editor_context.selected_objects)
         {
             object->save_matrix();
         }
@@ -400,9 +400,9 @@ void Gizmo::apply(const vsg::ButtonReleaseEvent& buttonRelease)
         return;
     }
 
-    auto command = std::make_unique<TranslateObjects>(context_,
-        context_.selected_objects, total_translation_);
-    context_.command_manager->push(std::move(command));
+    auto command = std::make_unique<TranslateObjects>(editor_context,
+        editor_context.selected_objects, total_translation_);
+    editor_context.command_manager->push(std::move(command));
 
     plane_switches[active_plain_index]->mask = vsg::MASK_OFF;
     line_switches[active_arrow_index]->mask = vsg::MASK_OFF;
@@ -418,7 +418,7 @@ void Gizmo::apply(const vsg::MoveEvent& moveEvent)
         return;
     }
 
-    const auto& camera = context_.camera;
+    const auto& camera = editor_context.camera;
 
     const auto intersector = vsg::LineSegmentIntersector::create(*camera,
         moveEvent.x, moveEvent.y);
@@ -464,7 +464,7 @@ void Gizmo::apply(const vsg::MoveEvent& moveEvent)
 
         total_translation_ += translation;
 
-        for (const auto& object : context_.selected_objects)
+        for (const auto& object : editor_context.selected_objects)
         {
             object->move(translation);
         }
@@ -480,11 +480,11 @@ const vsg::dvec3& Gizmo::get_curr_pos() const
 
 void Gizmo::update_visibility()
 {
-    this->mask = context_.selected_objects.empty()
+    this->mask = editor_context.selected_objects.empty()
         ? vsg::MASK_OFF
         : MASK_GUI1 | MASK_CLICKABLE;
 
-    const auto& camera = context_.camera;
+    const auto& camera = editor_context.camera;
 
     const vsg::dvec3& camera_pos = camera->get_look_at()->eye;
     const double fov_rad = vsg::radians(camera->get_perspective()->fieldOfViewY);
@@ -525,9 +525,9 @@ static vsg::dvec3 calculate_position_center(
 
 void Gizmo::update_position()
 {
-    curr_pos_ = context_.gizmo_settings.to_center
-        ? calculate_position_center(context_.selected_objects)
-        : calculate_position_pivot(context_.selected_objects);
+    curr_pos_ = editor_context.gizmo_settings.to_center
+        ? calculate_position_center(editor_context.selected_objects)
+        : calculate_position_pivot(editor_context.selected_objects);
 
     matrix_transform_->matrix = vsg::translate(curr_pos_) * vsg::scale(scale_);
 }

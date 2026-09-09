@@ -35,7 +35,6 @@ static vsg::dvec3 to_euler_deg(const vsg::dquat& q)
 RouteObject::RouteObject(
     EditorContext& context,
     const vsg::ref_ptr<vsg::PagedLOD>& paged_lod,
-    const vsg::ref_ptr<Gizmo>& gizmo,
     const std::string& label,
     const vsg::dvec3& translation,
     const vsg::dvec3& rotation_deg,
@@ -47,7 +46,6 @@ RouteObject::RouteObject(
     , rotation_deg_(rotation_deg)
     , scale_(scale)
     , paged_lod_(paged_lod)
-    , gizmo(gizmo)
 {
     paged_lod_switch_ = SingleSwitch::create(
         vsg::Mask{MASK_SCENE | MASK_CLICKABLE}, paged_lod);
@@ -172,9 +170,7 @@ bool RouteObject::select()
 {
     if (!outline_switch_->node)
     {
-        const auto outline = context_.outline_builder->create_outline(
-            paged_lod_);
-
+        auto outline = context_.outline_builder->create_outline(paged_lod_);
         if (!outline)
         {
             return false;
@@ -189,7 +185,7 @@ bool RouteObject::select()
     is_selected_ = true;
 
     context_.selected_objects.emplace_back(this);
-    gizmo->update_position();
+    context_.gizmo->update_position();
 
     return true;
 }
@@ -200,19 +196,19 @@ RouteObjectsIterator RouteObject::deselect()
 
     is_selected_ = false;
 
-    RouteObjects& selected_objects = context_.selected_objects;
+    auto& selected_objects = context_.selected_objects;
 
     const auto it = selected_objects.erase(std::find(selected_objects.begin(),
         selected_objects.end(), vsg::ref_ptr(this)));
 
-    gizmo->update_position();
+    context_.gizmo->update_position();
 
     return it;
 }
 
 vsg::ref_ptr<RouteObject> RouteObject::copy() const
 {
-    return RouteObject::create(context_, paged_lod_, gizmo, label,
+    return RouteObject::create(context_, paged_lod_, label,
         translation_, rotation_deg_, scale_);
 }
 
@@ -251,7 +247,7 @@ void RouteObject::update_bounds()
     this->accept(compute_bounds);
     bounds_ = compute_bounds.bounds;
 
-    gizmo->update_position();
+    context_.gizmo->update_position();
 }
 
 void RouteObject::decompose_matrix()

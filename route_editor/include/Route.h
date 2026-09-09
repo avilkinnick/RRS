@@ -17,7 +17,6 @@ public:
     Route(
         EditorContext& context,
         const std::string& route_dir,
-        const vsg::ref_ptr<Gizmo>& gizmo,
         ObjectManager& object_manager
     );
 
@@ -36,7 +35,6 @@ private:
 private:
     EditorContext& context_;
     const std::string& route_dir;
-    const vsg::ref_ptr<Gizmo>& gizmo;
     ObjectManager& object_manager;
 };
 

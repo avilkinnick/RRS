@@ -33,8 +33,8 @@ void SaveHandler::apply([[maybe_unused]] vsg::KeyPressEvent& keyPress)
 
 void SaveHandler::save_route() const
 {
-    const FileSystem& fs{FileSystem::getInstance()};
-    const std::string save_dir{fs.combinePath(route_dir_, "topology", "map")};
+    const auto& fs = FileSystem::getInstance();
+    const std::string save_dir = fs.combinePath(route_dir_, "topology", "map");
 
     try
     {

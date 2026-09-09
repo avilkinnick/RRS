@@ -33,16 +33,16 @@
 #include <utility>
 
 ObjectSelector::ObjectSelector(EditorContext& context)
-    : context_(context)
+    : editor_context(context)
 {
 }
 
 void ObjectSelector::apply([[maybe_unused]] vsg::KeyPressEvent& keyPress)
 {
-    const auto& keyboard = context_.keyboard;
-    const auto& mouse = context_.mouse;
-    const auto& selected_objects = context_.selected_objects;
-    auto& copied_objects = context_.copied_objects;
+    const auto& keyboard = editor_context.keyboard;
+    const auto& mouse = editor_context.mouse;
+    const auto& selected_objects = editor_context.selected_objects;
+    auto& copied_objects = editor_context.copied_objects;
 
     if (mouse->is_rmb_pressed() ||
         state_ != State::INITIAL ||
@@ -58,16 +58,16 @@ void ObjectSelector::apply([[maybe_unused]] vsg::KeyPressEvent& keyPress)
     }
     else if (keyboard->pressed(ACTION_PASTE_OBJECTS))
     {
-        auto command = std::make_unique<PasteObjects>(context_);
+        auto command = std::make_unique<PasteObjects>(editor_context);
         command->execute();
-        context_.command_manager->push(std::move(command));
+        editor_context.command_manager->push(std::move(command));
         return;
     }
     else if (keyboard->pressed(ACTION_DELETE_OBJECTS))
     {
-        auto command = std::make_unique<DeleteObjects>(context_);
+        auto command = std::make_unique<DeleteObjects>(editor_context);
         command->execute();
-        context_.command_manager->push(std::move(command));
+        editor_context.command_manager->push(std::move(command));
         return;
     }
 
@@ -81,11 +81,11 @@ void ObjectSelector::apply([[maybe_unused]] vsg::KeyPressEvent& keyPress)
         return;
     }
 
-    const auto& camera = context_.camera;
+    const auto& camera = editor_context.camera;
 
     calculate_intersection_mouse_and_plane(mouse->get_x(), mouse->get_y(),
-        context_.window->extent2D(), camera->get_inverse_view_matrix(),
-        camera->get_inverse_projection_matrix(), context_.gizmo->get_curr_pos(),
+        editor_context.window->extent2D(), camera->get_inverse_view_matrix(),
+        camera->get_inverse_projection_matrix(), editor_context.gizmo->get_curr_pos(),
         camera->get_front(), prev_intersect_pos_);
 
     total_translation_ = {0.0, 0.0, 0.0};
@@ -118,9 +118,9 @@ void ObjectSelector::apply(vsg::ButtonPressEvent& buttonPress)
         return;
     }
 
-    const auto& keyboard = context_.keyboard;
-    const auto& mouse = context_.mouse;
-    const auto& selected_objects = context_.selected_objects;
+    const auto& keyboard = editor_context.keyboard;
+    const auto& mouse = editor_context.mouse;
+    const auto& selected_objects = editor_context.selected_objects;
 
     if (state_ != State::INITIAL)
     {
@@ -144,12 +144,12 @@ void ObjectSelector::apply(vsg::ButtonPressEvent& buttonPress)
 
     // If we have selected objects and clicked on Gizmo,
     // handle Gizmo intersection (start moving objects with Gizmo)
-    if (!selected_objects.empty() && context_.gizmo->handle_intersections())
+    if (!selected_objects.empty() && editor_context.gizmo->handle_intersections())
     {
         return;
     }
 
-    const auto& camera = context_.camera;
+    const auto& camera = editor_context.camera;
 
     const auto intersector = vsg::LineSegmentIntersector::create(*camera,
         buttonPress.x, buttonPress.y);
@@ -159,7 +159,7 @@ void ObjectSelector::apply(vsg::ButtonPressEvent& buttonPress)
     }
     intersector->traversalMask = MASK_CLICKABLE;
 
-    context_.scene_graph->accept(*intersector);
+    editor_context.scene_graph->accept(*intersector);
 
     auto& intersections = intersector->intersections;
     if (intersections.empty())
@@ -169,11 +169,11 @@ void ObjectSelector::apply(vsg::ButtonPressEvent& buttonPress)
         // deselect them all
         if (!selected_objects.empty() && !keyboard->get_shift_state())
         {
-            auto command = std::make_unique<SelectObjects>(context_);
+            auto command = std::make_unique<SelectObjects>(editor_context);
             command->objects_to_deselect = selected_objects;
             command->update_description();
             command->execute();
-            context_.command_manager->push(std::move(command));
+            editor_context.command_manager->push(std::move(command));
         }
 
         return;
@@ -193,27 +193,27 @@ void ObjectSelector::apply(vsg::ButtonPressEvent& buttonPress)
 
 void ObjectSelector::apply(vsg::ButtonReleaseEvent& buttonRelease)
 {
-    context_.gizmo->apply(buttonRelease);
+    editor_context.gizmo->apply(buttonRelease);
 }
 
 void ObjectSelector::apply(vsg::MoveEvent& moveEvent)
 {
-    context_.gizmo->apply(moveEvent);
+    editor_context.gizmo->apply(moveEvent);
 
     if (state_ == State::INITIAL)
     {
         return;
     }
 
-    const auto& mouse = context_.mouse;
-    const auto& selected_objects = context_.selected_objects;
+    const auto& mouse = editor_context.mouse;
+    const auto& selected_objects = editor_context.selected_objects;
 
-    const auto& camera = context_.camera;
+    const auto& camera = editor_context.camera;
 
     vsg::dvec3 world_intersection;
     calculate_intersection_mouse_and_plane(mouse->get_x(), mouse->get_y(),
-        context_.window->extent2D(), camera->get_inverse_view_matrix(),
-        camera->get_inverse_projection_matrix(), context_.gizmo->get_curr_pos(),
+        editor_context.window->extent2D(), camera->get_inverse_view_matrix(),
+        camera->get_inverse_projection_matrix(), editor_context.gizmo->get_curr_pos(),
         camera->get_front(), world_intersection);
 
     const vsg::dvec3& camera_up = camera->get_up();
@@ -236,7 +236,7 @@ void ObjectSelector::apply(vsg::MoveEvent& moveEvent)
         }
         case State::KEYBOARD_ROTATE:
         {
-            const vsg::dvec3& gizmo_pos = context_.gizmo->get_curr_pos();
+            const vsg::dvec3& gizmo_pos = editor_context.gizmo->get_curr_pos();
 
             if (world_intersection == gizmo_pos)
             {
@@ -251,7 +251,7 @@ void ObjectSelector::apply(vsg::MoveEvent& moveEvent)
             double prev_acos = acos(vsg::dot(prev_vec, camera_up));
             double curr_acos = acos(vsg::dot(curr_vec, camera_up));
 
-            const vsg::dvec3& front = context_.camera->get_front();
+            const vsg::dvec3& front = editor_context.camera->get_front();
 
             if (prev_vec != camera_up && prev_vec != -camera_up &&
                 vsg::dot(vsg::cross(prev_vec, camera_up), front) < 0.0)
@@ -277,7 +277,7 @@ void ObjectSelector::apply(vsg::MoveEvent& moveEvent)
         }
         case State::KEYBOARD_SCALE:
         {
-            const vsg::dvec3& gizmo_pos = context_.gizmo->get_curr_pos();
+            const vsg::dvec3& gizmo_pos = editor_context.gizmo->get_curr_pos();
 
             if (world_intersection == gizmo_pos)
             {
@@ -310,9 +310,9 @@ void ObjectSelector::apply(vsg::MoveEvent& moveEvent)
 
 void ObjectSelector::select_object(vsg::ref_ptr<RouteObject> object)
 {
-    auto command = std::make_unique<SelectObjects>(context_);
+    auto command = std::make_unique<SelectObjects>(editor_context);
 
-    if (context_.keyboard->get_shift_state())
+    if (editor_context.keyboard->get_shift_state())
     {
         if (object->get_is_selected())
         {
@@ -325,7 +325,7 @@ void ObjectSelector::select_object(vsg::ref_ptr<RouteObject> object)
     }
     else
     {
-        const RouteObjects& selected_objects = context_.selected_objects;
+        const RouteObjects& selected_objects = editor_context.selected_objects;
 
         if (selected_objects.empty())
         {
@@ -358,7 +358,7 @@ void ObjectSelector::select_object(vsg::ref_ptr<RouteObject> object)
     command->update_description();
     command->execute();
 
-    context_.command_manager->push(std::move(command));
+    editor_context.command_manager->push(std::move(command));
 }
 
 void ObjectSelector::confirm_keyboard_transformation()
@@ -367,28 +367,28 @@ void ObjectSelector::confirm_keyboard_transformation()
     {
         case State::KEYBOARD_GRAB:
         {
-            auto command = std::make_unique<TranslateObjects>(context_,
-                context_.selected_objects, total_translation_);
-            context_.command_manager->push(std::move(command));
+            auto command = std::make_unique<TranslateObjects>(editor_context,
+                editor_context.selected_objects, total_translation_);
+            editor_context.command_manager->push(std::move(command));
 
             break;
         }
         case State::KEYBOARD_ROTATE:
         {
-            const auto& camera = context_.camera;
+            const auto& camera = editor_context.camera;
 
-            auto command = std::make_unique<RotateObjects>(context_,
-                context_.selected_objects, context_.gizmo->get_curr_pos(),
+            auto command = std::make_unique<RotateObjects>(editor_context,
+                editor_context.selected_objects, editor_context.gizmo->get_curr_pos(),
                 camera->get_front(), total_rotation_rad_);
-            context_.command_manager->push(std::move(command));
+            editor_context.command_manager->push(std::move(command));
 
             break;
         }
         case State::KEYBOARD_SCALE:
         {
-            auto command = std::make_unique<ScaleObjects>(context_,
-                context_.selected_objects, context_.gizmo->get_curr_pos(), total_scale_);
-            context_.command_manager->push(std::move(command));
+            auto command = std::make_unique<ScaleObjects>(editor_context,
+                editor_context.selected_objects, editor_context.gizmo->get_curr_pos(), total_scale_);
+            editor_context.command_manager->push(std::move(command));
 
             break;
         }
@@ -403,7 +403,7 @@ void ObjectSelector::confirm_keyboard_transformation()
 
 void ObjectSelector::cancel_keyboard_transformation()
 {
-    for (const auto& object : context_.selected_objects)
+    for (const auto& object : editor_context.selected_objects)
     {
         object->set_matrix(object->get_initial_matrix());
     }

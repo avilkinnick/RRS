@@ -79,12 +79,10 @@ static vsg::ref_ptr<vsg::PagedLOD> construct_paged_lod(const vsg::Path& filename
 Route::Route(
     EditorContext& context,
     const std::string& route_dir,
-    const vsg::ref_ptr<Gizmo>& gizmo,
     ObjectManager& object_manager
 )
     : context_(context)
     , route_dir(route_dir)
-    , gizmo(gizmo)
     , object_manager(object_manager)
 {
 }
@@ -300,7 +298,7 @@ void Route::load_static_objects()
         for (const auto& transform : transforms)
         {
             const auto object = RouteObject::create(context_,
-                ref_it->second.paged_lod, gizmo, label, transform.translation,
+                ref_it->second.paged_lod, label, transform.translation,
                 -transform.rotation_deg);
 
             context_.compile_infos.lock()->emplace_back(CompileInfo{
@@ -440,7 +438,7 @@ bool Route::load_topology()
                 vsg::degrees(atan2(-right.y, right.x))
             };
 
-            const auto object = RouteObject::create(context_, paged_lod, gizmo,
+            const auto object = RouteObject::create(context_, paged_lod,
                 signal_model_name, pos, -rotation_deg);
 
             context_.compile_infos.lock()->emplace_back(CompileInfo{

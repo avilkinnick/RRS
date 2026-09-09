@@ -12,7 +12,7 @@ SceneGraph::SceneGraph(
 )
     : context_(context)
 {
-    context.route = Route::create(context_, route_dir, context.gizmo, object_manager);
+    context.route = Route::create(context_, route_dir, object_manager);
 }
 
 void SceneGraph::load_route()

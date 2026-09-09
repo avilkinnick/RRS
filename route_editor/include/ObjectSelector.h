@@ -28,7 +28,7 @@ class MoveEvent;
 class ObjectSelector : public vsg::Inherit<vsg::Visitor, ObjectSelector>
 {
 public:
-    ObjectSelector(EditorContext& context);
+    ObjectSelector(EditorContext& editor_context);
 
     void apply(vsg::KeyPressEvent& keyPress) override;
     void apply(vsg::ButtonPressEvent& buttonPress) override;
@@ -52,7 +52,7 @@ private:
 
     State state_ = State::INITIAL;
 
-    EditorContext& context_;
+    EditorContext& editor_context;
 
     vsg::dvec3 prev_intersect_pos_;
     vsg::dvec3 total_translation_;
