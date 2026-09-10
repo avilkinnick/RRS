@@ -2291,6 +2291,7 @@ namespace
         const double eps = 1e-9;
         double traveled = 0.0;
         double seg_begin = 0.0;
+        const dir_t train_dir = orient;
 
         auto close_segment = [segments, &traveled, &traj, kind, &seg_begin]()
         {
@@ -2384,8 +2385,6 @@ namespace
                     if (sig->getSignalModel().isEmpty()) return;
                     if (sig->getSignalModel().startsWith("empty_")) return;
                     if (st != traj && st != next_traj) return;
-                    // Если на стрелке есть оба сигнала — непопутный не рисуем
-                    if (oncoming && sf && sb) return;
                     profile_signal_t ps;
                     ps.distance = kind * traveled;
                     ps.connector_name = sig->getConnectorName();
