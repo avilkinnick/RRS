@@ -1,7 +1,7 @@
-#include "commands/HideObjects.h"
+#include "editor/commands/HideObjects.h"
 
-#include "commands/Command.h"
-#include "RouteObject.h"
+#include "editor/commands/Command.h"
+#include "editor/RouteObject.h"
 
 #include <cstdio>
 

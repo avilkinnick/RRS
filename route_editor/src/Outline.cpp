@@ -1,4 +1,4 @@
-#include "Outline.h"
+#include "editor/Outline.h"
 
 #include "filesystem.h"
 #include "graphics/common.h"

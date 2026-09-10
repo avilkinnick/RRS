@@ -1,26 +1,26 @@
-#include "RouteEditor.h"
+#include "editor/RouteEditor.h"
 
-#include "Camera.h"
+#include "editor/Camera.h"
 #include "CfgReader.h"
-#include "EditorContext.h"
-#include "EditorGui.h"
-#include "EditorState.h"
-#include "EventHandler.h"
-#include "Gizmo.h"
+#include "editor/EditorContext.h"
+#include "editor/EditorGui.h"
+#include "editor/EditorState.h"
+#include "editor/EventHandler.h"
+#include "editor/Gizmo.h"
 #include "Journal.h"
 #include "JournalFile.h"
-#include "Keyboard.h"
-#include "Mask.h"
-#include "Mouse.h"
-#include "ObjectManager.h"
-#include "ObjectSelector.h"
-#include "Outline.h"
-#include "Route.h"
-#include "RouteObject.h"
-#include "SingleSwitch.h"
-#include "StateManager.h"
-#include "WindowHandler.h"
-#include "commands/CommandManager.h"
+#include "editor/Keyboard.h"
+#include "editor/Mask.h"
+#include "editor/Mouse.h"
+#include "editor/ObjectManager.h"
+#include "editor/ObjectSelector.h"
+#include "editor/Outline.h"
+#include "editor/Route.h"
+#include "editor/RouteObject.h"
+#include "editor/SingleSwitch.h"
+#include "editor/StateManager.h"
+#include "editor/WindowHandler.h"
+#include "editor/commands/CommandManager.h"
 #include "filesystem.h"
 #include "graphics/common.h"
 #include "graphics/shader_funcs.h"
@@ -77,15 +77,10 @@ bool RouteEditor::initialize()
 
     editor_context.mouse = Mouse::create();
     editor_context.keyboard = Keyboard::create(editor_context.key_bindings);
-
     editor_context.command_manager = std::make_unique<CommandManager>();
-
     editor_context.camera = Camera::create(editor_context);
-
     editor_context.object_manager = std::make_unique<ObjectManager>(1000000);
-
     editor_context.route = Route::create(editor_context);
-
     editor_context.outline_builder = OutlineBuilder::create();
 
     const auto ambient_light = vsg::AmbientLight::create();
@@ -143,7 +138,6 @@ bool RouteEditor::initialize()
     viewer_->addEventHandler(vsg::CloseHandler::create(viewer_));
     viewer_->addEventHandler(window_handler_);
     viewer_->addEventHandler(editor_context.mouse);
-
 
     viewer_->addEventHandler(EventHandler::create(editor_context));
 

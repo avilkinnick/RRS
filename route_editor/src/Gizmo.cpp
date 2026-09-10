@@ -1,14 +1,14 @@
-#include "Gizmo.h"
+#include "editor/Gizmo.h"
 
-#include "Camera.h"
-#include "EditorContext.h"
-#include "Mask.h"
-#include "Mouse.h"
-#include "RouteObject.h"
-#include "SingleSwitch.h"
-#include "commands/CommandManager.h"
-#include "commands/TranslateObjects.h"
-#include "editor_math.h"
+#include "editor/Camera.h"
+#include "editor/EditorContext.h"
+#include "editor/Mask.h"
+#include "editor/Mouse.h"
+#include "editor/RouteObject.h"
+#include "editor/SingleSwitch.h"
+#include "editor/commands/CommandManager.h"
+#include "editor/commands/TranslateObjects.h"
+#include "editor/editor_math.h"
 
 #include <vsg/core/Mask.h>
 #include <vsg/core/ref_ptr.h>

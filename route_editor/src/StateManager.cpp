@@ -1,16 +1,16 @@
-#include "StateManager.h"
+#include "editor/StateManager.h"
 
-#include "EditorContext.h"
-#include "states/NavigationState.h"
-#include "states/GizmoRotateState.h"
-#include "states/GizmoScaleState.h"
-#include "states/GizmoTranslateState.h"
-#include "states/BasicEditorState.h"
-#include "states/KeyboardRotateState.h"
-#include "states/KeyboardScaleState.h"
-#include "states/KeyboardTranslateState.h"
-#include "states/RouteNotLoadedState.h"
-#include "states/State.h"
+#include "editor/EditorContext.h"
+#include "editor/states/NavigationState.h"
+#include "editor/states/GizmoRotateState.h"
+#include "editor/states/GizmoScaleState.h"
+#include "editor/states/GizmoTranslateState.h"
+#include "editor/states/BasicEditorState.h"
+#include "editor/states/KeyboardRotateState.h"
+#include "editor/states/KeyboardScaleState.h"
+#include "editor/states/KeyboardTranslateState.h"
+#include "editor/states/RouteNotLoadedState.h"
+#include "editor/states/State.h"
 
 #include <Journal.h>
 

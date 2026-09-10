@@ -1,7 +1,7 @@
 #ifndef KEYBOARD_TRANSLATE_STATE_H
 #define KEYBOARD_TRANSLATE_STATE_H
 
-#include "states/State.h"
+#include "editor/states/State.h"
 
 class KeyboardTranslateState : public State
 {

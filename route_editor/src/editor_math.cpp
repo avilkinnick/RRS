@@ -1,4 +1,4 @@
-#include "editor_math.h"
+#include "editor/editor_math.h"
 
 #include <vsg/maths/mat4.h>
 #include <vsg/maths/vec3.h>

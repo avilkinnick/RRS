@@ -1,15 +1,15 @@
 #ifndef EDITOR_CONTEXT_H
 #define EDITOR_CONTEXT_H
 
-#include "KeyBindings.h"
-#include "RouteMap.h"
-#include "RouteObjects.h"
+#include "editor/KeyBindings.h"
+#include "editor/RouteMap.h"
+#include "editor/RouteObjects.h"
 #include <core/ThreadSafe.h>
-#include "settings/CameraSettings.h"
-#include "settings/GizmoSettings.h"
-#include "settings/GuiSettings.h"
-#include "settings/SceneSettings.h"
-#include "settings/WindowSettings.h"
+#include "editor/settings/CameraSettings.h"
+#include "editor/settings/GizmoSettings.h"
+#include "editor/settings/GuiSettings.h"
+#include "editor/settings/SceneSettings.h"
+#include "editor/settings/WindowSettings.h"
 
 #include <atomic>
 #include <mutex>

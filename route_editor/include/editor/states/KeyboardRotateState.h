@@ -1,7 +1,7 @@
 #ifndef KEYBOARD_ROTATE_STATE_H
 #define KEYBOARD_ROTATE_STATE_H
 
-#include "states/State.h"
+#include "editor/states/State.h"
 
 class KeyboardRotateState : public State
 {

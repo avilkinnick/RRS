@@ -1,9 +1,9 @@
-#include "commands/SelectObjects.h"
+#include "editor/commands/SelectObjects.h"
 
-#include "commands/Command.h"
-#include "EditorContext.h"
-#include "Gizmo.h"
-#include "RouteObject.h"
+#include "editor/commands/Command.h"
+#include "editor/EditorContext.h"
+#include "editor/Gizmo.h"
+#include "editor/RouteObject.h"
 
 #include <cstdio>
 

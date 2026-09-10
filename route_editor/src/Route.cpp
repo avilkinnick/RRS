@@ -1,12 +1,12 @@
-#include "Route.h"
+#include "editor/Route.h"
 
-#include "EditorContext.h"
+#include "editor/EditorContext.h"
 #include "Journal.h"
-#include "Mask.h"
-#include "ObjectManager.h"
-#include "PagedLodMap.h"
-#include "RouteMap.h"
-#include "RouteObject.h"
+#include "editor/Mask.h"
+#include "editor/ObjectManager.h"
+#include "editor/PagedLodMap.h"
+#include "editor/RouteMap.h"
+#include "editor/RouteObject.h"
 #include "filesystem.h"
 #include "graphics/pipeline_funcs.h"
 #include "rail-signal.h"
@@ -14,7 +14,7 @@
 #include "topology.h"
 #include "trajectory.h"
 #include "vec3.h"
-#include "settings/CameraSettings.h"
+#include "editor/settings/CameraSettings.h"
 
 #include <CfgReader.h>
 

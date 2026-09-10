@@ -1,10 +1,10 @@
-#include "commands/AddObject.h"
+#include "editor/commands/AddObject.h"
 
-#include "Route.h"
-#include "RouteObject.h"
-#include "EditorContext.h"
-#include "Gizmo.h"
-#include "commands/Command.h"
+#include "editor/Route.h"
+#include "editor/RouteObject.h"
+#include "editor/EditorContext.h"
+#include "editor/Gizmo.h"
+#include "editor/commands/Command.h"
 
 #include <vsg/core/Mask.h>
 #include <vsg/core/ref_ptr.h>

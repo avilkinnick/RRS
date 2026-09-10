@@ -1,7 +1,7 @@
 #ifndef SCALE_OBJECTS_H
 #define SCALE_OBJECTS_H
 
-#include "commands/TransformObjects.h"
+#include "editor/commands/TransformObjects.h"
 
 #include <vsg/maths/vec3.h>
 

@@ -1,4 +1,4 @@
-#include "states/GizmoScaleState.h"
+#include "editor/states/GizmoScaleState.h"
 
 GizmoScaleState::GizmoScaleState(EditorContext& editor_context)
     : State(editor_context)

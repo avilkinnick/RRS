@@ -1,7 +1,7 @@
 #ifndef NAVIGATION_STATE_H
 #define NAVIGATION_STATE_H
 
-#include "states/State.h"
+#include "editor/states/State.h"
 
 class NavigationState : public State
 {

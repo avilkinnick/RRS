@@ -1,9 +1,9 @@
-#include "commands/ScaleObjects.h"
+#include "editor/commands/ScaleObjects.h"
 
-#include "commands/Command.h"
-#include "commands/TransformObjects.h"
-#include "EditorContext.h"
-#include "RouteObject.h"
+#include "editor/commands/Command.h"
+#include "editor/commands/TransformObjects.h"
+#include "editor/EditorContext.h"
+#include "editor/RouteObject.h"
 
 #include <vsg/maths/vec3.h>
 

@@ -1,9 +1,9 @@
-#include "states/NavigationState.h"
+#include "editor/states/NavigationState.h"
 
-#include "Camera.h"
-#include "Mouse.h"
-#include "EditorContext.h"
-#include "StateManager.h"
+#include "editor/Camera.h"
+#include "editor/Mouse.h"
+#include "editor/EditorContext.h"
+#include "editor/StateManager.h"
 
 #include <vsgImGui/imgui.h>
 

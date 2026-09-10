@@ -1,4 +1,4 @@
-#include "Mouse.h"
+#include "editor/Mouse.h"
 
 #include <vsg/ui/PointerEvent.h>
 #include <vsg/ui/ScrollWheelEvent.h>

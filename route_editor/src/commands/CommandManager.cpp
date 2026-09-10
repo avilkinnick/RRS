@@ -1,6 +1,6 @@
-#include "commands/CommandManager.h"
+#include "editor/commands/CommandManager.h"
 
-#include "commands/Command.h"
+#include "editor/commands/Command.h"
 
 #include <algorithm>
 #include <cstddef>

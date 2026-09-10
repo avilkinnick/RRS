@@ -1,10 +1,10 @@
-#include "RouteObject.h"
+#include "editor/RouteObject.h"
 
-#include "EditorContext.h"
-#include "Gizmo.h"
-#include "Mask.h"
-#include "Outline.h"
-#include "SingleSwitch.h"
+#include "editor/EditorContext.h"
+#include "editor/Gizmo.h"
+#include "editor/Mask.h"
+#include "editor/Outline.h"
+#include "editor/SingleSwitch.h"
 
 #include <vsg/core/Mask.h>
 #include <vsg/core/ref_ptr.h>

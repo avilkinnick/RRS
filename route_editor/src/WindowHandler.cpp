@@ -1,9 +1,9 @@
-#include "WindowHandler.h"
+#include "editor/WindowHandler.h"
 
-#include "Camera.h"
-#include "EditorContext.h"
+#include "editor/Camera.h"
+#include "editor/EditorContext.h"
 #include "Journal.h"
-#include "settings/WindowSettings.h"
+#include "editor/settings/WindowSettings.h"
 
 #include <vsg/app/Camera.h>
 #include <vsg/app/ProjectionMatrix.h>

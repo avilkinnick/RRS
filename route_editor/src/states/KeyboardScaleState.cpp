@@ -1,4 +1,4 @@
-#include "states/KeyboardScaleState.h"
+#include "editor/states/KeyboardScaleState.h"
 
 KeyboardScaleState::KeyboardScaleState(EditorContext& editor_context)
     : State(editor_context)

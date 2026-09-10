@@ -1,7 +1,7 @@
 #ifndef GIZMO_TRANSLATE_STATE_H
 #define GIZMO_TRANSLATE_STATE_H
 
-#include "states/State.h"
+#include "editor/states/State.h"
 
 class GizmoTranslateState : public State
 {

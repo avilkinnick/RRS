@@ -1,4 +1,4 @@
-#include "states/KeyboardTranslateState.h"
+#include "editor/states/KeyboardTranslateState.h"
 
 KeyboardTranslateState::KeyboardTranslateState(EditorContext& editor_context)
     : State(editor_context)

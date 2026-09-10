@@ -1,4 +1,4 @@
-#include "ObjectManager.h"
+#include "editor/ObjectManager.h"
 
 #include <vsg/nodes/MatrixTransform.h>
 

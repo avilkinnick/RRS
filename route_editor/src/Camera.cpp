@@ -1,9 +1,9 @@
-#include "Camera.h"
+#include "editor/Camera.h"
 
-#include "Action.h"
-#include "EditorContext.h"
-#include "Keyboard.h"
-#include "Mouse.h"
+#include "editor/Action.h"
+#include "editor/EditorContext.h"
+#include "editor/Keyboard.h"
+#include "editor/Mouse.h"
 
 #include <vsg/app/Camera.h>
 #include <vsg/app/ProjectionMatrix.h>

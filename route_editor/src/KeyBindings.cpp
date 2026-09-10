@@ -1,6 +1,6 @@
-#include "KeyBindings.h"
+#include "editor/KeyBindings.h"
 
-#include "Action.h"
+#include "editor/Action.h"
 
 #include <CfgReader.h>
 #include <Journal.h>

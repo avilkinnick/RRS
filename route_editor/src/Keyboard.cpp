@@ -1,7 +1,7 @@
-#include "Keyboard.h"
+#include "editor/Keyboard.h"
 
-#include "Action.h"
-#include "KeyBindings.h"
+#include "editor/Action.h"
+#include "editor/KeyBindings.h"
 
 #include <vsg/ui/KeyEvent.h>
 

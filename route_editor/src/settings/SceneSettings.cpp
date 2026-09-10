@@ -1,4 +1,4 @@
-#include "settings/SceneSettings.h"
+#include "editor/settings/SceneSettings.h"
 
 #include <CfgReader.h>
 

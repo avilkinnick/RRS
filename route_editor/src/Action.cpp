@@ -1,4 +1,4 @@
-#include "Action.h"
+#include "editor/Action.h"
 
 static constexpr const char* action_names[TOTAL_ACTIONS] = {
     "Camera: move forward",

@@ -1,4 +1,4 @@
-#include "states/GizmoRotateState.h"
+#include "editor/states/GizmoRotateState.h"
 
 GizmoRotateState::GizmoRotateState(EditorContext& editor_context)
     : State(editor_context)

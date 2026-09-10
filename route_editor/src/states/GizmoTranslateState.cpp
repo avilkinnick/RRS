@@ -1,4 +1,4 @@
-#include "states/GizmoTranslateState.h"
+#include "editor/states/GizmoTranslateState.h"
 
 GizmoTranslateState::GizmoTranslateState(EditorContext& editor_context)
     : State(editor_context)

@@ -1,7 +1,7 @@
 #ifndef GIZMO_ROTATE_STATE_H
 #define GIZMO_ROTATE_STATE_H
 
-#include "states/State.h"
+#include "editor/states/State.h"
 
 class GizmoRotateState : public State
 {

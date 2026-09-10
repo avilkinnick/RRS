@@ -1,7 +1,7 @@
 #ifndef KEYBOARD_SCALE_STATE_H
 #define KEYBOARD_SCALE_STATE_H
 
-#include "states/State.h"
+#include "editor/states/State.h"
 
 class KeyboardScaleState : public State
 {

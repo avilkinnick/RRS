@@ -1,7 +1,7 @@
 #ifndef BASIC_EDITOR_STATE_H
 #define BASIC_EDITOR_STATE_H
 
-#include "states/State.h"
+#include "editor/states/State.h"
 
 struct EditorContext;
 

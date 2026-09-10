@@ -1,7 +1,7 @@
 #ifndef GIZMO_SCALE_STATE_H
 #define GIZMO_SCALE_STATE_H
 
-#include "states/State.h"
+#include "editor/states/State.h"
 
 class GizmoScaleState : public State
 {

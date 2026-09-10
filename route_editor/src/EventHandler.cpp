@@ -1,8 +1,8 @@
-#include "EventHandler.h"
+#include "editor/EventHandler.h"
 
-#include "EditorContext.h"
-#include "StateManager.h"
-#include "states/State.h"
+#include "editor/EditorContext.h"
+#include "editor/StateManager.h"
+#include "editor/states/State.h"
 
 EventHandler::EventHandler(EditorContext& editor_context)
     : editor_context(editor_context)

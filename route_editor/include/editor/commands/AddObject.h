@@ -1,8 +1,8 @@
 #ifndef ADD_OBJECT_H
 #define ADD_OBJECT_H
 
-#include "RouteObjects.h"
-#include "commands/Command.h"
+#include "editor/RouteObjects.h"
+#include "editor/commands/Command.h"
 
 #include <vsg/core/ref_ptr.h>
 
