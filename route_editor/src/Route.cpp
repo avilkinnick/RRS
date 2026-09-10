@@ -19,7 +19,6 @@
 #include <CfgReader.h>
 
 #include <memory>
-#include <mutex>
 #include <vsg/app/RecordTraversal.h>
 #include <vsg/commands/DrawIndexed.h>
 #include <vsg/core/Array.h>
@@ -370,14 +369,13 @@ bool Route::load_topology()
     const signals_data_t* signals_data = nullptr;
 
     {
-        std::lock_guard<std::mutex> lock(context_.topology_mutex);
-        auto& topology = context_.topology;
-        topology = std::make_unique<Topology>();
+        auto topology = context_.topology.lock();
+        *topology = std::make_unique<Topology>();
 
         const auto directory_name = std::filesystem::path(route_dir).filename();
 
         context_.finish_topology_thread.store(false);
-        if (!topology->load(directory_name.string().c_str(), true,
+        if (!(*topology)->load(directory_name.string().c_str(), true,
             &context_.finish_topology_thread))
         {
             Journal::instance()->error("Failed to load topology");
@@ -385,7 +383,7 @@ bool Route::load_topology()
         }
         context_.topology_loaded = true;
 
-        signals_data = topology->getSignalsData();
+        signals_data = (*topology)->getSignalsData();
         if (!signals_data)
         {
             return false;
@@ -490,9 +488,8 @@ bool Route::load_topology()
         vsg::DepthStencilState::create()
     );
 
-    context_.topology_mutex.lock();
-    auto& topology = context_.topology;
-    const traj_list_t* traj_list = topology->getTrajectoriesList();
+    auto topology = context_.topology.lock();
+    const traj_list_t* traj_list = (*topology)->getTrajectoriesList();
     for (const Trajectory* trajectory : *traj_list)
     {
         const auto& tracks = trajectory->getTracks();
@@ -536,7 +533,6 @@ bool Route::load_topology()
 
         state_group->addChild(geometry);
     }
-    context_.topology_mutex.unlock();
 
     group->addChild(state_group);
 

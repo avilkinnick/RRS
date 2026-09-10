@@ -493,21 +493,21 @@ void EditorGui::show_topology() const
         return;
     }
 
-    std::lock_guard<std::mutex> lock(editor_context.topology_mutex);
-    auto& topology = editor_context.topology;
-    if (!topology)
+    // std::lock_guard<std::mutex> lock()
+    auto topology = editor_context.topology.lock();
+    if (!*topology)
     {
         ImGui::Text("Topology not yet loaded");
         ImGui::End();
         return;
     }
 
-    const auto route_name = topology->getRouteName().toStdString();
+    const auto route_name = (*topology)->getRouteName().toStdString();
     ImGui::Text("Route name: %s", route_name.c_str());
 
     if (ImGui::CollapsingHeader("Trajectories"))
     {
-        const auto* trajectories = topology->getTrajectoriesList();
+        const auto* trajectories = (*topology)->getTrajectoriesList();
         for (const Trajectory* trajectory : *trajectories)
         {
             if (ImGui::TreeNode(trajectory->getName().toStdString().c_str()))
@@ -572,7 +572,8 @@ void EditorGui::show_topology() const
             }
         };
 
-        const sw_list_t* const connectors = topology->getConnectorsList();
+        auto topology = editor_context.topology.lock();
+        const sw_list_t* const connectors = (*topology)->getConnectorsList();
         for (auto it = connectors->constBegin(); it != connectors->constEnd(); ++it)
         {
             const Switch* const switch_ = dynamic_cast<Switch*>(*it);
