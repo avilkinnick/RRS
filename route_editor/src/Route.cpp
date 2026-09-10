@@ -369,27 +369,25 @@ bool Route::load_topology()
 
     const signals_data_t* signals_data = nullptr;
 
+    context_.topology_mutex.lock();
+    auto& topology = context_.topology;
+    topology = std::make_unique<Topology>();
+
+    const auto directory_name = std::filesystem::path(route_dir).filename();
+
+    context_.finish_topology_thread.store(false);
+    if (!topology->load(directory_name.string().c_str(), true,
+        &context_.finish_topology_thread))
     {
-        std::lock_guard<std::mutex> lock(context_.topology_mutex);
-        auto& topology = context_.topology;
-        topology = std::make_unique<Topology>();
+        Journal::instance()->error("Failed to load topology");
+        return false;
+    }
+    context_.topology_loaded = true;
 
-        const auto directory_name = std::filesystem::path(route_dir).filename();
-
-        context_.finish_topology_thread.store(false);
-        if (!topology->load(directory_name.string().c_str(), true,
-            &context_.finish_topology_thread))
-        {
-            Journal::instance()->error("Failed to load topology");
-            return false;
-        }
-        context_.topology_loaded = true;
-
-        signals_data = topology->getSignalsData();
-        if (!signals_data)
-        {
-            return false;
-        }
+    signals_data = topology->getSignalsData();
+    if (!signals_data)
+    {
+        return false;
     }
 
     PagedLodMap paged_lods;
@@ -490,8 +488,6 @@ bool Route::load_topology()
         vsg::DepthStencilState::create()
     );
 
-    context_.topology_mutex.lock();
-    auto& topology = context_.topology;
     const traj_list_t* traj_list = topology->getTrajectoriesList();
     for (const Trajectory* trajectory : *traj_list)
     {
