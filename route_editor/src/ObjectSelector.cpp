@@ -43,8 +43,7 @@ void ObjectSelector::apply([[maybe_unused]] vsg::KeyPressEvent& keyPress)
     const auto& selected_objects = editor_context.selected_objects;
     auto& copied_objects = editor_context.copied_objects;
 
-    if (mouse->is_rmb_pressed() ||
-        state_ != State::INITIAL ||
+    if (mouse->is_rmb_pressed() || state_ != State::INITIAL ||
         selected_objects.empty())
     {
         return;

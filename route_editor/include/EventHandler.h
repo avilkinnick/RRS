@@ -4,7 +4,7 @@
 #include <vsg/core/Inherit.h>
 #include <vsg/core/Visitor.h>
 
-class StateManager;
+struct EditorContext;
 
 namespace vsg
 {
@@ -20,7 +20,7 @@ class ScrollWheelEvent;
 class EventHandler : public vsg::Inherit<vsg::Visitor, EventHandler>
 {
 public:
-    explicit EventHandler(StateManager& state_manager);
+    explicit EventHandler(EditorContext& editor_context);
 
     virtual ~EventHandler() override;
 
@@ -39,7 +39,7 @@ public:
     void update(double delta_time);
 
 private:
-    StateManager& state_manager;
+    EditorContext& editor_context;
 };
 
 #endif // EVENT_HANDLER_H
