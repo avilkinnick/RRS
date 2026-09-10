@@ -25,10 +25,10 @@ void DeleteObjects::execute()
     {
         object->deselect();
 
-        {
-            auto static_objects = context_.static_objects.lock();
-            static_objects->erase(std::find(static_objects->begin(), static_objects->end(), object));
-        }
+        auto& static_objects = context_.static_objects;
+        context_.static_objects_mutex.lock();
+        static_objects.erase(std::find(static_objects.begin(), static_objects.end(), object));
+        context_.static_objects_mutex.unlock();
 
         context_.route->children.erase(
             std::find_if(context_.route->children.begin(), context_.route->children.end(),
@@ -51,7 +51,9 @@ void DeleteObjects::undo()
         context_.compile_infos.lock()->emplace_back(CompileInfo{
             context_.route, object, vsg::MASK_ALL});
 
-        context_.static_objects.lock()->emplace_back(object);
+        context_.static_objects_mutex.lock();
+        context_.static_objects.emplace_back(object);
+        context_.static_objects_mutex.unlock();
 
         object->select();
     }
