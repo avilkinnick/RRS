@@ -8,7 +8,6 @@
 #include "Outline.h"
 #include "Route.h"
 #include "RouteObject.h"
-#include "SceneGraph.h"
 #include "StateManager.h"
 #include "commands/CommandManager.h"
 #include "topology.h"

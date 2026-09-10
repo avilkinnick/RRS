@@ -10,7 +10,6 @@
 #include "ObjectSelector.h"
 #include "Route.h"
 #include "RouteObject.h"
-#include "SceneGraph.h"
 #include "StateManager.h"
 #include "commands/AddObject.h"
 #include "commands/Command.h"
@@ -327,7 +326,10 @@ void EditorGui::show_waypoints_conf() const
         return;
     }
 
-    if (!editor_context.topology_loaded)
+    std::lock_guard<std::mutex> lock(editor_context.topology_mutex);
+        auto& topology = editor_context.topology;
+
+    if (!editor_context.topology_loaded.load())
     {
         return;
     }
@@ -346,9 +348,6 @@ void EditorGui::show_waypoints_conf() const
             ImGui::TableNextColumn();
             if (ImGui::Button(label.c_str()))
             {
-                std::lock_guard<std::mutex> lock(editor_context.topology_mutex);
-                auto& topology = editor_context.topology;
-
                 const traj_list_t* const traj_list = topology->getTrajectoriesList();
 
                 const QString traj_name = QString::fromStdString(

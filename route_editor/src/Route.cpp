@@ -382,7 +382,7 @@ bool Route::load_topology()
         Journal::instance()->error("Failed to load topology");
         return false;
     }
-    context_.topology_loaded = true;
+    context_.topology_loaded.store(true);
 
     signals_data = topology->getSignalsData();
     if (!signals_data)

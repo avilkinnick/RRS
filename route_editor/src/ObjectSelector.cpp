@@ -9,7 +9,6 @@
 #include "Mouse.h"
 #include "Route.h"
 #include "RouteObject.h"
-#include "SceneGraph.h"
 #include "commands/CommandManager.h"
 #include "commands/DeleteObjects.h"
 #include "commands/PasteObjects.h"

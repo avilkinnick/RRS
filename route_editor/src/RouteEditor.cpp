@@ -16,7 +16,6 @@
 #include "Outline.h"
 #include "Route.h"
 #include "RouteObject.h"
-#include "SceneGraph.h"
 #include "SingleSwitch.h"
 #include "StateManager.h"
 #include "SaveHandler.h"
@@ -88,17 +87,17 @@ bool RouteEditor::initialize()
 
     object_manager = std::make_unique<ObjectManager>(1000000);
 
-    editor_context.scene_graph = SceneGraph::create(editor_context, route_dir, *object_manager);
+    editor_context.route = Route::create(editor_context, route_dir, *object_manager);
 
     editor_context.outline_builder = OutlineBuilder::create();
 
     const auto ambient_light = vsg::AmbientLight::create();
 
-    const auto scene_graph = vsg::Group::create();
-    scene_graph->addChild(ambient_light);
-    scene_graph->addChild(editor_context.scene_graph);
+    editor_context.scene_graph = vsg::Switch::create();
+    editor_context.scene_graph->addChild(vsg::Mask{MASK_SCENE}, ambient_light);
+    editor_context.scene_graph->addChild(vsg::MASK_ALL, editor_context.route);
 
-    const auto scene_view = vsg::View::create(editor_context.camera, scene_graph);
+    const auto scene_view = vsg::View::create(editor_context.camera, editor_context.scene_graph);
     scene_view->mask = MASK_SCENE;
 
     VkClearValue clear_value{};
@@ -177,7 +176,13 @@ void RouteEditor::run()
 
         if (editor_state == EditorState::LOAD_ROUTE)
         {
-            editor_context.scene_graph->load_route();
+            editor_context.route->load();
+
+            editor_context.compile_infos_mutex.lock();
+            editor_context.compile_infos.emplace_back(CompileInfo{
+                nullptr, editor_context.route, vsg::MASK_ALL});
+            editor_context.compile_infos_mutex.unlock();
+
             editor_state = EditorState::EDIT_ROUTE;
         }
 

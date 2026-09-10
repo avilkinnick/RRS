@@ -83,7 +83,7 @@ struct EditorContext
     vsg::ref_ptr<vsg::Options> vsg_options;
     vsg::ref_ptr<vsg::Window> window;
     vsg::ref_ptr<Camera> camera;
-    vsg::ref_ptr<SceneGraph> scene_graph;
+    vsg::ref_ptr<vsg::Switch> scene_graph;
     vsg::ref_ptr<Route> route;
     vsg::ref_ptr<Gizmo> gizmo;
 
