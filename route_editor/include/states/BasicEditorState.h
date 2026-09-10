@@ -15,6 +15,9 @@ public:
 
     virtual void handle_button_press() override;
     virtual void handle_mouse_scroll() override;
+
+private:
+    void save_route();
 };
 
 #endif // BASIC_EDITOR_STATE_H

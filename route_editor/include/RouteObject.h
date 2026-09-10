@@ -26,7 +26,7 @@ class RouteObject : public vsg::Inherit<vsg::MatrixTransform, RouteObject>
 {
 public:
     RouteObject(
-        EditorContext& context,
+        EditorContext& editor_context,
         const vsg::ref_ptr<vsg::PagedLOD>& paged_lod,
         const std::string& label,
         const vsg::dvec3& translation,
@@ -76,7 +76,7 @@ private:
     void decompose_matrix();
 
 private:
-    EditorContext& context_;
+    EditorContext& editor_context;
 
     vsg::dvec3 translation_;
     vsg::dvec3 rotation_deg_;

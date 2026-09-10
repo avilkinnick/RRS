@@ -3,10 +3,14 @@
 #include "Action.h"
 #include "Camera.h"
 #include "EditorContext.h"
+#include "Journal.h"
 #include "Keyboard.h"
 #include "Mouse.h"
+#include "Route.h"
+#include "RouteObject.h"
 #include "StateManager.h"
 #include "commands/CommandManager.h"
+#include "filesystem.h"
 
 #include <vsg/ui/PointerEvent.h>
 #include <vsgImGui/imgui.h>
@@ -32,6 +36,10 @@ void BasicEditorState::handle_key_press()
     else if (keyboard->pressed_once(ACTION_REDO_COMMAND))
     {
         command_manager->redo();
+    }
+    else if(keyboard->pressed_once(ACTION_SAVE_ROUTE))
+    {
+        save_route();
     }
     else
     {
@@ -65,4 +73,39 @@ void BasicEditorState::handle_button_press()
 void BasicEditorState::handle_mouse_scroll()
 {
     editor_context.camera->handle_mouse_scroll();
+}
+
+void BasicEditorState::save_route()
+{
+    const auto& fs = FileSystem::getInstance();
+    const std::string save_dir = fs.combinePath(editor_context.route->route_dir, "topology", "map");
+
+    try
+    {
+        // Создаём резервную копию
+        std::filesystem::copy_file(
+            fs.combinePath(save_dir, "route1.map"),
+            fs.combinePath(save_dir, "route1.map.prev"),
+            std::filesystem::copy_options::overwrite_existing
+        );
+    }
+    catch (const std::filesystem::filesystem_error& e)
+    {
+        Journal::instance()->error(e.what());
+    }
+
+    // Перезаписываем рабочую копию
+    std::ofstream route_map_file{fs.combinePath(save_dir, "route1.map")};
+
+    editor_context.static_objects_mutex.lock();
+    for (const auto& object : editor_context.static_objects)
+    {
+        const vsg::dvec3& translation{object->get_translation()};
+        const vsg::dvec3 rotation_deg{-object->get_rotation_deg()};
+
+        route_map_file << object->label << "," <<
+            translation.x << "," << translation.y << "," << translation.z << "," <<
+            rotation_deg.x << "," << rotation_deg.y << "," << rotation_deg.z << ";\n";
+    }
+    editor_context.static_objects_mutex.unlock();
 }

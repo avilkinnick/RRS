@@ -25,7 +25,7 @@ public:
         const vsg::ref_ptr<vsg::PagedLOD>& paged_lod);
 
 private:
-    vsg::ref_ptr<vsg::Options> options_;
+    vsg::ref_ptr<vsg::Options> vsg_options;
     vsg::Builder builder_;
 };
 

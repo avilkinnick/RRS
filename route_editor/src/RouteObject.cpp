@@ -33,7 +33,7 @@ static vsg::dvec3 to_euler_deg(const vsg::dquat& q)
 }
 
 RouteObject::RouteObject(
-    EditorContext& context,
+    EditorContext& editor_context,
     const vsg::ref_ptr<vsg::PagedLOD>& paged_lod,
     const std::string& label,
     const vsg::dvec3& translation,
@@ -41,7 +41,7 @@ RouteObject::RouteObject(
     const vsg::dvec3& scale
 )
     : label(label)
-    , context_(context)
+    , editor_context(editor_context)
     , translation_(translation)
     , rotation_deg_(rotation_deg)
     , scale_(scale)
@@ -151,7 +151,7 @@ void RouteObject::hide()
 
     is_hidden_ = true;
 
-    context_.hidden_objects.emplace_back(this);
+    editor_context.hidden_objects.emplace_back(this);
 }
 
 RouteObjectsIterator RouteObject::show()
@@ -160,7 +160,7 @@ RouteObjectsIterator RouteObject::show()
 
     is_hidden_ = false;
 
-    RouteObjects& hidden_objects = context_.hidden_objects;
+    RouteObjects& hidden_objects = editor_context.hidden_objects;
 
     return hidden_objects.erase(std::find(hidden_objects.begin(),
         hidden_objects.end(), vsg::ref_ptr(this)));
@@ -170,23 +170,23 @@ bool RouteObject::select()
 {
     if (!outline_switch_->node)
     {
-        auto outline = context_.outline_builder->create_outline(paged_lod_);
+        auto outline = editor_context.outline_builder->create_outline(paged_lod_);
         if (!outline)
         {
             return false;
         }
 
-        context_.compile_infos_mutex.lock();
-        context_.compile_infos.emplace_back(CompileInfo{outline_switch_, outline});
-        context_.compile_infos_mutex.unlock();
+        editor_context.compile_infos_mutex.lock();
+        editor_context.compile_infos.emplace_back(CompileInfo{outline_switch_, outline});
+        editor_context.compile_infos_mutex.unlock();
     }
 
     outline_switch_->mask = MASK_GUI2;
 
     is_selected_ = true;
 
-    context_.selected_objects.emplace_back(this);
-    context_.gizmo->update_position();
+    editor_context.selected_objects.emplace_back(this);
+    editor_context.gizmo->update_position();
 
     return true;
 }
@@ -197,19 +197,19 @@ RouteObjectsIterator RouteObject::deselect()
 
     is_selected_ = false;
 
-    auto& selected_objects = context_.selected_objects;
+    auto& selected_objects = editor_context.selected_objects;
 
     const auto it = selected_objects.erase(std::find(selected_objects.begin(),
         selected_objects.end(), vsg::ref_ptr(this)));
 
-    context_.gizmo->update_position();
+    editor_context.gizmo->update_position();
 
     return it;
 }
 
 vsg::ref_ptr<RouteObject> RouteObject::copy() const
 {
-    return RouteObject::create(context_, paged_lod_, label,
+    return RouteObject::create(editor_context, paged_lod_, label,
         translation_, rotation_deg_, scale_);
 }
 
@@ -248,7 +248,7 @@ void RouteObject::update_bounds()
     this->accept(compute_bounds);
     bounds_ = compute_bounds.bounds;
 
-    context_.gizmo->update_position();
+    editor_context.gizmo->update_position();
 }
 
 void RouteObject::decompose_matrix()

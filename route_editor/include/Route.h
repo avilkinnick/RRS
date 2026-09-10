@@ -14,7 +14,7 @@ public:
     std::string route_dir;
 
 public:
-    Route(EditorContext& context);
+    Route(EditorContext& editor_context);
 
     void load();
 
@@ -28,7 +28,7 @@ private:
     bool load_topology();
 
 private:
-    EditorContext& context_;
+    EditorContext& editor_context;
 };
 
 #endif // ROUTE_H
