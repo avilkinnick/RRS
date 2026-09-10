@@ -12,6 +12,7 @@
 #include "settings/WindowSettings.h"
 
 #include <atomic>
+#include <mutex>
 #include <thread>
 
 #include <vector>
@@ -89,7 +90,8 @@ struct EditorContext
     std::unique_ptr<StateManager> state_manager;
     std::unique_ptr<CommandManager> command_manager;
 
-    ThreadSafe<RouteObjects> static_objects;
+    RouteObjects static_objects;
+    std::mutex static_objects_mutex;
 
     RouteObjects selected_objects;
     RouteObjects copied_objects;
