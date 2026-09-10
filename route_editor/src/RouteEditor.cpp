@@ -19,7 +19,6 @@
 #include "RouteObject.h"
 #include "SingleSwitch.h"
 #include "StateManager.h"
-#include "SaveHandler.h"
 #include "WindowHandler.h"
 #include "commands/CommandManager.h"
 #include "filesystem.h"
@@ -80,8 +79,6 @@ bool RouteEditor::initialize()
     editor_context.keyboard = Keyboard::create(editor_context.key_bindings);
 
     editor_context.command_manager = std::make_unique<CommandManager>();
-
-    auto save_handler = SaveHandler::create(editor_context);
 
     editor_context.camera = Camera::create(editor_context);
 
@@ -146,7 +143,7 @@ bool RouteEditor::initialize()
     viewer_->addEventHandler(vsg::CloseHandler::create(viewer_));
     viewer_->addEventHandler(window_handler_);
     viewer_->addEventHandler(editor_context.mouse);
-    viewer_->addEventHandler(save_handler);
+
 
     viewer_->addEventHandler(EventHandler::create(editor_context));
 
