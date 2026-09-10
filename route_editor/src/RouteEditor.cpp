@@ -29,7 +29,6 @@
 #include <algorithm>
 #include <core/string_funcs.h>
 
-#include <mutex>
 #include <vsg/app/CloseHandler.h>
 #include <vsg/app/CommandGraph.h>
 #include <vsg/app/CompileManager.h>
@@ -308,17 +307,15 @@ void RouteEditor::configure_shaders()
 
 void RouteEditor::compile_models()
 {
-    auto& compile_infos = editor_context.compile_infos;
-    std::lock_guard<std::mutex> lock(editor_context.compile_infos_mutex);
-
-    if (compile_infos.empty())
+    auto compile_infos = editor_context.compile_infos.lock();
+    if (compile_infos->empty())
     {
         return;
     }
 
     vsg::CompileResult compile_result;
 
-    std::for_each(compile_infos.begin(), compile_infos.end(),
+    std::for_each(compile_infos->begin(), compile_infos->end(),
         [&](const CompileInfo& compile_info) {
         const auto& group_node = compile_info.group_node;
         const vsg::Mask mask = compile_info.mask;
@@ -344,7 +341,7 @@ void RouteEditor::compile_models()
     });
 
     vsg::updateViewer(*viewer_, compile_result);
-    compile_infos.clear();
+    compile_infos->clear();
 }
 
 void RouteEditor::handle_deferred_selection()

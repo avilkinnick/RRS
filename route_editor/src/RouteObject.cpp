@@ -176,9 +176,8 @@ bool RouteObject::select()
             return false;
         }
 
-        context_.compile_infos_mutex.lock();
-        context_.compile_infos.emplace_back(CompileInfo{outline_switch_, outline});
-        context_.compile_infos_mutex.unlock();
+        context_.compile_infos.lock()->emplace_back(CompileInfo{
+            outline_switch_, outline});
     }
 
     outline_switch_->mask = MASK_GUI2;

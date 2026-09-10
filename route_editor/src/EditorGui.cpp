@@ -32,7 +32,6 @@
 
 #include <ImGuiFileDialog.h>
 
-#include <mutex>
 #include <vsg/app/ProjectionMatrix.h>
 #include <vsg/app/RecordTraversal.h>
 #include <vsg/commands/Commands.h>
@@ -346,10 +345,9 @@ void EditorGui::show_waypoints_conf() const
             ImGui::TableNextColumn();
             if (ImGui::Button(label.c_str()))
             {
-                std::lock_guard<std::mutex> lock(editor_context.topology_mutex);
-                auto& topology = editor_context.topology;
-
-                const traj_list_t* const traj_list = topology->getTrajectoriesList();
+                auto topology = editor_context.topology.lock();
+                const traj_list_t* const traj_list =
+                    (*topology)->getTrajectoriesList();
 
                 const QString traj_name = QString::fromStdString(
                     data.trajectory_name);
@@ -493,7 +491,6 @@ void EditorGui::show_topology() const
         return;
     }
 
-    // std::lock_guard<std::mutex> lock()
     auto topology = editor_context.topology.lock();
     if (!*topology)
     {
