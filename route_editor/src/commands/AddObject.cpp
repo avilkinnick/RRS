@@ -30,9 +30,7 @@ void AddObject::execute()
     context_.compile_infos.lock()->emplace_back(CompileInfo{
         context_.route, object_to_add_, vsg::MASK_ALL});
 
-    context_.static_objects_mutex.lock();
-    context_.static_objects.emplace_back(object_to_add_);
-    context_.static_objects_mutex.unlock();
+    context_.static_objects.lock()->emplace_back(object_to_add_);
 
     context_.deferred_selection.emplace_back(object_to_add_);
 }
@@ -41,11 +39,11 @@ void AddObject::undo()
 {
     object_to_add_->deselect();
 
-    auto& static_objects = context_.static_objects;
-    context_.static_objects_mutex.lock();
-    static_objects.erase(std::find(static_objects.begin(),
-        static_objects.end(), object_to_add_));
-    context_.static_objects_mutex.unlock();
+    {
+        auto static_objects = context_.static_objects.lock();
+        static_objects->erase(std::find(static_objects->begin(),
+            static_objects->end(), object_to_add_));
+    }
 
     context_.route->children.erase(
         std::find_if(context_.route->children.begin(), context_.route->children.end(),

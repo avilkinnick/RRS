@@ -53,8 +53,7 @@ void SaveHandler::save_route() const
     // Перезаписываем рабочую копию
     std::ofstream route_map_file{fs.combinePath(save_dir, "route1.map")};
 
-    editor_context.static_objects_mutex.lock();
-    for (const auto& object : editor_context.static_objects)
+    for (const auto& object : *editor_context.static_objects.lock())
     {
         const vsg::dvec3& translation{object->get_translation()};
         const vsg::dvec3 rotation_deg{-object->get_rotation_deg()};
@@ -63,5 +62,4 @@ void SaveHandler::save_route() const
             translation.x << "," << translation.y << "," << translation.z << "," <<
             rotation_deg.x << "," << rotation_deg.y << "," << rotation_deg.z << ";\n";
     }
-    editor_context.static_objects_mutex.unlock();
 }
