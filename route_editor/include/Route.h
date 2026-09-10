@@ -14,13 +14,11 @@ struct camera_settings_t;
 class Route : public vsg::Inherit<vsg::Switch, Route>
 {
 public:
-    Route(
-        EditorContext& context,
-        const std::string& route_dir,
-        ObjectManager& object_manager
-    );
+    std::string route_dir;
 
 public:
+    Route(EditorContext& context);
+
     void load();
 
 private:
@@ -34,8 +32,6 @@ private:
 
 private:
     EditorContext& context_;
-    const std::string& route_dir;
-    ObjectManager& object_manager;
 };
 
 #endif // ROUTE_H

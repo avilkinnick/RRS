@@ -12,6 +12,7 @@
 #include "Keyboard.h"
 #include "Mask.h"
 #include "Mouse.h"
+#include "ObjectManager.h"
 #include "ObjectSelector.h"
 #include "Outline.h"
 #include "Route.h"
@@ -80,14 +81,14 @@ bool RouteEditor::initialize()
 
     editor_context.command_manager = std::make_unique<CommandManager>();
 
-    auto save_handler = SaveHandler::create(editor_context, route_dir);
+    auto save_handler = SaveHandler::create(editor_context);
 
     editor_context.camera = Camera::create(editor_context);
     window_handler_->set_camera(editor_context.camera);
 
-    object_manager = std::make_unique<ObjectManager>(1000000);
+    editor_context.object_manager = std::make_unique<ObjectManager>(1000000);
 
-    editor_context.route = Route::create(editor_context, route_dir, *object_manager);
+    editor_context.route = Route::create(editor_context);
 
     editor_context.outline_builder = OutlineBuilder::create();
 
@@ -117,7 +118,7 @@ bool RouteEditor::initialize()
     gui_view2->mask = MASK_GUI2;
 
     editor_context.state_manager = std::make_unique<StateManager>(editor_context);
-    const auto editor_gui = EditorGui::create(editor_context, editor_state, route_dir);
+    const auto editor_gui = EditorGui::create(editor_context, editor_state);
 
     const auto render_gui = vsgImGui::RenderImGui::create(editor_context.window, editor_gui);
 

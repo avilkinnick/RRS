@@ -3,11 +3,8 @@
 
 #include "EditorContext.h"
 #include "EditorState.h"
-#include "ObjectManager.h"
 
 #include <vsg/io/Options.h>
-
-#include <memory>
 
 class WindowHandler;
 
@@ -41,8 +38,6 @@ private:
     vsg::ref_ptr<WindowHandler> window_handler_;
 
     EditorState editor_state = EditorState::SELECT_ROUTE;
-    std::string route_dir;
-    std::unique_ptr<ObjectManager> object_manager;
 };
 
 #endif // ROUTE_EDITOR_H

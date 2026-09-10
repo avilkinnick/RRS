@@ -5,8 +5,6 @@
 #include <vsg/core/Visitor.h>
 #include <vsg/core/ref_ptr.h>
 
-#include <string>
-
 struct EditorContext;
 
 namespace vsg
@@ -20,10 +18,7 @@ class KeyPressEvent;
 class SaveHandler : public vsg::Inherit<vsg::Visitor, SaveHandler>
 {
 public:
-    SaveHandler(
-        EditorContext& editor_context,
-        const std::string& route_dir
-    );
+    SaveHandler(EditorContext& editor_context);
 
     virtual void apply(vsg::KeyPressEvent& keyPress) override;
 
@@ -32,7 +27,6 @@ private:
 
 private:
     EditorContext& editor_context;
-    const std::string& route_dir_;
 };
 
 #endif // SAVE_HANDLER_H

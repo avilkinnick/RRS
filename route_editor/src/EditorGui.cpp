@@ -81,10 +81,9 @@ static bool drag_double3(const char* label, double* data, float speed = 1.0f,
         speed, min, max, "%.3f", flags);
 }
 
-EditorGui::EditorGui(EditorContext& context, EditorState& editor_state, std::string& route_dir)
+EditorGui::EditorGui(EditorContext& context, EditorState& editor_state)
     : editor_context(context)
     , editor_state(editor_state)
-    , route_dir(route_dir)
 {
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
@@ -890,6 +889,7 @@ void EditorGui::draw_load_route_file_dialog() const
     {
         if (ImGuiFileDialog::Instance()->IsOk())
         {
+            auto& route_dir = editor_context.route->route_dir;
             route_dir = ImGuiFileDialog::Instance()->GetCurrentPath();
             if (!std::filesystem::exists(route_dir + "/models") ||
                 !std::filesystem::exists(route_dir + "/textures") ||

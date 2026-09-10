@@ -4,6 +4,7 @@
 #include "EditorContext.h"
 #include "Journal.h"
 #include "Keyboard.h"
+#include "Route.h"
 #include "RouteObject.h"
 #include "filesystem.h"
 
@@ -14,12 +15,8 @@
 #include <fstream>
 #include <string>
 
-SaveHandler::SaveHandler(
-    EditorContext& editor_context,
-    const std::string& route_dir
-)
+SaveHandler::SaveHandler(EditorContext& editor_context)
     : editor_context(editor_context)
-    , route_dir_{route_dir}
 {
 }
 
@@ -34,7 +31,7 @@ void SaveHandler::apply([[maybe_unused]] vsg::KeyPressEvent& keyPress)
 void SaveHandler::save_route() const
 {
     const auto& fs = FileSystem::getInstance();
-    const std::string save_dir = fs.combinePath(route_dir_, "topology", "map");
+    const std::string save_dir = fs.combinePath(editor_context.route->route_dir, "topology", "map");
 
     try
     {

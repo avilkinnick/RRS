@@ -30,7 +30,7 @@ class CommandBuffer;
 class EditorGui : public vsg::Inherit<vsg::Command, EditorGui>
 {
 public:
-    EditorGui(EditorContext& editor_context, EditorState& editor_state, std::string& route_dir);
+    EditorGui(EditorContext& editor_context, EditorState& editor_state);
 
     ~EditorGui();
 
@@ -77,7 +77,6 @@ private:
 private:
     EditorContext& editor_context;
     EditorState& editor_state;
-    std::string& route_dir;
 
     ImGuiWindowFlags window_flags_;
     ImGuiViewport* viewport;
