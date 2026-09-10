@@ -5,13 +5,11 @@
 #include <vsg/core/Visitor.h>
 #include <vsg/core/ref_ptr.h>
 
-class Camera;
 struct EditorContext;
 
 namespace vsg
 {
 
-class Camera;
 class ConfigureWindowEvent;
 class Perspective;
 
@@ -24,10 +22,8 @@ public:
 
     virtual void apply(vsg::ConfigureWindowEvent& configureWindow) override;
 
-    void set_camera(const vsg::ref_ptr<Camera>& camera) { this->camera = camera; }
-
 private:
-    vsg::ref_ptr<Camera> camera;
+    EditorContext& editor_context;
 };
 
 #endif // WINDOW_HANDLER_H

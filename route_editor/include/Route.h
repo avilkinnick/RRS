@@ -7,9 +7,6 @@
 #include <string>
 
 struct EditorContext;
-class Gizmo;
-class ObjectManager;
-struct camera_settings_t;
 
 class Route : public vsg::Inherit<vsg::Switch, Route>
 {

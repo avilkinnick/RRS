@@ -6,7 +6,6 @@
 #include <array>
 #include <memory>
 
-class CommandManager;
 struct EditorContext;
 class State;
 

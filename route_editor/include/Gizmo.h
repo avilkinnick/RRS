@@ -8,8 +8,6 @@
 #include <vsg/maths/vec3.h>
 #include <vsg/utils/Builder.h>
 
-class Camera;
-class CommandManager;
 struct EditorContext;
 
 namespace vsg

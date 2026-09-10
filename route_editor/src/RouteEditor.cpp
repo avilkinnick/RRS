@@ -84,7 +84,6 @@ bool RouteEditor::initialize()
     auto save_handler = SaveHandler::create(editor_context);
 
     editor_context.camera = Camera::create(editor_context);
-    window_handler_->set_camera(editor_context.camera);
 
     editor_context.object_manager = std::make_unique<ObjectManager>(1000000);
 

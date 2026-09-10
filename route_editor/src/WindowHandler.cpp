@@ -17,6 +17,7 @@
 static VkSampleCountFlags samples_bit_flag(int samples);
 
 WindowHandler::WindowHandler(EditorContext& editor_context)
+    : editor_context(editor_context)
 {
     const auto& window_settings = editor_context.window_settings;
     auto& window = editor_context.window;
@@ -45,6 +46,12 @@ WindowHandler::WindowHandler(EditorContext& editor_context)
 
 void WindowHandler::apply(vsg::ConfigureWindowEvent& configureWindow)
 {
+    const auto& camera = editor_context.camera;
+    if (!camera)
+    {
+        return;
+    }
+
     const std::uint32_t width{configureWindow.width};
     const std::uint32_t height{configureWindow.height};
 

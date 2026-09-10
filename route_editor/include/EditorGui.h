@@ -11,14 +11,8 @@
 #include <cstddef>
 #include <string>
 
-class Camera;
-class CommandManager;
 struct EditorContext;
-class Gizmo;
-struct KeyBindings;
-class Route;
 class RouteObject;
-class StateManager;
 
 namespace vsg
 {

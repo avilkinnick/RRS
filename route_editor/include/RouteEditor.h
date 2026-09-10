@@ -4,8 +4,6 @@
 #include "EditorContext.h"
 #include "EditorState.h"
 
-#include <vsg/io/Options.h>
-
 class WindowHandler;
 
 class RouteEditor
