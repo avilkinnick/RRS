@@ -19,6 +19,8 @@ void SceneGraph::load_route()
 {
     context_.route->load();
 
-    context_.compile_infos.lock()->emplace_back(CompileInfo{
+    context_.compile_infos_mutex.lock();
+    context_.compile_infos.emplace_back(CompileInfo{
         vsg::ref_ptr(this), context_.route, vsg::MASK_ALL});
+    context_.compile_infos_mutex.unlock();
 }

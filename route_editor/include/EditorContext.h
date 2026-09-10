@@ -97,9 +97,11 @@ struct EditorContext
     RouteObjects copied_objects;
     RouteObjects hidden_objects;
 
-    ThreadSafe<std::vector<CompileInfo>> compile_infos;
+    std::vector<CompileInfo> compile_infos;
+    std::mutex compile_infos_mutex;
 
-    ThreadSafe<std::unique_ptr<Topology>> topology;
+    std::unique_ptr<Topology> topology;
+    std::mutex topology_mutex;
     std::atomic_bool topology_loaded = false;
 
     std::thread load_static_objects_thread;
