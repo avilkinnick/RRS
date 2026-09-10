@@ -342,7 +342,7 @@ void TrainProfileHintWidget::drawProfile() const
             float rel_top_max = plot.rel_max;
             for (const auto& sig : _profile.signal_list)
             {
-                if (sig.distance < -req_backward || sig.distance > req_forward)
+if (sig.distance < -req_backward + 5.0f || sig.distance > req_forward - 5.0f)
                     continue;
 
                 TrafficLight* traffic_light = _params->traffic_lights_handler
@@ -381,7 +381,7 @@ void TrainProfileHintWidget::drawProfile() const
         const ImU32 grid_col = ImGui::ColorConvertFloat4ToU32(_params->hud_train_profile_grid);
         const ImU32 label_col = ImGui::ColorConvertFloat4ToU32(_params->hud_train_profile_grid_label);
         const ImFont* font = ImGui::GetFont();
-        const float label_y = y1 - font->LegacySize;
+        const float label_y = y0;
 
         std::vector<std::pair<float, float>> marks;
         collectGridMarks(points, grid_step, marks);
@@ -519,33 +519,19 @@ void TrainProfileHintWidget::drawTrainNames(const PlotTransform& plot) const
     if (vehicles.empty())
         return;
 
+    // Все ПЕ вьювера с их train_id (индекс поезда, в который вцеплена ПЕ)
+    const auto& all_vehicles = _params->vehicles_handler->getVehicles();
+
     // Запрошенный диапазон отображения (как в drawTrain)
     const float cfg_backward = std::max(_params->backward_m, 0.0f);
     const float cfg_forward = std::max(_params->forward_m, 0.0f);
     const float req_backward = std::min(cfg_backward, std::max(_profile.backward_requested, 0.0f));
     const float req_forward = std::min(cfg_forward, std::max(_profile.forward_requested, 0.0f));
 
-    // Диапазоны model-index ПЕ поездов из данных вьювера
-    struct train_range_t
-    {
-        int begin_id = 0;
-        int end_id = 0;
-        QString name;
-    };
-    std::vector<train_range_t> ranges;
-    ranges.reserve(trains_info.size());
-    for (const auto& info : trains_info)
-    {
-        train_range_t range;
-        range.begin_id = std::min(info.first_vehicle_id, info.last_vehicle_id);
-        range.end_id = std::max(info.first_vehicle_id, info.last_vehicle_id);
-        range.name = info.train_name;
-        ranges.push_back(range);
-    }
-
-    // Группировка ПЕ профиля по поездам: для каждой ПЕ находим поезд по
-    // model-index и объединяем в общий интервал состава. Все интервалы одного
-    // поезда сливаются в одну группу независимо от разрывов между ними
+    // Группировка ПЕ профиля по поездам: для каждой ПЕ берём её train_id из
+    // вьювера (принадлежность конкретной ПЕ к поезду, а не диапазон id) и
+    // объединяем в общий интервал состава. Все интервалы одного поезда
+    // сливаются в одну группу независимо от разрывов между ними
     // (например, при пересечении точкой отсчёта профиля), чтобы имя поезда
     // рисовалось один раз над центром всего состава
     struct train_group_t
@@ -561,22 +547,20 @@ void TrainProfileHintWidget::drawTrainNames(const PlotTransform& plot) const
     {
         const int model_index = vehicle.vehicle_id;
 
-        int matched_index = -1;
-        for (size_t i = 0; i < ranges.size(); ++i)
-        {
-            if (model_index >= ranges[i].begin_id && model_index <= ranges[i].end_id)
-            {
-                matched_index = static_cast<int>(i);
-                break;
-            }
-        }
-        if (matched_index < 0 || ranges[matched_index].name.isEmpty())
+        // Принадлежность ПЕ поезду — по train_id конкретной ПЕ
+        if (model_index < 0 || static_cast<size_t>(model_index) >= all_vehicles.size())
+            continue;
+        const int train_id = all_vehicles[model_index].train_id;
+        if (train_id < 0 || static_cast<size_t>(train_id) >= trains_info.size())
+            continue;
+        const QString name = trains_info[train_id].train_name;
+        if (name.isEmpty())
             continue;
 
         bool merged = false;
         for (auto& group : groups)
         {
-            if (group.train_index == matched_index)
+            if (group.train_index == train_id)
             {
                 group.begin = std::min(group.begin, vehicle.begin_distance);
                 group.end = std::max(group.end, vehicle.end_distance);
@@ -587,8 +571,8 @@ void TrainProfileHintWidget::drawTrainNames(const PlotTransform& plot) const
         if (!merged)
         {
             train_group_t group;
-            group.train_index = matched_index;
-            group.name = ranges[matched_index].name;
+            group.train_index = train_id;
+            group.name = name;
             group.begin = vehicle.begin_distance;
             group.end = vehicle.end_distance;
             groups.push_back(group);
@@ -649,7 +633,7 @@ void TrainProfileHintWidget::drawStations(const PlotTransform& plot) const
 
     ImDrawList* draw_list = ImGui::GetWindowDrawList();
 
-    const float text_offset_y = 12.0f;  // отступ подписи под линией профиля
+    const float text_offset_y = 20.0f;  // отступ подписи под линией профиля
     const ImU32 text_col = ImGui::ColorConvertFloat4ToU32(_params->hud_train_profile_station_text);  // голубой, как литеры светофоров
 
     for (const auto& station : stations)
@@ -721,26 +705,22 @@ void TrainProfileHintWidget::drawSignals(const PlotTransform& plot) const
         }
     };
 
-    for (const auto& sig : sig_list)
+    // Отрисовка одного сигнала с заданными цветами
+    auto drawOneSignal = [&](const simulator_train_profile_signal_t& sig,
+                             const ImU32 body_color, const ImU32 letter_color,
+                             bool draw_lit)
     {
-        if (sig.distance < -req_backward || sig.distance > req_forward)
-            continue;
-
         TrafficLight* traffic_light = _params->traffic_lights_handler
             ->findSignal(sig.connector_name, sig.signal_dir);
         if (traffic_light == nullptr)
-            continue;
+            return;
 
         const QString model = traffic_light->getModelName();
-
-        // Модели empty_* - заглушки для цепей АЛСН на неправильном пути,
-        // не являются попутными сигналами и не должны отображаться
         if (model.isEmpty() || model.startsWith("empty_"))
-            continue;
+            return;
 
         const lens_state_t& lens = traffic_light->getLensState();
 
-        // Набор линз и порядок их следования снизу вверх (как в tools/route-map)
         std::vector<lens_spec_t> spec;
         if (model.endsWith("line"))
             spec = {{RED_LENS, lens_color(RED_LENS)},
@@ -761,51 +741,78 @@ void TrainProfileHintWidget::drawSignals(const PlotTransform& plot) const
             spec = {{BLUE_LENS, lens_color(BLUE_LENS)},
                     {WHITE_LENS, lens_color(WHITE_LENS)}};
         else
-            continue;
+            return;
 
-const float x = plot.map_x(sig.distance);
+        const float x = plot.map_x(sig.distance);
         const float rel = elevationAt(sig.distance, _profile.profile) - plot.origin_elev;
         const float y_base = plot.map_y(rel);
+        const float y_lowest = y_base - lens_r - 1.0f;
 
-        // Мачта и перекладина (до проверки any_lit, чтобы тёмный корпус оставался всегда, но ...)
-        // лучше тоже скрывать для непопутных сигналов, поэтому всю отрисовку —
-        // после проверки горящих линз
-        const float mast_h = signalHeightPx(static_cast<int>(spec.size()));
-        const float y_top = y_base - mast_h;
+        draw_list->AddLine(ImVec2(x, y_base), ImVec2(x, y_lowest), body_color, 1.5f);
+        draw_list->AddLine(ImVec2(x - lens_r, y_base), ImVec2(x + lens_r, y_base), body_color, 1.5f);
 
-        // Если ни одна линза не горит — сигнал направлен против движения, не рисуем
-        bool any_lit = false;
-        for (size_t i = 0; i < spec.size() && !any_lit; ++i)
-        {
-            if (static_cast<size_t>(spec[i].lens) < lens.size()
-                && lens[static_cast<size_t>(spec[i].lens)])
-                any_lit = true;
-        }
-        if (!any_lit)
-            continue;
+        const QString letter = traffic_light->getLetter();
 
-        draw_list->AddLine(ImVec2(x, y_base), ImVec2(x, y_top), signal_body_col, 1.5f);
-        draw_list->AddLine(ImVec2(x - lens_r, y_base), ImVec2(x + lens_r, y_base), signal_body_col, 1.5f);
-
-        // Линзы снизу вверх: горящая - ярким цветом, погашенная - тёмной
         for (size_t i = 0; i < spec.size(); ++i)
         {
             const float ly = y_base - (i + 1) * lens_gap;
-            const bool lit = static_cast<size_t>(spec[i].lens) < lens.size()
-                && lens[static_cast<size_t>(spec[i].lens)];
-            const ImU32 col = lit ? spec[i].lit_color : off_col;
-            draw_list->AddCircleFilled(ImVec2(x, ly), lens_r, col, 16);
+            if (draw_lit)
+            {
+                const bool lit = static_cast<size_t>(spec[i].lens) < lens.size()
+                    && lens[static_cast<size_t>(spec[i].lens)];
+                const ImU32 col = lit ? spec[i].lit_color : off_col;
+                draw_list->AddCircleFilled(ImVec2(x, ly), lens_r, col, 16);
+            }
+            else
+            {
+                draw_list->AddCircle(ImVec2(x, ly), lens_r, body_color, 16, 3.0f);
+            }
         }
 
-// Литер над верхней линзой
-        const QString letter = traffic_light->getLetter();
         if (!letter.isEmpty())
         {
             const std::string label = letter.toStdString();
-            const float text_w = ImGui::CalcTextSize(label.c_str()).x;
-            draw_list->AddText(ImVec2(x - text_w * 0.5f, y_top - 16.0f),
-                               ImGui::ColorConvertFloat4ToU32(_params->hud_train_profile_signal_letter), label.c_str());
+            const ImVec2 text_size = ImGui::CalcTextSize(label.c_str());
+
+            if (draw_lit)
+            {
+                const float y_top = y_base - lens_gap * (static_cast<float>(spec.size()) + 1.0f);
+                const float y_liter = y_top - lens_gap;
+                draw_list->AddLine(ImVec2(x, y_liter), ImVec2(x, y_top), letter_color, 1.5f);
+
+                draw_list->AddText(ImVec2(x - text_size.x * 0.5f, y_liter - text_size.y),
+                                   letter_color, label.c_str());
+            }
+            else
+            {
+                const float y_liter = y_base + lens_r;
+                draw_list->AddLine(ImVec2(x, y_liter), ImVec2(x, y_base), letter_color, 1.5f);
+
+                draw_list->AddText(ImVec2(x - text_size.x * 0.5f, y_liter),
+                                   letter_color, label.c_str());
+            }
         }
+    };
+
+    // Проход 1: непопутные (is_oncoming) — рисуются первыми (под попутными)
+    for (const auto& sig : sig_list)
+    {
+        if (sig.distance < -req_backward || sig.distance > req_forward)
+            continue;
+        if (!sig.is_oncoming)
+            continue;
+        drawOneSignal(sig, IM_COL32(0, 0, 0, 127), IM_COL32(96, 96, 96, 127), false);
+    }
+
+    // Проход 2: попутные — сверху
+    for (const auto& sig : sig_list)
+    {
+        if (sig.distance < -req_backward || sig.distance > req_forward)
+            continue;
+        if (sig.is_oncoming)
+            continue;
+        drawOneSignal(sig, signal_body_col,
+                      ImGui::ColorConvertFloat4ToU32(_params->hud_train_profile_signal_letter), true);
     }
 }
 
@@ -823,17 +830,20 @@ void TrainProfileHintWidget::drawSpeedLimits(const PlotTransform& plot) const
     const float req_backward = std::min(cfg_backward, std::max(_profile.backward_requested, 0.0f));
     const float req_forward = std::min(cfg_forward, std::max(_profile.forward_requested, 0.0f));
 
-    // Базовая линия (y = 0) — уровень середины поезда
-    const float y_base = (0.0f >= plot.rel_min && 0.0f <= plot.rel_max)
-        ? plot.map_y(0.0f) : (plot.y0 + plot.y1) * 0.5f;
-
+    // Зона ограничений — в самом низу виджета
     ImDrawList* draw_list = ImGui::GetWindowDrawList();
 
-    const float zone_height = 20.0f;
-    const float y_bottom = y_base + zone_height;
+    // Высота полосы = 2 × (высота шрифта + отступы)
+    const float font_h = ImGui::CalcTextSize("80").y;
+    const float pad = 3.0f;
+    const float label_h = font_h + pad * 2.0f;
+    const float zone_height = font_h * 2.0f + 14.0f;
+    const float y_bottom = plot.y1;
+    const float y_base = y_bottom - zone_height;
     const ImU32 col = ImGui::ColorConvertFloat4ToU32(_params->hud_train_profile_speed_limit_border);
     const ImU32 fill_col = ImGui::ColorConvertFloat4ToU32(_params->hud_train_profile_speed_limit_fill);
     const ImU32 text_col = ImGui::ColorConvertFloat4ToU32(_params->hud_train_profile_speed_limit_text);
+    const ImU32 no_col = IM_COL32(0, 0, 0, 0);
 
     for (const auto& sl : limits)
     {
@@ -854,36 +864,56 @@ void TrainProfileHintWidget::drawSpeedLimits(const PlotTransform& plot) const
         draw_list->AddRectFilled(ImVec2(x0, y_base), ImVec2(x1, y_bottom), fill_col);
         draw_list->AddRect(ImVec2(x0, y_base), ImVec2(x1, y_bottom), col, 0.0f, 0, 1.5f);
 
-        const float pad = 2.0f;
+        // Вертикальные линии с градиентом от красного у профиля до серого в зоне
+        const float rel0 = elevationAt(c0, _profile.profile) - plot.origin_elev;
+        const float rel1 = elevationAt(c1, _profile.profile) - plot.origin_elev;
+        draw_list->AddRectFilledMultiColor(ImVec2(x0 - 1.0f, plot.map_y(rel0)), ImVec2(x0 + 1.0f, y_bottom), no_col, no_col, text_col, text_col);
+        draw_list->AddRectFilledMultiColor(ImVec2(x1 - 1.0f, plot.map_y(rel1)), ImVec2(x1 + 1.0f, y_bottom), no_col, no_col, text_col, text_col);
+    }
 
-        // Подпись в начале зоны
+    // Подписи в шахматном порядке
+    int label_idx = 0;
+    for (const auto& sl : limits)
+    {
+        const float d0 = sl.distance;
+        const float d1 = sl.end_distance;
+        if (d1 <= d0 || d1 < -req_backward || d0 > req_forward)
+            continue;
+
+        const float c0 = std::max(d0, -req_backward);
+        const float c1 = std::min(d1, req_forward);
+        if (c1 <= c0)
+            continue;
+
+        const float x0 = plot.map_x(c0);
+        const float x1 = plot.map_x(c1);
+
         const std::string label = std::to_string(static_cast<int>(sl.speed_kmh));
         const ImVec2 text_size = ImGui::CalcTextSize(label.c_str());
-        const float tx = x0 + pad;
-        const float ty = y_base + (zone_height - text_size.y) * 0.5f;
 
-        // Белая непрозрачная подложка под текст (не выходит за границы ленты)
-        const float bg_x0 = std::max(tx - pad, x0);
-        const float bg_x1 = std::min(tx + text_size.x + pad, x1);
-        const float bg_y0 = std::max(ty - pad, y_base);
-        const float bg_y1 = std::min(ty + text_size.y + pad, y_bottom);
-        if (bg_x1 > bg_x0 && bg_y1 > bg_y0)
-            draw_list->AddRectFilled(ImVec2(bg_x0, bg_y0),
-                                     ImVec2(bg_x1, bg_y1),
+        // Шахматный порядок: чётные — низ, нечётные — верх
+        const float ty = (label_idx % 2 == 0)
+            ? y_bottom - label_h + pad
+            : y_base + pad;
+
+        // Белый фон по ширине текста (всегда, обрезается по границе зоны)
+        const float bx0 = x0 + pad;
+        const float bx1 = bx0 + text_size.x + pad;
+        const float by0 = ty - pad;
+        const float by1 = ty + text_size.y + pad;
+        if (by1 > by0)
+            draw_list->AddRectFilled(ImVec2(bx0, by0),
+                                     ImVec2(bx1, by1),
                                      ImGui::ColorConvertFloat4ToU32(_params->hud_train_profile_speed_limit_bg));
 
         // Жирный шрифт через наложение
         const float bold_off = 1.0f;
-        draw_list->AddText(ImVec2(tx - bold_off, ty), text_col, label.c_str());
-        draw_list->AddText(ImVec2(tx + bold_off, ty), text_col, label.c_str());
-        draw_list->AddText(ImVec2(tx, ty - bold_off), text_col, label.c_str());
-        draw_list->AddText(ImVec2(tx, ty + bold_off), text_col, label.c_str());
-        draw_list->AddText(ImVec2(tx, ty), text_col, label.c_str());
+        draw_list->AddText(ImVec2(x0 + pad - bold_off, ty), text_col, label.c_str());
+        draw_list->AddText(ImVec2(x0 + pad + bold_off, ty), text_col, label.c_str());
+        draw_list->AddText(ImVec2(x0 + pad, ty - bold_off), text_col, label.c_str());
+        draw_list->AddText(ImVec2(x0 + pad, ty + bold_off), text_col, label.c_str());
+        draw_list->AddText(ImVec2(x0 + pad, ty), text_col, label.c_str());
 
-        // Вертикальные линии от линии профиля до низа ленты (поверх подложки)
-        const float rel0 = elevationAt(c0, _profile.profile) - plot.origin_elev;
-        const float rel1 = elevationAt(c1, _profile.profile) - plot.origin_elev;
-        draw_list->AddLine(ImVec2(x0, plot.map_y(rel0)), ImVec2(x0, y_bottom), text_col, 1.5f);
-        draw_list->AddLine(ImVec2(x1, plot.map_y(rel1)), ImVec2(x1, y_bottom), text_col, 1.5f);
+        ++label_idx;
     }
 }

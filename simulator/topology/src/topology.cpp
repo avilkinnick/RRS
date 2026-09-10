@@ -2282,7 +2282,8 @@ namespace
                      std::vector<profile_signal_t>* signal_list,
                      const topology_stations_list_t* stations,
                      std::vector<profile_station_t>* station_list,
-                     std::vector<profile_speed_limit_t>* speed_limits)
+                     std::vector<profile_speed_limit_t>* speed_limits,
+                     dir_t train_orient)
     {
         if (traj == nullptr || limit_m <= 0.0)
             return;
@@ -2343,71 +2344,6 @@ namespace
             if (next_sw == nullptr)
                 break;
 
-            // Сбор попутного сигнала, установленного на стрелке: это сигнал той
-            // ветви, по которой поезд подходит к стрелке (см. Signal::calcPosition).
-            // При движении вперёд это текущая траектория и сигнал FWD стрелки;
-            // при движении назад - это уже проследованная ветвь за стрелкой и тот
-            // же попутный сигнал FWD, оставшийся позади поезда
-            if (signal_list != nullptr)
-            {
-                const Signal* signal = nullptr;
-                const Trajectory* signal_traj = nullptr;
-                const Trajectory* passed_traj = nullptr;
-
-                if (kind > 0)
-                {
-                    // Пробуем сигнал FWD на BWD-ветви (поезд подходит к стрелке
-                    // со стороны BWD — штатный случай при движении «туда»)
-                    signal = next_sw->getSignalFwd();
-                    signal_traj = next_sw->trajectories[SW_BWD_PLUS]
-                        ? next_sw->trajectories[SW_BWD_PLUS]
-                        : next_sw->trajectories[SW_BWD_MINUS];
-                    // Если не совпало — пробуем сигнал BWD на FWD-ветви (поезд
-                    // подходит к стрелке со стороны FWD — при движении «обратно»)
-                    if (!(signal != nullptr && signal_traj == traj
-                        && !signal->getSignalModel().isEmpty()
-                        && !signal->getSignalModel().startsWith("empty_")))
-                    {
-                        signal = next_sw->getSignalBwd();
-                        signal_traj = next_sw->trajectories[SW_FWD_PLUS]
-                            ? next_sw->trajectories[SW_FWD_PLUS]
-                            : next_sw->trajectories[SW_FWD_MINUS];
-                    }
-                }
-                else
-                {
-                    // Ветвь, по которой поезд уже проехал стрелку, определяем так же,
-                    // как переход на следующую траекторию при обходе назад
-                    dir_t passed_dir = exit_dir;
-                    passed_traj = next_sw->getNextTraj(passed_dir);
-                    const bool on_bwd_branch =
-                        (passed_traj == next_sw->trajectories[SW_BWD_PLUS])
-                        || (passed_traj == next_sw->trajectories[SW_BWD_MINUS]);
-                    signal = on_bwd_branch ? next_sw->getSignalFwd()
-                                           : next_sw->getSignalBwd();
-                    signal_traj = on_bwd_branch
-                        ? (next_sw->trajectories[SW_BWD_PLUS]
-                            ? next_sw->trajectories[SW_BWD_PLUS]
-                            : next_sw->trajectories[SW_BWD_MINUS])
-                        : (next_sw->trajectories[SW_FWD_PLUS]
-                            ? next_sw->trajectories[SW_FWD_PLUS]
-                            : next_sw->trajectories[SW_FWD_MINUS]);
-                }
-
-                const Trajectory* matched_traj = (kind > 0) ? traj : passed_traj;
-                if ((signal != nullptr) && (matched_traj != nullptr)
-                    && (signal_traj == matched_traj)
-                    && (!signal->getSignalModel().isEmpty())
-                    && (!signal->getSignalModel().startsWith("empty_")))
-                {
-                    profile_signal_t ps;
-                    ps.distance = kind * traveled;
-                    ps.connector_name = signal->getConnectorName();
-                    ps.signal_dir = signal->getDirection();
-                    signal_list->push_back(ps);
-                }
-            }
-
             // Проверка сопряжения стрелки с ветвью входа: если состояние стрелки
             // не установлено на ветвь, по которой движется поезд, дальнейшего пути нет
             bool aligned = false;
@@ -2429,6 +2365,39 @@ namespace
             Trajectory* next_traj = next_sw->getNextTraj(exit_dir);
             if (next_traj == nullptr)
                 break;
+
+            // Сбор всех сигналов на стрелке — попутных и непопутных
+            if (signal_list != nullptr)
+            {
+                const Signal* sf = next_sw->getSignalFwd();
+                const Trajectory* tf = next_sw->trajectories[SW_BWD_PLUS]
+                    ? next_sw->trajectories[SW_BWD_PLUS]
+                    : next_sw->trajectories[SW_BWD_MINUS];
+                const Signal* sb = next_sw->getSignalBwd();
+                const Trajectory* tb = next_sw->trajectories[SW_FWD_PLUS]
+                    ? next_sw->trajectories[SW_FWD_PLUS]
+                    : next_sw->trajectories[SW_FWD_MINUS];
+
+                auto addSig = [&](const Signal* sig, const Trajectory* st, bool oncoming)
+                {
+                    if (!sig || !st) return;
+                    if (sig->getSignalModel().isEmpty()) return;
+                    if (sig->getSignalModel().startsWith("empty_")) return;
+                    if (st != traj && st != next_traj) return;
+                    // Если на стрелке есть оба сигнала — непопутный не рисуем
+                    if (oncoming && sf && sb) return;
+                    profile_signal_t ps;
+                    ps.distance = kind * traveled;
+                    ps.connector_name = sig->getConnectorName();
+                    ps.signal_dir = sig->getDirection();
+                    ps.is_oncoming = oncoming;
+                    signal_list->push_back(ps);
+                };
+
+                addSig(sf, tf, (sf && sf->getDirection() != static_cast<std::int8_t>(train_orient)));
+                addSig(sb, tb, (sb && sb->getDirection() != static_cast<std::int8_t>(train_orient)));
+            }
+
             if (exit_dir != orient)
                 orient = static_cast<dir_t>(-orient);
             coord = (exit_dir == BWD) ? next_traj->getLength() : 0.0;
@@ -2637,7 +2606,7 @@ bool Topology::getProfile(Trajectory* traj, double coord, dir_t orient,
     dir_t fwd_orient = orient;
     walkProfile(fwd_traj, fwd_coord, fwd_orient, forward_m, +1, fwd_points,
                 nullptr, &fwd_vehicles, &fwd_signals,
-                &stations, &fwd_stations, &fwd_speed_limits);
+                &stations, &fwd_stations, &fwd_speed_limits, orient);
 
     // Ход назад
     Trajectory* bwd_traj = traj;
@@ -2645,7 +2614,7 @@ bool Topology::getProfile(Trajectory* traj, double coord, dir_t orient,
     dir_t bwd_orient = static_cast<dir_t>(-orient);
     walkProfile(bwd_traj, bwd_coord, bwd_orient, backward_m, -1, bwd_points,
                 nullptr, &bwd_vehicles, &bwd_signals,
-                &stations, &bwd_stations, &bwd_speed_limits);
+                &stations, &bwd_stations, &bwd_speed_limits, orient);
 
     // Сборка профиля: назад (по убыванию) + точка отсчёта + вперёд
     out.points.clear();
