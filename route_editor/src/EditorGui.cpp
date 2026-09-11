@@ -15,7 +15,7 @@
 #include "editor/commands/CommandManager.h"
 #include "editor/commands/RotateObjectsCommand.h"
 #include "editor/commands/ScaleObjectsCommand.h"
-#include "editor/commands/TranslateObjects.h"
+#include "editor/commands/TranslateObjectsCommand.h"
 #include "editor/settings/CameraSettings.h"
 #include "editor/settings/GuiSettings.h"
 #include "editor/states/State.h"
@@ -707,7 +707,7 @@ void EditorGui::handle_translation_drag(
 
     if (ImGui::IsItemDeactivatedAfterEdit())
     {
-        auto command = std::make_unique<TranslateObjects>(editor_context,
+        auto command = std::make_unique<TranslateObjectsCommand>(editor_context,
             RouteObjects{object}, total_translation);
         editor_context.command_manager->push(std::move(command));
 

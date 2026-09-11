@@ -1,4 +1,4 @@
-#include "editor/commands/TranslateObjects.h"
+#include "editor/commands/TranslateObjectsCommand.h"
 
 #include "editor/EditorContext.h"
 #include "editor/RouteObject.h"
@@ -9,7 +9,7 @@
 
 #include <cstdio>
 
-TranslateObjects::TranslateObjects(
+TranslateObjectsCommand::TranslateObjectsCommand(
     EditorContext& context,
     const RouteObjects& objects,
     const vsg::dvec3& translation
@@ -20,7 +20,7 @@ TranslateObjects::TranslateObjects(
     update_description();
 }
 
-void TranslateObjects::execute()
+void TranslateObjectsCommand::execute()
 {
     for (const auto& object : objects_)
     {
@@ -28,7 +28,7 @@ void TranslateObjects::execute()
     }
 }
 
-void TranslateObjects::update_description()
+void TranslateObjectsCommand::update_description()
 {
     std::snprintf(description, COMMAND_DESCRIPTION_BUFFER_SIZE,
         "Translate objects: { %.3f, %.3f, %.3f }",

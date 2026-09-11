@@ -1,5 +1,5 @@
-#ifndef EDITOR_SCENE_SETTINGS_H
-#define EDITOR_SCENE_SETTINGS_H
+#ifndef EDITOR_SETTINGS_SCENE_SETTINGS_H
+#define EDITOR_SETTINGS_SCENE_SETTINGS_H
 
 class CfgReader;
 
@@ -11,4 +11,4 @@ struct scene_settings_t
     void read(CfgReader& cfg);
 };
 
-#endif // EDITOR_SCENE_SETTINGS_H
+#endif // EDITOR_SETTINGS_SCENE_SETTINGS_H

@@ -1,5 +1,5 @@
-#ifndef EDITOR_CAMERA_SETTINGS_H
-#define EDITOR_CAMERA_SETTINGS_H
+#ifndef EDITOR_SETTINGS_CAMERA_SETTINGS_H
+#define EDITOR_SETTINGS_CAMERA_SETTINGS_H
 
 class CfgReader;
 
@@ -19,4 +19,4 @@ struct camera_settings_t
     void read(CfgReader& cfg);
 };
 
-#endif // EDITOR_CAMERA_SETTINGS_H
+#endif // EDITOR_SETTINGS_CAMERA_SETTINGS_H

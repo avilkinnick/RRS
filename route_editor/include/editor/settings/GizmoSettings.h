@@ -1,5 +1,5 @@
-#ifndef EDITOR_GIZMO_SETTINGS_H
-#define EDITOR_GIZMO_SETTINGS_H
+#ifndef EDITOR_SETTINGS_GIZMO_SETTINGS_H
+#define EDITOR_SETTINGS_GIZMO_SETTINGS_H
 
 #include <vsg/maths/vec3.h>
 
@@ -19,4 +19,4 @@ struct gizmo_settings_t
     void read(CfgReader& cfg);
 };
 
-#endif // EDITOR_GIZMO_SETTINGS_H
+#endif // EDITOR_SETTINGS_GIZMO_SETTINGS_H

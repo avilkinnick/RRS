@@ -1,5 +1,5 @@
-#ifndef EDITOR_WINDOW_SETTINGS_H
-#define EDITOR_WINDOW_SETTINGS_H
+#ifndef EDITOR_SETTINGS_WINDOW_SETTINGS_H
+#define EDITOR_SETTINGS_WINDOW_SETTINGS_H
 
 #include <string>
 
@@ -22,4 +22,4 @@ struct window_settings_t
     void read(CfgReader& cfg);
 };
 
-#endif // EDITOR_WINDOW_SETTINGS_H
+#endif // EDITOR_SETTINGS_WINDOW_SETTINGS_H

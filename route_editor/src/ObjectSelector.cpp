@@ -15,7 +15,7 @@
 #include "editor/commands/RotateObjectsCommand.h"
 #include "editor/commands/ScaleObjectsCommand.h"
 #include "editor/commands/SelectObjectsCommand.h"
-#include "editor/commands/TranslateObjects.h"
+#include "editor/commands/TranslateObjectsCommand.h"
 #include "editor/editor_math.h"
 
 #include <vsg/core/Mask.h>
@@ -365,7 +365,7 @@ void ObjectSelector::confirm_keyboard_transformation()
     {
         case State::KEYBOARD_GRAB:
         {
-            auto command = std::make_unique<TranslateObjects>(editor_context,
+            auto command = std::make_unique<TranslateObjectsCommand>(editor_context,
                 editor_context.selected_objects, total_translation_);
             editor_context.command_manager->push(std::move(command));
 

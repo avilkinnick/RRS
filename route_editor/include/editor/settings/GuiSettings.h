@@ -1,5 +1,5 @@
-#ifndef EDITOR_GUI_SETTINGS_H
-#define EDITOR_GUI_SETTINGS_H
+#ifndef EDITOR_SETTINGS_GUI_SETTINGS_H
+#define EDITOR_SETTINGS_GUI_SETTINGS_H
 
 class CfgReader;
 
@@ -21,4 +21,4 @@ struct gui_settings_t
     void read(CfgReader& cfg);
 };
 
-#endif // EDITOR_GUI_SETTINGS_H
+#endif // EDITOR_SETTINGS_GUI_SETTINGS_H
