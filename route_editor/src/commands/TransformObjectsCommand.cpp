@@ -1,4 +1,4 @@
-#include "editor/commands/TransformObjects.h"
+#include "editor/commands/TransformObjectsCommand.h"
 
 #include "editor/EditorContext.h"
 #include "editor/RouteObject.h"
@@ -6,7 +6,7 @@
 
 #include <cstddef>
 
-TransformObjects::TransformObjects(
+TransformObjectsCommand::TransformObjectsCommand(
     EditorContext& context,
     const RouteObjects& objects
 )
@@ -20,7 +20,7 @@ TransformObjects::TransformObjects(
     }
 }
 
-void TransformObjects::undo()
+void TransformObjectsCommand::undo()
 {
     std::size_t index = 0;
     for (const auto& object : objects_)

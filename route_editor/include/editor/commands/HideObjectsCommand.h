@@ -1,17 +1,17 @@
-#ifndef HIDE_OBJECTS_H
-#define HIDE_OBJECTS_H
+#ifndef EDITOR_COMMAND_HIDE_OBJECTS_COMMAND_H
+#define EDITOR_COMMAND_HIDE_OBJECTS_COMMAND_H
 
 #include "editor/RouteObjects.h"
 #include "editor/commands/Command.h"
 
 struct EditorContext;
 
-class HideObjects : public Command
+class HideObjectsCommand : public Command
 {
 public:
-    explicit HideObjects(EditorContext& context);
+    explicit HideObjectsCommand(EditorContext& context);
 
-    virtual ~HideObjects() override = default;
+    virtual ~HideObjectsCommand() override = default;
 
     virtual void execute() override;
 
@@ -25,4 +25,4 @@ public:
 };
 
 
-#endif // HIDE_OBJECTS_H
+#endif // EDITOR_COMMAND_HIDE_OBJECTS_COMMAND_H

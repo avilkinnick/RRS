@@ -1,24 +1,24 @@
-#include "editor/commands/ScaleObjects.h"
+#include "editor/commands/ScaleObjectsCommand.h"
 
 #include "editor/EditorContext.h"
 #include "editor/RouteObject.h"
 #include "editor/commands/Command.h"
-#include "editor/commands/TransformObjects.h"
+#include "editor/commands/TransformObjectsCommand.h"
 
 #include <vsg/maths/vec3.h>
 
 #include <cstdio>
 
-ScaleObjects::ScaleObjects(EditorContext& context, const RouteObjects& objects,
+ScaleObjectsCommand::ScaleObjectsCommand(EditorContext& context, const RouteObjects& objects,
     const vsg::dvec3& pivot, const vsg::dvec3& scale)
-    : TransformObjects(context, objects)
+    : TransformObjectsCommand(context, objects)
     , pivot_(pivot)
     , scale_(scale)
 {
     update_description();
 }
 
-void ScaleObjects::execute()
+void ScaleObjectsCommand::execute()
 {
     for (const auto& object : objects_)
     {
@@ -26,9 +26,9 @@ void ScaleObjects::execute()
     }
 }
 
-void ScaleObjects::update_description()
+void ScaleObjectsCommand::update_description()
 {
-    std::snprintf(description_, COMMAND_DESCRIPTION_BUFFER_SIZE,
+    std::snprintf(description, COMMAND_DESCRIPTION_BUFFER_SIZE,
         "Scale objects: pivot = { %.3f, %.3f, %.3f }\n"
         "               scale = { %.3f, %.3f, %.3f }",
         pivot_.x, pivot_.y, pivot_.z, scale_.x, scale_.y, scale_.z

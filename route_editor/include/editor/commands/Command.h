@@ -1,5 +1,5 @@
-#ifndef COMMAND_H
-#define COMMAND_H
+#ifndef EDITOR_COMMANDS_COMMAND_H
+#define EDITOR_COMMANDS_COMMAND_H
 
 #define COMMAND_DESCRIPTION_BUFFER_SIZE 256
 
@@ -8,21 +8,18 @@ struct EditorContext;
 class Command
 {
 public:
-    explicit Command(EditorContext& context) : context_(context) {}
-
-    virtual ~Command() = default;
+    explicit Command(EditorContext& context);
+    virtual ~Command();
 
     virtual void execute() = 0;
-
     virtual void undo() = 0;
-
     virtual void update_description() = 0;
 
-    const char* get_description() const { return description_; }
+    const char* get_description() const;
 
 protected:
-    EditorContext& context_;
-    char description_[COMMAND_DESCRIPTION_BUFFER_SIZE];
+    EditorContext& editor_context;
+    char description[COMMAND_DESCRIPTION_BUFFER_SIZE];
 };
 
-#endif // COMMAND_H
+#endif // EDITOR_COMMANDS_COMMAND_H

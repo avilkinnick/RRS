@@ -10,11 +10,11 @@
 #include "editor/Route.h"
 #include "editor/RouteObject.h"
 #include "editor/commands/CommandManager.h"
-#include "editor/commands/DeleteObjects.h"
-#include "editor/commands/PasteObjects.h"
-#include "editor/commands/RotateObjects.h"
-#include "editor/commands/ScaleObjects.h"
-#include "editor/commands/SelectObjects.h"
+#include "editor/commands/DeleteObjectsCommand.h"
+#include "editor/commands/PasteObjectsCommand.h"
+#include "editor/commands/RotateObjectsCommand.h"
+#include "editor/commands/ScaleObjectsCommand.h"
+#include "editor/commands/SelectObjectsCommand.h"
 #include "editor/commands/TranslateObjects.h"
 #include "editor/editor_math.h"
 
@@ -56,14 +56,14 @@ void ObjectSelector::apply([[maybe_unused]] vsg::KeyPressEvent& keyPress)
     }
     else if (keyboard->pressed(ACTION_PASTE_OBJECTS))
     {
-        auto command = std::make_unique<PasteObjects>(editor_context);
+        auto command = std::make_unique<PasteObjectsCommand>(editor_context);
         command->execute();
         editor_context.command_manager->push(std::move(command));
         return;
     }
     else if (keyboard->pressed(ACTION_DELETE_OBJECTS))
     {
-        auto command = std::make_unique<DeleteObjects>(editor_context);
+        auto command = std::make_unique<DeleteObjectsCommand>(editor_context);
         command->execute();
         editor_context.command_manager->push(std::move(command));
         return;
@@ -167,7 +167,7 @@ void ObjectSelector::apply(vsg::ButtonPressEvent& buttonPress)
         // deselect them all
         if (!selected_objects.empty() && !keyboard->get_shift_state())
         {
-            auto command = std::make_unique<SelectObjects>(editor_context);
+            auto command = std::make_unique<SelectObjectsCommand>(editor_context);
             command->objects_to_deselect = selected_objects;
             command->update_description();
             command->execute();
@@ -308,7 +308,7 @@ void ObjectSelector::apply(vsg::MoveEvent& moveEvent)
 
 void ObjectSelector::select_object(vsg::ref_ptr<RouteObject> object)
 {
-    auto command = std::make_unique<SelectObjects>(editor_context);
+    auto command = std::make_unique<SelectObjectsCommand>(editor_context);
 
     if (editor_context.keyboard->get_shift_state())
     {
@@ -375,7 +375,7 @@ void ObjectSelector::confirm_keyboard_transformation()
         {
             const auto& camera = editor_context.camera;
 
-            auto command = std::make_unique<RotateObjects>(editor_context,
+            auto command = std::make_unique<RotateObjectsCommand>(editor_context,
                 editor_context.selected_objects, editor_context.gizmo->get_curr_pos(),
                 camera->get_front(), total_rotation_rad_);
             editor_context.command_manager->push(std::move(command));
@@ -384,7 +384,7 @@ void ObjectSelector::confirm_keyboard_transformation()
         }
         case State::KEYBOARD_SCALE:
         {
-            auto command = std::make_unique<ScaleObjects>(editor_context,
+            auto command = std::make_unique<ScaleObjectsCommand>(editor_context,
                 editor_context.selected_objects, editor_context.gizmo->get_curr_pos(), total_scale_);
             editor_context.command_manager->push(std::move(command));
 

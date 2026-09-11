@@ -1,17 +1,17 @@
-#ifndef SELECT_OBJECTS_H
-#define SELECT_OBJECTS_H
+#ifndef EDITOR_COMMANDS_SELECT_OBJECTS_COMMAND_H
+#define EDITOR_COMMANDS_SELECT_OBJECTS_COMMAND_H
 
 #include "editor/RouteObjects.h"
 #include "editor/commands/Command.h"
 
 struct EditorContext;
 
-class SelectObjects : public Command
+class SelectObjectsCommand : public Command
 {
 public:
-    explicit SelectObjects(EditorContext& context);
+    explicit SelectObjectsCommand(EditorContext& context);
 
-    virtual ~SelectObjects() override = default;
+    virtual ~SelectObjectsCommand() override = default;
 
     virtual void execute() override;
 
@@ -24,4 +24,4 @@ public:
     RouteObjects objects_to_deselect;
 };
 
-#endif // SELECT_OBJECTS_H
+#endif // EDITOR_COMMANDS_SELECT_OBJECTS_COMMAND_H

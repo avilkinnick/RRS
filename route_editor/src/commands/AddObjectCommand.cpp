@@ -12,11 +12,11 @@
 #include <algorithm>
 #include <cstdio>
 
-AddObjectCommand::AddObjectCommand(EditorContext& context,
+AddObjectCommand::AddObjectCommand(EditorContext& editor_context,
     const vsg::ref_ptr<RouteObject>& object)
-    : Command(context)
+    : Command(editor_context)
     , object_to_add_(object)
-    , objects_to_deselect_(context.selected_objects)
+    , objects_to_deselect_(editor_context.selected_objects)
 {
     update_description();
 }
@@ -28,30 +28,30 @@ void AddObjectCommand::execute()
         object->deselect();
     }
 
-    context_.compile_infos_mutex.lock();
-    context_.compile_infos.emplace_back(CompileInfo{
-        context_.route, object_to_add_, vsg::MASK_ALL});
-    context_.compile_infos_mutex.unlock();
+    editor_context.compile_infos_mutex.lock();
+    editor_context.compile_infos.emplace_back(CompileInfo{
+        editor_context.route, object_to_add_, vsg::MASK_ALL});
+    editor_context.compile_infos_mutex.unlock();
 
-    context_.static_objects_mutex.lock();
-    context_.static_objects.emplace_back(object_to_add_);
-    context_.static_objects_mutex.unlock();
+    editor_context.static_objects_mutex.lock();
+    editor_context.static_objects.emplace_back(object_to_add_);
+    editor_context.static_objects_mutex.unlock();
 
-    context_.deferred_selection.emplace_back(object_to_add_);
+    editor_context.deferred_selection.emplace_back(object_to_add_);
 }
 
 void AddObjectCommand::undo()
 {
     object_to_add_->deselect();
 
-    auto& static_objects = context_.static_objects;
-    context_.static_objects_mutex.lock();
+    auto& static_objects = editor_context.static_objects;
+    editor_context.static_objects_mutex.lock();
     static_objects.erase(std::find(static_objects.begin(),
         static_objects.end(), object_to_add_));
-    context_.static_objects_mutex.unlock();
+    editor_context.static_objects_mutex.unlock();
 
-    context_.route->children.erase(
-        std::find_if(context_.route->children.begin(), context_.route->children.end(),
+    editor_context.route->children.erase(
+        std::find_if(editor_context.route->children.begin(), editor_context.route->children.end(),
             [this](const vsg::Switch::Child& child) {
                 return child.node == object_to_add_;
             }
@@ -63,16 +63,16 @@ void AddObjectCommand::undo()
         object->select();
     }
 
-    context_.compile_infos_mutex.lock();
-    context_.compile_infos.emplace_back(CompileInfo{nullptr, context_.route});
-    context_.compile_infos_mutex.unlock();
+    editor_context.compile_infos_mutex.lock();
+    editor_context.compile_infos.emplace_back(CompileInfo{nullptr, editor_context.route});
+    editor_context.compile_infos_mutex.unlock();
 
-    context_.gizmo->update_visibility();
+    editor_context.gizmo->update_visibility();
 }
 
 void AddObjectCommand::update_description()
 {
-    std::snprintf(description_, COMMAND_DESCRIPTION_BUFFER_SIZE,
+    std::snprintf(description, COMMAND_DESCRIPTION_BUFFER_SIZE,
         "Add object: \"%s\"", object_to_add_->label.c_str()
     );
 }

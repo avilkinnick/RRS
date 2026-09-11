@@ -1,4 +1,4 @@
-#include "editor/commands/SelectObjects.h"
+#include "editor/commands/SelectObjectsCommand.h"
 
 #include "editor/EditorContext.h"
 #include "editor/Gizmo.h"
@@ -7,12 +7,12 @@
 
 #include <cstdio>
 
-SelectObjects::SelectObjects(EditorContext& context)
+SelectObjectsCommand::SelectObjectsCommand(EditorContext& context)
     : Command(context)
 {
 }
 
-void SelectObjects::execute()
+void SelectObjectsCommand::execute()
 {
     for (const auto& object : objects_to_select)
     {
@@ -24,10 +24,10 @@ void SelectObjects::execute()
         object->deselect();
     }
 
-    context_.gizmo->update_visibility();
+    editor_context.gizmo->update_visibility();
 }
 
-void SelectObjects::undo()
+void SelectObjectsCommand::undo()
 {
     for (const auto& object : objects_to_select)
     {
@@ -39,12 +39,12 @@ void SelectObjects::undo()
         object->select();
     }
 
-    context_.gizmo->update_visibility();
+    editor_context.gizmo->update_visibility();
 }
 
-void SelectObjects::update_description()
+void SelectObjectsCommand::update_description()
 {
-    std::snprintf(description_, COMMAND_DESCRIPTION_BUFFER_SIZE,
+    std::snprintf(description, COMMAND_DESCRIPTION_BUFFER_SIZE,
         "Select objects: to select: %zu objects\n"
         "              to deselect: %zu objects",
         objects_to_select.size(), objects_to_deselect.size()

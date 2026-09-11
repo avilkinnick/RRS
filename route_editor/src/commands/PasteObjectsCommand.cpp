@@ -1,4 +1,4 @@
-#include "editor/commands/PasteObjects.h"
+#include "editor/commands/PasteObjectsCommand.h"
 
 #include "editor/EditorContext.h"
 #include "editor/Gizmo.h"
@@ -12,7 +12,7 @@
 #include <algorithm>
 #include <cstdio>
 
-PasteObjects::PasteObjects(
+PasteObjectsCommand::PasteObjectsCommand(
     EditorContext& context
 )
     : Command(context)
@@ -22,7 +22,7 @@ PasteObjects::PasteObjects(
     update_description();
 }
 
-void PasteObjects::execute()
+void PasteObjectsCommand::execute()
 {
     for (const auto& object : objects_to_deselect_)
     {
@@ -39,35 +39,35 @@ void PasteObjects::execute()
 
     for (const auto& pasted_object : pasted_objects_)
     {
-        context_.compile_infos_mutex.lock();
-        context_.compile_infos.emplace_back(CompileInfo{
-            context_.route, pasted_object, vsg::MASK_ALL});
-        context_.compile_infos_mutex.unlock();
+        editor_context.compile_infos_mutex.lock();
+        editor_context.compile_infos.emplace_back(CompileInfo{
+            editor_context.route, pasted_object, vsg::MASK_ALL});
+        editor_context.compile_infos_mutex.unlock();
 
-        context_.static_objects_mutex.lock();
-        context_.static_objects.emplace_back(pasted_object);
-        context_.static_objects_mutex.unlock();
+        editor_context.static_objects_mutex.lock();
+        editor_context.static_objects.emplace_back(pasted_object);
+        editor_context.static_objects_mutex.unlock();
 
         pasted_object->select();
     }
 
-    context_.gizmo->update_visibility();
+    editor_context.gizmo->update_visibility();
 }
 
-void PasteObjects::undo()
+void PasteObjectsCommand::undo()
 {
     for (const auto& pasted_object : pasted_objects_)
     {
         pasted_object->deselect();
 
-        auto& static_objects = context_.static_objects;
-        context_.static_objects_mutex.lock();
+        auto& static_objects = editor_context.static_objects;
+        editor_context.static_objects_mutex.lock();
         static_objects.erase(std::find(static_objects.begin(),
             static_objects.end(), pasted_object));
-        context_.static_objects_mutex.unlock();
+        editor_context.static_objects_mutex.unlock();
 
-        context_.route->children.erase(
-            std::find_if(context_.route->children.begin(), context_.route->children.end(),
+        editor_context.route->children.erase(
+            std::find_if(editor_context.route->children.begin(), editor_context.route->children.end(),
                 [pasted_object](const vsg::Switch::Child& child) {
                     return child.node == pasted_object;
                 }
@@ -80,16 +80,16 @@ void PasteObjects::undo()
         object->select();
     }
 
-    context_.compile_infos_mutex.lock();
-    context_.compile_infos.emplace_back(CompileInfo{nullptr, context_.route});
-    context_.compile_infos_mutex.unlock();
+    editor_context.compile_infos_mutex.lock();
+    editor_context.compile_infos.emplace_back(CompileInfo{nullptr, editor_context.route});
+    editor_context.compile_infos_mutex.unlock();
 
-    context_.gizmo->update_visibility();
+    editor_context.gizmo->update_visibility();
 }
 
-void PasteObjects::update_description()
+void PasteObjectsCommand::update_description()
 {
-    std::snprintf(description_, COMMAND_DESCRIPTION_BUFFER_SIZE,
+    std::snprintf(description, COMMAND_DESCRIPTION_BUFFER_SIZE,
         "Paste objects: to paste: %zu objects",
         objects_to_paste_.size()
     );

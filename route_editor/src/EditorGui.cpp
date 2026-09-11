@@ -13,8 +13,8 @@
 #include "editor/commands/AddObjectCommand.h"
 #include "editor/commands/Command.h"
 #include "editor/commands/CommandManager.h"
-#include "editor/commands/RotateObjects.h"
-#include "editor/commands/ScaleObjects.h"
+#include "editor/commands/RotateObjectsCommand.h"
+#include "editor/commands/ScaleObjectsCommand.h"
 #include "editor/commands/TranslateObjects.h"
 #include "editor/settings/CameraSettings.h"
 #include "editor/settings/GuiSettings.h"
@@ -761,7 +761,7 @@ void EditorGui::handle_rotation_drag(
             radians = vsg::radians(total_rotation_deg.z);
         }
 
-        auto command = std::make_unique<RotateObjects>(editor_context,
+        auto command = std::make_unique<RotateObjectsCommand>(editor_context,
             RouteObjects{object}, editor_context.gizmo->get_curr_pos(), axis, radians);
         editor_context.command_manager->push(std::move(command));
 
@@ -798,7 +798,7 @@ void EditorGui::handle_scale_drag(
 
     if (ImGui::IsItemDeactivatedAfterEdit())
     {
-        auto command = std::make_unique<ScaleObjects>(editor_context,
+        auto command = std::make_unique<ScaleObjectsCommand>(editor_context,
             RouteObjects{object}, editor_context.gizmo->get_curr_pos(), total_scale);
         editor_context.command_manager->push(std::move(command));
 

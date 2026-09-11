@@ -29,7 +29,7 @@ static std::array<std::string, TOTAL_ACTIONS> get_action_setting_names()
     action_setting_names[ACTION_SCALE_OBJECTS]            = "ScaleObjects";
     action_setting_names[ACTION_COPY_OBJECTS]             = "CopyObjects";
     action_setting_names[ACTION_PASTE_OBJECTS]            = "PasteObjects";
-    action_setting_names[ACTION_HIDE_OBJECTS]             = "HideObjects";
+    action_setting_names[ACTION_HIDE_OBJECTS]             = "HideObjectsCommand";
     action_setting_names[ACTION_SHOW_OBJECTS]             = "ShowObjects";
     action_setting_names[ACTION_DELETE_OBJECTS]           = "DeleteObjects";
     action_setting_names[ACTION_UNDO_COMMAND]             = "UndoCommand";

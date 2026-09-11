@@ -1,5 +1,5 @@
-#ifndef COMMAND_MANAGER_H
-#define COMMAND_MANAGER_H
+#ifndef EDITOR_COMMANDS_COMMAND_MANAGER_H
+#define EDITOR_COMMANDS_COMMAND_MANAGER_H
 
 #include <deque>
 #include <functional>
@@ -28,4 +28,4 @@ private:
     std::deque<std::unique_ptr<Command>> undone_commands;
 };
 
-#endif // COMMAND_MANAGER_H
+#endif // EDITOR_COMMANDS_COMMAND_MANAGER_H
