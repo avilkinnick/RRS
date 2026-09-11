@@ -53,8 +53,7 @@ public:
     const vsg::dmat4& get_inverse_view_matrix() const;
 
 private:
-    void create_orthographic_projection(double window_width,
-        double window_height, double aspect_ratio);
+    void create_orthographic_projection(double aspect_ratio);
 
     void calculate_front();
 

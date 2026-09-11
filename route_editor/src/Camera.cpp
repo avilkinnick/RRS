@@ -21,11 +21,14 @@
 #include <vulkan/vulkan_core.h>
 
 #include <algorithm>
+#include <cassert>
 #include <cmath>
 
 Camera::Camera(EditorContext& editor_context)
     : editor_context(editor_context)
 {
+    assert(editor_context.window && "Window must be created before camera");
+
     const auto& camera_settings = editor_context.camera_settings;
     const auto& window_extent = editor_context.window->extent2D();
 
@@ -40,7 +43,7 @@ Camera::Camera(EditorContext& editor_context)
         camera_settings.view_distance
     );
 
-    create_orthographic_projection(window_width, window_height, aspect_ratio);
+    create_orthographic_projection(aspect_ratio);
 
     const double initial_height = camera_settings.initial_height;
 
@@ -180,8 +183,7 @@ const vsg::dmat4& Camera::get_inverse_view_matrix() const
     return inverse_view_matrix;
 }
 
-void Camera::create_orthographic_projection(double window_width,
-    double window_height, double aspect_ratio)
+void Camera::create_orthographic_projection(double aspect_ratio)
 {
     const auto& camera_settings = editor_context.camera_settings;
 
@@ -189,7 +191,7 @@ void Camera::create_orthographic_projection(double window_width,
 
     const double halfDim = 100.0;
     double halfHeight, halfWidth;
-    if (window_width > window_height)
+    if (aspect_ratio > 1.0f)
     {
         halfHeight = halfDim;
         halfWidth = halfDim * aspect_ratio;
