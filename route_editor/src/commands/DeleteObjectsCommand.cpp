@@ -26,16 +26,18 @@ void DeleteObjectsCommand::execute()
         object->deselect();
 
         editor_context.static_objects_mutex.lock();
-        auto& static_objects = editor_context.static_objects;
-        static_objects.erase(std::find(static_objects.begin(), static_objects.end(), object));
+        editor_context.static_objects.remove(object);
         editor_context.static_objects_mutex.unlock();
 
-        editor_context.route->children.erase(
-            std::find_if(editor_context.route->children.begin(), editor_context.route->children.end(),
+        auto& route_children = editor_context.route->children;
+
+        route_children.erase(
+            std::remove_if(route_children.begin(), route_children.end(),
                 [object](const vsg::Switch::Child& child) {
                     return child.node == object;
                 }
-            )
+            ),
+            route_children.end()
         );
     }
 

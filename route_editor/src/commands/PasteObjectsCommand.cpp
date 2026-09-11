@@ -62,16 +62,18 @@ void PasteObjectsCommand::undo()
 
         auto& static_objects = editor_context.static_objects;
         editor_context.static_objects_mutex.lock();
-        static_objects.erase(std::find(static_objects.begin(),
-            static_objects.end(), pasted_object));
+        static_objects.remove(pasted_object);
         editor_context.static_objects_mutex.unlock();
 
-        editor_context.route->children.erase(
-            std::find_if(editor_context.route->children.begin(), editor_context.route->children.end(),
+        auto& route_children = editor_context.route->children;
+
+        route_children.erase(
+            std::remove_if(route_children.begin(), route_children.end(),
                 [pasted_object](const vsg::Switch::Child& child) {
                     return child.node == pasted_object;
                 }
-            )
+            ),
+            route_children.end()
         );
     }
 

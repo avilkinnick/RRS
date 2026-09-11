@@ -46,16 +46,18 @@ void AddObjectCommand::undo()
 
     auto& static_objects = editor_context.static_objects;
     editor_context.static_objects_mutex.lock();
-    static_objects.erase(std::find(static_objects.begin(),
-        static_objects.end(), object_to_add_));
+    static_objects.remove(object_to_add_);
     editor_context.static_objects_mutex.unlock();
 
-    editor_context.route->children.erase(
-        std::find_if(editor_context.route->children.begin(), editor_context.route->children.end(),
+    auto& route_children = editor_context.route->children;
+
+    route_children.erase(
+        std::remove_if(route_children.begin(), route_children.end(),
             [this](const vsg::Switch::Child& child) {
                 return child.node == object_to_add_;
             }
-        )
+        ),
+        route_children.end()
     );
 
     for (const auto& object : objects_to_deselect_)
