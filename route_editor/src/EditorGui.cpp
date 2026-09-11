@@ -5,33 +5,33 @@
 #include "editor/EditorContext.h"
 #include "editor/EditorState.h"
 #include "editor/Gizmo.h"
-#include "Journal.h"
 #include "editor/KeyBindings.h"
 #include "editor/ObjectSelector.h"
 #include "editor/Route.h"
 #include "editor/RouteObject.h"
 #include "editor/StateManager.h"
-#include "editor/commands/AddObject.h"
+#include "editor/commands/AddObjectCommand.h"
 #include "editor/commands/Command.h"
 #include "editor/commands/CommandManager.h"
 #include "editor/commands/RotateObjects.h"
 #include "editor/commands/ScaleObjects.h"
 #include "editor/commands/TranslateObjects.h"
-#include "filesystem.h"
-#include "rail-signal.h"
 #include "editor/settings/CameraSettings.h"
 #include "editor/settings/GuiSettings.h"
 #include "editor/states/State.h"
-#include "switch.h"
-#include "topology.h"
-#include "topology-defines.h"
-#include "track.h"
-#include "trajectory.h"
-#include "vec3.h"
+
+#include <Journal.h>
+#include <filesystem.h>
+#include <rail-signal.h>
+#include <switch.h>
+#include <topology.h>
+#include <topology-defines.h>
+#include <track.h>
+#include <trajectory.h>
+#include <vec3.h>
 
 #include <ImGuiFileDialog.h>
 
-#include <mutex>
 #include <vsg/app/ProjectionMatrix.h>
 #include <vsg/app/RecordTraversal.h>
 #include <vsg/commands/Commands.h>
@@ -56,7 +56,6 @@
 #include <vsg/state/RasterizationState.h>
 #include <vsg/state/VertexInputState.h>
 #include <vsg/ui/KeyEvent.h>
-
 #include <vsgImGui/imgui.h>
 
 #include <algorithm>
@@ -64,6 +63,7 @@
 #include <cstdio>
 #include <functional>
 #include <memory>
+#include <mutex>
 #include <string>
 
 static bool drag_double(const char* label, double* data,
@@ -668,10 +668,9 @@ void EditorGui::add_object(
     const auto& camera = editor_context.camera;
 
     const auto object = RouteObject::create(editor_context, paged_lod, label,
-        camera->get_look_at()->eye +
-        camera->get_front() * 20.0);
+        camera->get_look_at()->eye + camera->get_front() * 20.0);
 
-    auto command = std::make_unique<AddObject>(editor_context, object);
+    auto command = std::make_unique<AddObjectCommand>(editor_context, object);
     command->execute();
     editor_context.command_manager->push(std::move(command));
 }

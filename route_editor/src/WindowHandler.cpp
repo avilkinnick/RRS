@@ -2,8 +2,9 @@
 
 #include "editor/Camera.h"
 #include "editor/EditorContext.h"
-#include "Journal.h"
 #include "editor/settings/WindowSettings.h"
+
+#include <Journal.h>
 
 #include <vsg/app/Camera.h>
 #include <vsg/app/ProjectionMatrix.h>

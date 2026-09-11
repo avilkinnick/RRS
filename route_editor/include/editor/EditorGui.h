@@ -1,7 +1,7 @@
 #ifndef EDITOR_GUI_H
 #define EDITOR_GUI_H
 
-#include "EditorState.h"
+#include "editor/EditorState.h"
 
 #include <vsg/commands/Command.h>
 #include <vsg/core/Inherit.h>

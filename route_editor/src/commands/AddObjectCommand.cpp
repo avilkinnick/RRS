@@ -1,4 +1,4 @@
-#include "editor/commands/AddObject.h"
+#include "editor/commands/AddObjectCommand.h"
 
 #include "editor/Route.h"
 #include "editor/RouteObject.h"
@@ -12,7 +12,8 @@
 #include <algorithm>
 #include <cstdio>
 
-AddObject::AddObject(EditorContext& context, vsg::ref_ptr<RouteObject> object)
+AddObjectCommand::AddObjectCommand(EditorContext& context,
+    const vsg::ref_ptr<RouteObject>& object)
     : Command(context)
     , object_to_add_(object)
     , objects_to_deselect_(context.selected_objects)
@@ -20,7 +21,7 @@ AddObject::AddObject(EditorContext& context, vsg::ref_ptr<RouteObject> object)
     update_description();
 }
 
-void AddObject::execute()
+void AddObjectCommand::execute()
 {
     for (const auto& object : objects_to_deselect_)
     {
@@ -39,7 +40,7 @@ void AddObject::execute()
     context_.deferred_selection.emplace_back(object_to_add_);
 }
 
-void AddObject::undo()
+void AddObjectCommand::undo()
 {
     object_to_add_->deselect();
 
@@ -69,7 +70,7 @@ void AddObject::undo()
     context_.gizmo->update_visibility();
 }
 
-void AddObject::update_description()
+void AddObjectCommand::update_description()
 {
     std::snprintf(description_, COMMAND_DESCRIPTION_BUFFER_SIZE,
         "Add object: \"%s\"", object_to_add_->label.c_str()

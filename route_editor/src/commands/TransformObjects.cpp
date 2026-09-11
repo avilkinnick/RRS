@@ -1,8 +1,8 @@
 #include "editor/commands/TransformObjects.h"
 
-#include "editor/commands/Command.h"
 #include "editor/EditorContext.h"
 #include "editor/RouteObject.h"
+#include "editor/commands/Command.h"
 
 #include <cstddef>
 

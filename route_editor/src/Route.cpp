@@ -1,25 +1,23 @@
 #include "editor/Route.h"
 
 #include "editor/EditorContext.h"
-#include "Journal.h"
 #include "editor/Mask.h"
 #include "editor/ObjectManager.h"
 #include "editor/PagedLodMap.h"
 #include "editor/RouteMap.h"
 #include "editor/RouteObject.h"
-#include "filesystem.h"
-#include "graphics/pipeline_funcs.h"
-#include "rail-signal.h"
-#include "signals-data-types.h"
-#include "topology.h"
-#include "trajectory.h"
-#include "vec3.h"
 #include "editor/settings/CameraSettings.h"
 
 #include <CfgReader.h>
+#include <Journal.h>
+#include <filesystem.h>
+#include <graphics/pipeline_funcs.h>
+#include <rail-signal.h>
+#include <signals-data-types.h>
+#include <topology.h>
+#include <trajectory.h>
+#include <vec3.h>
 
-#include <memory>
-#include <mutex>
 #include <vsg/app/RecordTraversal.h>
 #include <vsg/commands/DrawIndexed.h>
 #include <vsg/core/Array.h>
@@ -56,6 +54,8 @@
 #include <cstdio>
 #include <filesystem>
 #include <fstream>
+#include <memory>
+#include <mutex>
 #include <sstream>
 #include <string>
 #include <thread>

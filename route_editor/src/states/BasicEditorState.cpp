@@ -3,14 +3,15 @@
 #include "editor/Action.h"
 #include "editor/Camera.h"
 #include "editor/EditorContext.h"
-#include "Journal.h"
 #include "editor/Keyboard.h"
 #include "editor/Mouse.h"
 #include "editor/Route.h"
 #include "editor/RouteObject.h"
 #include "editor/StateManager.h"
 #include "editor/commands/CommandManager.h"
-#include "filesystem.h"
+
+#include <Journal.h>
+#include <filesystem.h>
 
 #include <vsg/ui/PointerEvent.h>
 #include <vsgImGui/imgui.h>

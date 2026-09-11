@@ -1,8 +1,8 @@
 #include "editor/Outline.h"
 
-#include "filesystem.h"
-#include "graphics/common.h"
-#include "graphics/shader_funcs.h"
+#include <filesystem.h>
+#include <graphics/common.h>
+#include <graphics/shader_funcs.h>
 
 #include <vsg/core/ref_ptr.h>
 #include <vsg/io/FileSystem.h>

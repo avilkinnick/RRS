@@ -11,7 +11,8 @@
 #include "editor/RouteObject.h"
 #include "editor/StateManager.h"
 #include "editor/commands/CommandManager.h"
-#include "topology.h"
+
+#include <topology.h>
 
 #include <vsg/app/Window.h>
 #include <vsg/commands/ClearAttachments.h>

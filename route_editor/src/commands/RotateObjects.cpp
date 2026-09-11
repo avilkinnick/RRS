@@ -1,9 +1,9 @@
 #include "editor/commands/RotateObjects.h"
 
-#include "editor/commands/Command.h"
-#include "editor/commands/TransformObjects.h"
 #include "editor/EditorContext.h"
 #include "editor/RouteObject.h"
+#include "editor/commands/Command.h"
+#include "editor/commands/TransformObjects.h"
 
 #include <vsg/maths/vec3.h>
 

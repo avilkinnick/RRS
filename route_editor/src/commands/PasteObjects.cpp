@@ -1,10 +1,10 @@
 #include "editor/commands/PasteObjects.h"
 
-#include "editor/commands/Command.h"
 #include "editor/EditorContext.h"
 #include "editor/Gizmo.h"
 #include "editor/Route.h"
 #include "editor/RouteObject.h"
+#include "editor/commands/Command.h"
 
 #include <vsg/core/Mask.h>
 #include <vsg/nodes/Switch.h>

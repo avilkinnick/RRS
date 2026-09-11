@@ -1,7 +1,7 @@
 #ifndef ROUTE_OBJECT_H
 #define ROUTE_OBJECT_H
 
-#include "RouteObjects.h"
+#include "editor/RouteObjects.h"
 
 #include <vsg/core/Inherit.h>
 #include <vsg/core/ref_ptr.h>

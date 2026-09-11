@@ -1,8 +1,8 @@
 #ifndef ROUTE_EDITOR_H
 #define ROUTE_EDITOR_H
 
-#include "EditorContext.h"
-#include "EditorState.h"
+#include "editor/EditorContext.h"
+#include "editor/EditorState.h"
 
 class WindowHandler;
 

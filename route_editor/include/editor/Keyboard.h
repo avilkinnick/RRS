@@ -1,8 +1,8 @@
 #ifndef KEYBOARD_H
 #define KEYBOARD_H
 
-#include "Action.h"
-#include "KeyBindings.h"
+#include "editor/Action.h"
+#include "editor/KeyBindings.h"
 
 #include <vsg/core/Inherit.h>
 #include <vsg/ui/KeyEvent.h>

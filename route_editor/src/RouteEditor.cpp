@@ -1,14 +1,11 @@
 #include "editor/RouteEditor.h"
 
 #include "editor/Camera.h"
-#include "CfgReader.h"
 #include "editor/EditorContext.h"
 #include "editor/EditorGui.h"
 #include "editor/EditorState.h"
 #include "editor/EventHandler.h"
 #include "editor/Gizmo.h"
-#include "Journal.h"
-#include "JournalFile.h"
 #include "editor/Keyboard.h"
 #include "editor/Mask.h"
 #include "editor/Mouse.h"
@@ -21,14 +18,15 @@
 #include "editor/StateManager.h"
 #include "editor/WindowHandler.h"
 #include "editor/commands/CommandManager.h"
-#include "filesystem.h"
-#include "graphics/common.h"
-#include "graphics/shader_funcs.h"
 
-#include <algorithm>
+#include <CfgReader.h>
+#include <Journal.h>
+#include <JournalFile.h>
 #include <core/string_funcs.h>
+#include <filesystem.h>
+#include <graphics/common.h>
+#include <graphics/shader_funcs.h>
 
-#include <mutex>
 #include <vsg/app/CloseHandler.h>
 #include <vsg/app/CommandGraph.h>
 #include <vsg/app/CompileManager.h>
@@ -56,7 +54,9 @@
 
 #include <vulkan/vulkan_core.h>
 
+#include <algorithm>
 #include <memory>
+#include <mutex>
 #include <string>
 
 RouteEditor::RouteEditor() = default;

@@ -4,24 +4,24 @@
 #include "editor/KeyBindings.h"
 #include "editor/RouteMap.h"
 #include "editor/RouteObjects.h"
-#include <core/ThreadSafe.h>
 #include "editor/settings/CameraSettings.h"
 #include "editor/settings/GizmoSettings.h"
 #include "editor/settings/GuiSettings.h"
 #include "editor/settings/SceneSettings.h"
 #include "editor/settings/WindowSettings.h"
 
-#include <atomic>
-#include <mutex>
-#include <thread>
+#include <core/ThreadSafe.h>
 
-#include <vector>
 #include <vsg/core/Mask.h>
 #include <vsg/core/ref_ptr.h>
 
+#include <atomic>
 #include <map>
 #include <memory>
+#include <mutex>
 #include <string>
+#include <thread>
+#include <vector>
 
 class Camera;
 class CommandManager;

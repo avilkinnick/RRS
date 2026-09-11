@@ -1,5 +1,5 @@
-#ifndef ADD_OBJECT_H
-#define ADD_OBJECT_H
+#ifndef EDITOR_COMMANDS_ADD_OBJECT_COMMAND_H
+#define EDITOR_COMMANDS_ADD_OBJECT_COMMAND_H
 
 #include "editor/RouteObjects.h"
 #include "editor/commands/Command.h"
@@ -7,20 +7,15 @@
 #include <vsg/core/ref_ptr.h>
 
 struct EditorContext;
-
-namespace vsg
-{
-
 class RouteObject;
 
-}
-
-class AddObject : public Command
+class AddObjectCommand : public Command
 {
 public:
-    AddObject(EditorContext& context, vsg::ref_ptr<RouteObject> object);
+    AddObjectCommand(EditorContext& context,
+        const vsg::ref_ptr<RouteObject>& object);
 
-    virtual ~AddObject() override = default;
+    virtual ~AddObjectCommand() override = default;
 
     virtual void execute() override;
 
@@ -33,4 +28,4 @@ private:
     const RouteObjects objects_to_deselect_;
 };
 
-#endif // ADD_OBJECT_H
+#endif // EDITOR_COMMANDS_ADD_OBJECT_COMMAND_H
