@@ -59,8 +59,53 @@ void StateManager::update(double delta_time)
     (*current_state)->update(delta_time);
 }
 
-const std::unique_ptr<State>& StateManager::get_editor_state() const
+const std::unique_ptr<State>& StateManager::get_current_editor_state() const
 {
     return *current_state;
+}
+
+RouteNotLoadedState* StateManager::get_route_not_loaded_state() const
+{
+    return dynamic_cast<RouteNotLoadedState*>(states[STATE_ROUTE_NOT_LOADED].get());
+}
+
+BasicEditorState* StateManager::get_basic_editor_state() const
+{
+    return dynamic_cast<BasicEditorState*>(states[STATE_BASIC].get());
+}
+
+NavigationState* StateManager::get_navigation_state() const
+{
+    return dynamic_cast<NavigationState*>(states[STATE_NAVIGATION].get());
+}
+
+KeyboardTranslateState* StateManager::get_keyboard_translate_state() const
+{
+    return dynamic_cast<KeyboardTranslateState*>(states[STATE_KEYBOARD_TRANSLATE].get());
+}
+
+KeyboardRotateState* StateManager::get_keyboard_rotate_state() const
+{
+    return dynamic_cast<KeyboardRotateState*>(states[STATE_KEYBOARD_ROTATE].get());
+}
+
+KeyboardScaleState* StateManager::get_keyboard_scale_state() const
+{
+    return dynamic_cast<KeyboardScaleState*>(states[STATE_KEYBOARD_SCALE].get());
+}
+
+GizmoTranslateState* StateManager::get_gizmo_translate_state() const
+{
+    return dynamic_cast<GizmoTranslateState*>(states[STATE_GIZMO_TRANSLATE].get());
+}
+
+GizmoRotateState* StateManager::get_gizmo_rotate_state() const
+{
+    return dynamic_cast<GizmoRotateState*>(states[STATE_GIZMO_ROTATE].get());
+}
+
+GizmoScaleState* StateManager::get_gizmo_scale_state() const
+{
+    return dynamic_cast<GizmoScaleState*>(states[STATE_GIZMO_SCALE].get());
 }
 

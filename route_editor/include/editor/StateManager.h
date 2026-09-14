@@ -6,7 +6,16 @@
 #include <array>
 #include <memory>
 
+class BasicEditorState;
 struct EditorContext;
+class GizmoRotateState;
+class GizmoScaleState;
+class GizmoTranslateState;
+class KeyboardRotateState;
+class KeyboardScaleState;
+class KeyboardTranslateState;
+class NavigationState;
+class RouteNotLoadedState;
 class State;
 
 enum StateEnum
@@ -33,7 +42,17 @@ public:
 
     void update(double delta_time);
 
-    const std::unique_ptr<State>& get_editor_state() const;
+    const std::unique_ptr<State>& get_current_editor_state() const;
+
+    RouteNotLoadedState* get_route_not_loaded_state() const;
+    BasicEditorState* get_basic_editor_state() const;
+    NavigationState* get_navigation_state() const;
+    KeyboardTranslateState* get_keyboard_translate_state() const;
+    KeyboardRotateState* get_keyboard_rotate_state() const;
+    KeyboardScaleState* get_keyboard_scale_state() const;
+    GizmoTranslateState* get_gizmo_translate_state() const;
+    GizmoRotateState* get_gizmo_rotate_state() const;
+    GizmoScaleState* get_gizmo_scale_state() const;
 
 private:
     std::array<std::unique_ptr<State>, TOTAL_STATE_COUNT> states;

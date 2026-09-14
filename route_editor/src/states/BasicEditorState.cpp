@@ -78,41 +78,40 @@ void BasicEditorState::handle_key_press()
     }
     else
     {
-        // const bool pressed_action_move = keyboard->pressed(ACTION_TRANSLATE_OBJECTS);
-        // const bool pressed_action_rotate = keyboard->pressed(ACTION_ROTATE_OBJECTS);
-        // const bool pressed_action_scale = keyboard->pressed(ACTION_SCALE_OBJECTS);
+        const bool pressed_action_move = keyboard->pressed(ACTION_TRANSLATE_OBJECTS);
+        const bool pressed_action_rotate = keyboard->pressed(ACTION_ROTATE_OBJECTS);
+        const bool pressed_action_scale = keyboard->pressed(ACTION_SCALE_OBJECTS);
 
-        // if (!pressed_action_move && !pressed_action_rotate && !pressed_action_scale)
-        // {
-        //     return;
-        // }
+        if (!pressed_action_move && !pressed_action_rotate && !pressed_action_scale)
+        {
+            return;
+        }
 
-        // vsg::dvec3 intersection_pos;
-        // calculate_intersection_mouse_and_plane(mouse->get_x(), mouse->get_y(),
-        //     window->extent2D(), camera->get_inverse_view_matrix(),
-        //     camera->get_inverse_projection_matrix(), gizmo->get_curr_pos(),
-        //     camera->get_front(), intersection_pos);
+        vsg::dvec3 intersection_pos;
+        calculate_intersection_mouse_and_plane(mouse->get_x(), mouse->get_y(),
+            window->extent2D(), camera->get_inverse_view_matrix(),
+            camera->get_inverse_projection_matrix(), gizmo->get_curr_pos(),
+            camera->get_front(), intersection_pos);
 
-        // for (const auto& object : selected_objects)
-        // {
-        //     object->save_matrix();
-        // }
+        for (const auto& object : selected_objects)
+        {
+            object->save_matrix();
+        }
 
-        // if (pressed_action_move)
-        // {
-        //     auto* const state = dynamic_cast<KeyboardTranslateState*>(
-        //         state_manager->get_editor_state(STATE_KEYBOARD_TRANSLATE).get());
-        //     state->begin_intersection_pos = intersection_pos;
-        //     state_manager->defer_switch_to(STATE_KEYBOARD_TRANSLATE);
-        // }
-        // else if (pressed_action_rotate)
-        // {
-        //     // state_ = State::KEYBOARD_ROTATE;
-        // }
-        // else if (pressed_action_scale)
-        // {
-        //     // state_ = State::KEYBOARD_SCALE;
-        // }
+        if (pressed_action_move)
+        {
+            auto* const state = state_manager->get_keyboard_translate_state();
+            state->begin_intersection_pos = intersection_pos;
+            state_manager->defer_switch_to(STATE_KEYBOARD_TRANSLATE);
+        }
+        else if (pressed_action_rotate)
+        {
+            // state_ = State::KEYBOARD_ROTATE;
+        }
+        else if (pressed_action_scale)
+        {
+            // state_ = State::KEYBOARD_SCALE;
+        }
     }
 }
 
