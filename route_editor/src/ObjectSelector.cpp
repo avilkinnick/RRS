@@ -5,7 +5,6 @@
 #include "editor/EditorContext.h"
 #include "editor/Gizmo.h"
 #include "editor/Keyboard.h"
-#include "editor/Mask.h"
 #include "editor/Mouse.h"
 #include "editor/Route.h"
 #include "editor/RouteObject.h"
@@ -109,84 +108,9 @@ void ObjectSelector::apply([[maybe_unused]] vsg::KeyPressEvent& keyPress)
     }
 }
 
-void ObjectSelector::apply(vsg::ButtonPressEvent& buttonPress)
+void ObjectSelector::apply([[maybe_unused]] vsg::ButtonPressEvent& buttonPress)
 {
-    if (buttonPress.handled)
-    {
-        return;
-    }
-
-    const auto& keyboard = editor_context.keyboard;
-    const auto& mouse = editor_context.mouse;
-    const auto& selected_objects = editor_context.selected_objects;
-
-    if (state_ != State::INITIAL)
-    {
-        if (mouse->is_lmb_pressed())
-        {
-            confirm_keyboard_transformation();
-            return;
-        }
-        else if (mouse->is_rmb_pressed())
-        {
-            cancel_keyboard_transformation();
-            return;
-        }
-    }
-
-    if (!(buttonPress.button == 1 &&
-          buttonPress.mask == vsg::BUTTON_MASK_1))
-    {
-        return;
-    }
-
-    // If we have selected objects and clicked on Gizmo,
-    // handle Gizmo intersection (start moving objects with Gizmo)
-    if (!selected_objects.empty() && editor_context.gizmo->handle_intersections())
-    {
-        return;
-    }
-
-    const auto& camera = editor_context.camera;
-
-    const auto intersector = vsg::LineSegmentIntersector::create(*camera,
-        buttonPress.x, buttonPress.y);
-    if (!intersector)
-    {
-        return;
-    }
-    intersector->traversalMask = MASK_CLICKABLE;
-
-    editor_context.scene_graph->accept(*intersector);
-
-    auto& intersections = intersector->intersections;
-    if (intersections.empty())
-    {
-        // If we clicked on empty space without shift
-        // while there were selected objects,
-        // deselect them all
-        if (!selected_objects.empty() && !keyboard->get_shift_state())
-        {
-            auto command = std::make_unique<SelectObjectsCommand>(editor_context);
-            command->objects_to_deselect = selected_objects;
-            command->update_description();
-            command->execute();
-            editor_context.command_manager->push(std::move(command));
-        }
-
-        return;
-    }
-
-    for (const vsg::Node* const node : intersections.front()->nodePath)
-    {
-        if (const RouteObject* const object = node->cast<RouteObject>())
-        {
-            select_object(vsg::ref_ptr(const_cast<RouteObject*>(object)));
-            break;
-        }
-    }
-
-    intersections.clear();
+    // Обработка перенесена в commands/BasicEditorState.cpp
 }
 
 void ObjectSelector::apply(vsg::ButtonReleaseEvent& buttonRelease)

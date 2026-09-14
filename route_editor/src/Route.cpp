@@ -116,7 +116,7 @@ void Route::load()
     }
 
     editor_context.load_static_objects_thread = std::thread(&Route::load_static_objects, this);
-    editor_context.load_topology_thread = std::thread(&Route::load_topology, this);
+    // editor_context.load_topology_thread = std::thread(&Route::load_topology, this);
 }
 
 bool Route::load_objects_ref()

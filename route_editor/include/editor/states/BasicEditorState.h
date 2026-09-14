@@ -3,7 +3,10 @@
 
 #include "editor/states/State.h"
 
+#include <vsg/core/ref_ptr.h>
+
 struct EditorContext;
+class RouteObject;
 
 class BasicEditorState : public State
 {
@@ -18,6 +21,7 @@ public:
 
 private:
     void save_route();
+    void select_object(const vsg::ref_ptr<RouteObject>& object);
 };
 
 #endif // BASIC_EDITOR_STATE_H
