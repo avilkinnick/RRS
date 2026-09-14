@@ -26,7 +26,7 @@ public:
 
     virtual ~Camera() = default;
 
-    void handle_key_press();
+    void swap_projection_matrix();
 
     void update_move_direction();
 

@@ -11,7 +11,11 @@
 #include "editor/RouteObject.h"
 #include "editor/StateManager.h"
 #include "editor/commands/CommandManager.h"
+#include "editor/commands/DeleteObjectsCommand.h"
+#include "editor/commands/PasteObjectsCommand.h"
 #include "editor/commands/SelectObjectsCommand.h"
+#include "editor/editor_math.h"
+#include "editor/states/KeyboardTranslateState.h"
 
 #include <Journal.h>
 #include <filesystem.h>
@@ -31,8 +35,14 @@ BasicEditorState::~BasicEditorState() = default;
 void BasicEditorState::handle_key_press()
 {
     const auto& keyboard = editor_context.keyboard;
+    const auto& mouse = editor_context.mouse;
     const auto& camera = editor_context.camera;
     const auto& command_manager = editor_context.command_manager;
+    const auto& selected_objects = editor_context.selected_objects;
+    auto& copied_objects = editor_context.copied_objects;
+    const auto& window = editor_context.window;
+    const auto& gizmo = editor_context.gizmo;
+    const auto& state_manager = editor_context.state_manager;
 
     if (keyboard->pressed_once(ACTION_UNDO_COMMAND))
     {
@@ -46,9 +56,63 @@ void BasicEditorState::handle_key_press()
     {
         save_route();
     }
+    else if (keyboard->pressed_once(ACTION_SWAP_PROJECTION_MATRIX))
+    {
+        camera->swap_projection_matrix();
+    }
+    else if (keyboard->pressed_once(ACTION_COPY_OBJECTS))
+    {
+        copied_objects = selected_objects;
+    }
+    else if (keyboard->pressed_once(ACTION_PASTE_OBJECTS))
+    {
+        auto command = std::make_unique<PasteObjectsCommand>(editor_context);
+        command->execute();
+        command_manager->push(std::move(command));
+    }
+    else if (keyboard->pressed(ACTION_DELETE_OBJECTS))
+    {
+        auto command = std::make_unique<DeleteObjectsCommand>(editor_context);
+        command->execute();
+        command_manager->push(std::move(command));
+    }
     else
     {
-        camera->handle_key_press();
+        // const bool pressed_action_move = keyboard->pressed(ACTION_TRANSLATE_OBJECTS);
+        // const bool pressed_action_rotate = keyboard->pressed(ACTION_ROTATE_OBJECTS);
+        // const bool pressed_action_scale = keyboard->pressed(ACTION_SCALE_OBJECTS);
+
+        // if (!pressed_action_move && !pressed_action_rotate && !pressed_action_scale)
+        // {
+        //     return;
+        // }
+
+        // vsg::dvec3 intersection_pos;
+        // calculate_intersection_mouse_and_plane(mouse->get_x(), mouse->get_y(),
+        //     window->extent2D(), camera->get_inverse_view_matrix(),
+        //     camera->get_inverse_projection_matrix(), gizmo->get_curr_pos(),
+        //     camera->get_front(), intersection_pos);
+
+        // for (const auto& object : selected_objects)
+        // {
+        //     object->save_matrix();
+        // }
+
+        // if (pressed_action_move)
+        // {
+        //     auto* const state = dynamic_cast<KeyboardTranslateState*>(
+        //         state_manager->get_editor_state(STATE_KEYBOARD_TRANSLATE).get());
+        //     state->begin_intersection_pos = intersection_pos;
+        //     state_manager->defer_switch_to(STATE_KEYBOARD_TRANSLATE);
+        // }
+        // else if (pressed_action_rotate)
+        // {
+        //     // state_ = State::KEYBOARD_ROTATE;
+        // }
+        // else if (pressed_action_scale)
+        // {
+        //     // state_ = State::KEYBOARD_SCALE;
+        // }
     }
 }
 

@@ -65,15 +65,10 @@ Camera::Camera(EditorContext& editor_context)
     calculate_inverse_view_matrix();
 }
 
-void Camera::handle_key_press()
+void Camera::swap_projection_matrix()
 {
-    const auto& keyboard = editor_context.keyboard;
-
-    if (keyboard->pressed_once(ACTION_CHANGE_PROJECTION_MATRIX))
-    {
-        std::swap(projectionMatrix, another_projection_matrix);
-        calculate_inverse_projection_matrix();
-    }
+    std::swap(projectionMatrix, another_projection_matrix);
+    calculate_inverse_projection_matrix();
 }
 
 void Camera::update_move_direction()

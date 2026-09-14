@@ -35,7 +35,7 @@ static std::array<std::string, TOTAL_ACTIONS> get_action_setting_names()
     action_setting_names[ACTION_UNDO_COMMAND]             = "UndoCommand";
     action_setting_names[ACTION_REDO_COMMAND]             = "RedoCommand";
     action_setting_names[ACTION_SAVE_ROUTE]               = "SaveRoute";
-    action_setting_names[ACTION_CHANGE_PROJECTION_MATRIX] = "ChangeProjectionMatrix";
+    action_setting_names[ACTION_SWAP_PROJECTION_MATRIX] = "ChangeProjectionMatrix";
 
     return action_setting_names;
 };

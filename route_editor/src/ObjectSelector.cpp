@@ -44,7 +44,6 @@ void ObjectSelector::apply([[maybe_unused]] vsg::KeyPressEvent& keyPress)
     const auto& command_manager = editor_context.command_manager;
     const auto& window = editor_context.window;
     const auto& gizmo = editor_context.gizmo;
-    auto& copied_objects = editor_context.copied_objects;
 
     if (mouse->is_rmb_pressed() || state_ != State::INITIAL ||
         selected_objects.empty())
@@ -52,12 +51,7 @@ void ObjectSelector::apply([[maybe_unused]] vsg::KeyPressEvent& keyPress)
         return;
     }
 
-    if (keyboard->pressed(ACTION_COPY_OBJECTS))
-    {
-        copied_objects = selected_objects;
-        return;
-    }
-    else if (keyboard->pressed(ACTION_PASTE_OBJECTS))
+    if (keyboard->pressed(ACTION_PASTE_OBJECTS))
     {
         auto command = std::make_unique<PasteObjectsCommand>(editor_context);
         command->execute();
@@ -76,8 +70,7 @@ void ObjectSelector::apply([[maybe_unused]] vsg::KeyPressEvent& keyPress)
     const bool pressed_action_rotate = keyboard->pressed(ACTION_ROTATE_OBJECTS);
     const bool pressed_action_scale = keyboard->pressed(ACTION_SCALE_OBJECTS);
 
-    if (!pressed_action_move && !pressed_action_rotate &&
-        !pressed_action_scale)
+    if (!pressed_action_move && !pressed_action_rotate && !pressed_action_scale)
     {
         return;
     }
