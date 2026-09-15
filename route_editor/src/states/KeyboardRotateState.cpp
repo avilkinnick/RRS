@@ -11,3 +11,8 @@ KeyboardRotateState::~KeyboardRotateState() = default;
 void KeyboardRotateState::handle_key_press()
 {
 }
+
+void KeyboardRotateState::set_begin_intersection(vsg::dvec3 begin_intersection)
+{
+    this->begin_intersection = begin_intersection;
+}

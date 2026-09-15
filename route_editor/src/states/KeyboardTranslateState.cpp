@@ -11,11 +11,12 @@
 #include "editor/commands/TranslateObjectsCommand.h"
 #include "editor/editor_math.h"
 
-#include <memory>
-#include <utility>
 #include <vsg/maths/vec3.h>
 #include <vsg/ui/KeyEvent.h>
 #include <vsg/ui/PointerEvent.h>
+
+#include <memory>
+#include <utility>
 
 KeyboardTranslateState::KeyboardTranslateState(EditorContext& editor_context)
     : State(editor_context)

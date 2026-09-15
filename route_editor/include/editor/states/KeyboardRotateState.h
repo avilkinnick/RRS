@@ -3,6 +3,8 @@
 
 #include "editor/states/State.h"
 
+#include <vsg/maths/vec3.h>
+
 class KeyboardRotateState : public State
 {
 public:
@@ -10,6 +12,11 @@ public:
     virtual ~KeyboardRotateState() override;
 
     virtual void handle_key_press() override;
+
+    void set_begin_intersection(vsg::dvec3 begin_intersection);
+
+private:
+    vsg::dvec3 begin_intersection;
 };
 
 #endif // KEYBOARD_ROTATE_STATE_H

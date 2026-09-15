@@ -41,28 +41,12 @@ void ObjectSelector::apply([[maybe_unused]] vsg::KeyPressEvent& keyPress)
     const auto& mouse = editor_context.mouse;
     const auto& camera = editor_context.camera;
     const auto& selected_objects = editor_context.selected_objects;
-    const auto& command_manager = editor_context.command_manager;
     const auto& window = editor_context.window;
     const auto& gizmo = editor_context.gizmo;
 
     if (mouse->is_rmb_pressed() || state_ != State::INITIAL ||
         selected_objects.empty())
     {
-        return;
-    }
-
-    if (keyboard->pressed(ACTION_PASTE_OBJECTS))
-    {
-        auto command = std::make_unique<PasteObjectsCommand>(editor_context);
-        command->execute();
-        command_manager->push(std::move(command));
-        return;
-    }
-    else if (keyboard->pressed(ACTION_DELETE_OBJECTS))
-    {
-        auto command = std::make_unique<DeleteObjectsCommand>(editor_context);
-        command->execute();
-        command_manager->push(std::move(command));
         return;
     }
 
