@@ -2,6 +2,7 @@
 #define KEYBOARD_TRANSLATE_STATE_H
 
 #include "editor/states/State.h"
+
 #include <vsg/maths/vec3.h>
 
 class KeyboardTranslateState : public State
