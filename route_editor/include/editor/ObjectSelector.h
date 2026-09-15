@@ -53,7 +53,6 @@ private:
     EditorContext& editor_context;
 
     vsg::dvec3 prev_intersect_pos_;
-    vsg::dvec3 total_translation_;
     double total_rotation_rad_;
     vsg::dvec3 total_scale_;
 };

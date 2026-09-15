@@ -46,6 +46,7 @@
 #include <vsg/state/RasterizationState.h>
 #include <vsg/state/ResourceHints.h>
 #include <vsg/state/VertexInputState.h>
+#include <vsg/ui/KeyEvent.h>
 #include <vsg/utils/ShaderSet.h>
 #include <vsg/utils/SharedObjects.h>
 #include <vsgImGui/RenderImGui.h>
@@ -135,7 +136,9 @@ bool RouteEditor::initialize()
 
     viewer_->addEventHandler(editor_context.keyboard);
     viewer_->addEventHandler(vsgImGui::SendEventsToImGui::create());
-    viewer_->addEventHandler(vsg::CloseHandler::create(viewer_));
+    auto close_handler = vsg::CloseHandler::create(viewer_);
+    close_handler->closeKey = vsg::KEY_P;
+    viewer_->addEventHandler(close_handler);
     viewer_->addEventHandler(window_handler_);
     viewer_->addEventHandler(editor_context.mouse);
 

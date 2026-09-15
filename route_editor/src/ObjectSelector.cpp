@@ -80,7 +80,6 @@ void ObjectSelector::apply([[maybe_unused]] vsg::KeyPressEvent& keyPress)
         camera->get_inverse_projection_matrix(), gizmo->get_curr_pos(),
         camera->get_front(), prev_intersect_pos_);
 
-    total_translation_ = {0.0, 0.0, 0.0};
     total_rotation_rad_ = 0.0;
     total_scale_ = {1.0, 1.0, 1.0};
 
@@ -138,16 +137,6 @@ void ObjectSelector::apply(vsg::MoveEvent& moveEvent)
     {
         case State::KEYBOARD_GRAB:
         {
-            const vsg::dvec3 translation = world_intersection - prev_intersect_pos_;
-
-            prev_intersect_pos_ = world_intersection;
-            total_translation_ += translation;
-
-            for (const auto& object : selected_objects)
-            {
-                object->move(translation);
-            }
-
             return;
         }
         case State::KEYBOARD_ROTATE:
@@ -235,14 +224,6 @@ void ObjectSelector::confirm_keyboard_transformation()
 
     switch (state_)
     {
-        case State::KEYBOARD_GRAB:
-        {
-            auto command = std::make_unique<TranslateObjectsCommand>(
-                editor_context, selected_objects, total_translation_);
-            command_manager->push(std::move(command));
-
-            break;
-        }
         case State::KEYBOARD_ROTATE:
         {
             auto command = std::make_unique<RotateObjectsCommand>(

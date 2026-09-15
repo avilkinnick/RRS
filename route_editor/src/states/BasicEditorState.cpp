@@ -87,11 +87,11 @@ void BasicEditorState::handle_key_press()
             return;
         }
 
-        vsg::dvec3 intersection_pos;
+        vsg::dvec3 world_intersection;
         calculate_intersection_mouse_and_plane(mouse->get_x(), mouse->get_y(),
             window->extent2D(), camera->get_inverse_view_matrix(),
             camera->get_inverse_projection_matrix(), gizmo->get_curr_pos(),
-            camera->get_front(), intersection_pos);
+            camera->get_front(), world_intersection);
 
         for (const auto& object : selected_objects)
         {
@@ -101,7 +101,7 @@ void BasicEditorState::handle_key_press()
         if (pressed_action_move)
         {
             auto* const state = state_manager->get_keyboard_translate_state();
-            state->begin_intersection_pos = intersection_pos;
+            state->set_begin_intersection(world_intersection);
             state_manager->defer_switch_to(STATE_KEYBOARD_TRANSLATE);
         }
         else if (pressed_action_rotate)
