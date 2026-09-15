@@ -12,11 +12,14 @@ public:
     virtual ~KeyboardRotateState() override;
 
     virtual void handle_key_press() override;
+    virtual void handle_button_press() override;
+    virtual void handle_mouse_move() override;
 
     void set_begin_intersection(vsg::dvec3 begin_intersection);
 
 private:
     vsg::dvec3 begin_intersection;
+    double rotation_rad;
 };
 
 #endif // KEYBOARD_ROTATE_STATE_H

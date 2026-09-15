@@ -16,6 +16,7 @@
 #include "editor/commands/SelectObjectsCommand.h"
 #include "editor/editor_math.h"
 #include "editor/states/KeyboardTranslateState.h"
+#include "editor/states/KeyboardRotateState.h"
 
 #include <Journal.h>
 #include <filesystem.h>
@@ -106,7 +107,9 @@ void BasicEditorState::handle_key_press()
         }
         else if (pressed_action_rotate)
         {
-            // state_ = State::KEYBOARD_ROTATE;
+            auto* const state = state_manager->get_keyboard_rotate_state();
+            state->set_begin_intersection(world_intersection);
+            state_manager->defer_switch_to(STATE_KEYBOARD_ROTATE);
         }
         else if (pressed_action_scale)
         {
