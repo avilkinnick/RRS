@@ -30,30 +30,11 @@ class ObjectSelector : public vsg::Inherit<vsg::Visitor, ObjectSelector>
 public:
     ObjectSelector(EditorContext& editor_context);
 
-    void apply(vsg::KeyPressEvent& keyPress) override;
-    void apply(vsg::ButtonPressEvent& buttonPress) override;
     void apply(vsg::ButtonReleaseEvent& buttonRelease) override;
     void apply(vsg::MoveEvent& moveEvent) override;
 
 private:
-    void confirm_keyboard_transformation();
-    void cancel_keyboard_transformation();
-
-private:
-    enum class State
-    {
-        INITIAL,
-        KEYBOARD_GRAB,
-        KEYBOARD_ROTATE,
-        KEYBOARD_SCALE
-    };
-
-    State state_ = State::INITIAL;
-
     EditorContext& editor_context;
-
-    vsg::dvec3 prev_intersect_pos_;
-    vsg::dvec3 total_scale_;
 };
 
 #endif // OBJECT_SELECTOR_H

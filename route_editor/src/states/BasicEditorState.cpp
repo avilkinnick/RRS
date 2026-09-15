@@ -17,6 +17,7 @@
 #include "editor/editor_math.h"
 #include "editor/states/KeyboardTranslateState.h"
 #include "editor/states/KeyboardRotateState.h"
+#include "editor/states/KeyboardScaleState.h"
 
 #include <Journal.h>
 #include <filesystem.h>
@@ -79,9 +80,9 @@ void BasicEditorState::handle_key_press()
     }
     else
     {
-        const bool pressed_action_move = keyboard->pressed(ACTION_TRANSLATE_OBJECTS);
-        const bool pressed_action_rotate = keyboard->pressed(ACTION_ROTATE_OBJECTS);
-        const bool pressed_action_scale = keyboard->pressed(ACTION_SCALE_OBJECTS);
+        const bool pressed_action_move = keyboard->pressed_once(ACTION_TRANSLATE_OBJECTS);
+        const bool pressed_action_rotate = keyboard->pressed_once(ACTION_ROTATE_OBJECTS);
+        const bool pressed_action_scale = keyboard->pressed_once(ACTION_SCALE_OBJECTS);
 
         if (!pressed_action_move && !pressed_action_rotate && !pressed_action_scale)
         {
@@ -113,7 +114,9 @@ void BasicEditorState::handle_key_press()
         }
         else if (pressed_action_scale)
         {
-            // state_ = State::KEYBOARD_SCALE;
+            auto* const state = state_manager->get_keyboard_scale_state();
+            state->set_begin_intersection(world_intersection);
+            state_manager->defer_switch_to(STATE_KEYBOARD_SCALE);
         }
     }
 }

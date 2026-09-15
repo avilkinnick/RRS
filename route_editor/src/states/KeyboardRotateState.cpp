@@ -10,6 +10,7 @@
 #include "editor/StateManager.h"
 #include "editor/commands/RotateObjectsCommand.h"
 #include "editor/editor_math.h"
+
 #include <vsg/maths/vec3.h>
 
 KeyboardRotateState::KeyboardRotateState(EditorContext& editor_context)
