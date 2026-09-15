@@ -1,4 +1,5 @@
 #include    <TrainsListWidget.h>
+#include    <tcp-client.h>
 #include    <Logger.h>
 
 //------------------------------------------------------------------------------
@@ -165,9 +166,11 @@ void TrainsListWidget::renderTrainsList()
     const float top_y = 300.0f;
     const float max_height = std::max(0.0f, ImGui::GetIO().DisplaySize.y - top_y - 20.0f);
 
-    // Высота списка: заголовок + элементы + кнопка + отступы
+    // Высота списка: заголовок + элементы + кнопки + отступы
     const float list_height = _cached_trains_ids.size() * item_height;
-    float total_height = header_height + list_height + button_height + padding * 3;
+    const bool has_reverse_btn = (current_train_id >= 0 && _params->tcp_client);
+    const float btn_gap = has_reverse_btn ? ImGui::GetFrameHeight() * 0.5f : 0.0f;
+    float total_height = header_height + list_height + button_height * (1 + (has_reverse_btn ? 1 : 0)) + btn_gap + padding * 3;
 
     // Применяем минимальную и максимальную высоту
     total_height = std::clamp(total_height, std::min(min_height, max_height), max_height);
@@ -203,9 +206,10 @@ void TrainsListWidget::renderTrainsList()
     ImGui::Separator();
 
     // Список поездов с прокруткой
+    const int num_buttons = 1 + (has_reverse_btn ? 1 : 0);
     const float scroll_height = std::max(
         0.0f,
-        total_height - header_height - button_height - padding * 3
+        total_height - header_height - button_height * num_buttons - padding * 3
         );
 
     ImGui::BeginChild("##TrainsListScroll", ImVec2(0, scroll_height), true);
@@ -301,6 +305,17 @@ void TrainsListWidget::renderTrainsList()
         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.4f, 0.4f, 0.4f, 1.0f));
         ImGui::TextDisabled("Управляемый поезд: текущий");
         ImGui::PopStyleColor();
+    }
+
+    // Кнопка "Изменить направление поезда"
+    if (current_train_id >= 0 && _params->tcp_client)
+    {
+        ImGui::Dummy(ImVec2(0.0f, ImGui::GetFrameHeight() * 0.5f));
+
+        if (ImGui::Button("Изменить направление поезда", ImVec2(window_width - padding * 2, 0)))
+        {
+            _params->tcp_client->sendReverseTrain(current_train_id);
+        }
     }
 
     ImGui::End();
