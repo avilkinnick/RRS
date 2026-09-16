@@ -107,16 +107,19 @@ void Route::load()
     const auto& fs = FileSystem::getInstance();
     const auto& camera_settings = editor_context.camera_settings;
     const auto& vsg_options = editor_context.vsg_options;
+    auto& objects_ref = editor_context.objects_ref;
+    auto& load_static_objects_thread = editor_context.load_static_objects_thread;
+    // auto& load_topology_thread = editor_context.load_topology_thread;
 
-    for (auto& [label, ref] : editor_context.objects_ref)
+    for (auto& [label, ref] : objects_ref)
     {
         ref.paged_lod = construct_paged_lod(
             fs.combinePath(route_dir, ref.relative_path),
             camera_settings.view_distance, vsg_options);
     }
 
-    editor_context.load_static_objects_thread = std::thread(&Route::load_static_objects, this);
-    // editor_context.load_topology_thread = std::thread(&Route::load_topology, this);
+    load_static_objects_thread = std::thread(&Route::load_static_objects, this);
+    // load_topology_thread = std::thread(&Route::load_topology, this);
 }
 
 bool Route::load_objects_ref()

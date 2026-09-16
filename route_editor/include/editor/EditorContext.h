@@ -35,6 +35,7 @@ class Route;
 class SceneGraph;
 class StateManager;
 class Topology;
+class WorldCulling;
 
 namespace vsg
 {
@@ -88,6 +89,7 @@ struct EditorContext
     vsg::ref_ptr<Route> route;
     vsg::ref_ptr<Gizmo> gizmo;
     std::unique_ptr<ObjectManager> object_manager;
+    vsg::ref_ptr<WorldCulling> world_culling;
 
     std::unique_ptr<StateManager> state_manager;
     std::unique_ptr<CommandManager> command_manager;

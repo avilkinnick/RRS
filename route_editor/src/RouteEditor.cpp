@@ -17,6 +17,7 @@
 #include "editor/SingleSwitch.h"
 #include "editor/StateManager.h"
 #include "editor/WindowHandler.h"
+#include "editor/WorldCulling.h"
 #include "editor/commands/CommandManager.h"
 
 #include <CfgReader.h>
@@ -86,6 +87,10 @@ bool RouteEditor::initialize()
 
     const auto ambient_light = vsg::AmbientLight::create();
 
+    const auto& scene_settings = editor_context.scene_settings;
+    editor_context.world_culling = WorldCulling::create(
+        scene_settings.culling_tiles_size_0,
+        scene_settings.culling_tiles_size_1);
     editor_context.scene_graph = vsg::Switch::create();
     editor_context.scene_graph->addChild(vsg::Mask{MASK_SCENE}, ambient_light);
     editor_context.scene_graph->addChild(vsg::MASK_ALL, editor_context.route);

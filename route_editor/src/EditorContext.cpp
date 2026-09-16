@@ -10,6 +10,7 @@
 #include "editor/Route.h"
 #include "editor/RouteObject.h"
 #include "editor/StateManager.h"
+#include "editor/WorldCulling.h"
 #include "editor/commands/CommandManager.h"
 
 #include <topology.h>

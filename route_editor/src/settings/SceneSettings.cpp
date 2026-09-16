@@ -14,4 +14,6 @@ void scene_settings_t::read(CfgReader& cfg)
     const QString section = "Scene";
 
     cfg.getInt(section, "NumLights", num_lights);
+    cfg.getDouble(section, "LargeScaleTileSize", culling_tiles_size_0);
+    cfg.getDouble(section, "SmallScaleTileSize", culling_tiles_size_1);
 }
