@@ -115,7 +115,7 @@ bool RouteEditor::initialize()
     gui_view2->mask = MASK_GUI2;
 
     editor_context.state_manager = std::make_unique<StateManager>(editor_context);
-    const auto editor_gui = EditorGui::create(editor_context, editor_state);
+    const auto editor_gui = EditorGui::create(editor_context);
 
     const auto render_gui = vsgImGui::RenderImGui::create(editor_context.window, editor_gui);
 
@@ -173,7 +173,7 @@ void RouteEditor::run()
         const double delta_time = curr_time - prev_time;
         prev_time = curr_time;
 
-        if (editor_state == EditorState::LOAD_ROUTE)
+        if (editor_context.editor_state == EditorState::LOAD_ROUTE)
         {
             editor_context.route->load();
 
@@ -182,7 +182,7 @@ void RouteEditor::run()
                 nullptr, editor_context.route, vsg::MASK_ALL});
             editor_context.compile_infos_mutex.unlock();
 
-            editor_state = EditorState::EDIT_ROUTE;
+            editor_context.editor_state = EditorState::EDIT_ROUTE;
         }
 
         viewer_->handleEvents();

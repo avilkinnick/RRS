@@ -9,6 +9,8 @@ public:
     RouteNotLoadedState(EditorContext& editor_context);
     virtual ~RouteNotLoadedState() override;
 
+    virtual void draw_gui() const override;
+
     virtual void fill_status_bar() const override;
 };
 

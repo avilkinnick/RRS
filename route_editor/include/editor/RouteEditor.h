@@ -2,7 +2,6 @@
 #define ROUTE_EDITOR_H
 
 #include "editor/EditorContext.h"
-#include "editor/EditorState.h"
 
 class WindowHandler;
 
@@ -34,8 +33,6 @@ private:
     EditorContext editor_context;
     vsg::ref_ptr<vsg::Viewer> viewer_;
     vsg::ref_ptr<WindowHandler> window_handler_;
-
-    EditorState editor_state = EditorState::SELECT_ROUTE;
 };
 
 #endif // ROUTE_EDITOR_H

@@ -1,8 +1,6 @@
 #ifndef EDITOR_GUI_H
 #define EDITOR_GUI_H
 
-#include "editor/EditorState.h"
-
 #include <vsg/commands/Command.h>
 #include <vsg/core/Inherit.h>
 #include <vsg/core/ref_ptr.h>
@@ -24,7 +22,7 @@ class CommandBuffer;
 class EditorGui : public vsg::Inherit<vsg::Command, EditorGui>
 {
 public:
-    EditorGui(EditorContext& editor_context, EditorState& editor_state);
+    EditorGui(EditorContext& editor_context);
 
     ~EditorGui();
 
@@ -70,7 +68,6 @@ private:
 
 private:
     EditorContext& editor_context;
-    EditorState& editor_state;
 
     ImGuiWindowFlags window_flags_;
     ImGuiViewport* viewport;
@@ -86,8 +83,6 @@ private:
     void draw_main_menu_bar() const;
 
     void draw_status_bar() const;
-
-    void draw_load_route_file_dialog() const;
 
     void draw_invalid_route_popup() const;
 };

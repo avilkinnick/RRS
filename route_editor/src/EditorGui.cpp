@@ -81,9 +81,8 @@ static bool drag_double3(const char* label, double* data, float speed = 1.0f,
         speed, min, max, "%.3f", flags);
 }
 
-EditorGui::EditorGui(EditorContext& context, EditorState& editor_state)
+EditorGui::EditorGui(EditorContext& context)
     : editor_context(context)
-    , editor_state(editor_state)
 {
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
@@ -122,7 +121,6 @@ void EditorGui::record([[maybe_unused]] vsg::CommandBuffer& command_buffer) cons
 
     draw_main_menu_bar();
     draw_status_bar();
-    draw_load_route_file_dialog();
     draw_invalid_route_popup();
 
     const auto& state_manager = editor_context.state_manager;
@@ -130,7 +128,7 @@ void EditorGui::record([[maybe_unused]] vsg::CommandBuffer& command_buffer) cons
 
     auto& gui_settings = editor_context.gui_settings;
 
-    switch (editor_state)
+    switch (editor_context.editor_state)
     {
         case EditorState::SELECT_ROUTE:
         {
@@ -872,46 +870,6 @@ void EditorGui::draw_status_bar() const
     {
         editor_context.state_manager->get_current_editor_state()->fill_status_bar();
         ImGui::End();
-    }
-}
-
-void EditorGui::draw_load_route_file_dialog() const
-{
-    if (ImGuiFileDialog::Instance()->IsOpened("LoadRouteKey"))
-    {
-        ImGui::SetNextWindowPos(viewport->WorkPos);
-        ImGui::SetNextWindowSize(ImVec2(
-            viewport->WorkSize.x,
-            viewport->WorkSize.y - ImGui::GetFrameHeight() * 1.5
-        ));
-    }
-
-    if (ImGuiFileDialog::Instance()->Display("LoadRouteKey",
-        ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove |
-        ImGuiWindowFlags_NoCollapse))
-    {
-        if (ImGuiFileDialog::Instance()->IsOk())
-        {
-            auto& route_dir = editor_context.route->route_dir;
-            route_dir = ImGuiFileDialog::Instance()->GetCurrentPath();
-            if (!std::filesystem::exists(route_dir + "/models") ||
-                !std::filesystem::exists(route_dir + "/textures") ||
-                !std::filesystem::exists(route_dir + "/topology") ||
-                !std::filesystem::exists(route_dir + "/objects.ref"))
-            {
-                ImGui::OpenPopup("InvalidRoute");
-            }
-            else
-            {
-                editor_context.state_manager->defer_switch_to(STATE_BASIC);
-                editor_state = EditorState::LOAD_ROUTE;
-                ImGuiFileDialog::Instance()->Close();
-            }
-        }
-        else
-        {
-            ImGuiFileDialog::Instance()->Close();
-        }
     }
 }
 

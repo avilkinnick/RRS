@@ -1,6 +1,7 @@
 #ifndef EDITOR_CONTEXT_H
 #define EDITOR_CONTEXT_H
 
+#include "editor/EditorState.h"
 #include "editor/KeyBindings.h"
 #include "editor/RouteMap.h"
 #include "editor/RouteObjects.h"
@@ -91,6 +92,7 @@ struct EditorContext
     std::unique_ptr<ObjectManager> object_manager;
     vsg::ref_ptr<WorldCulling> world_culling;
 
+    EditorState editor_state = EditorState::SELECT_ROUTE;
     std::unique_ptr<StateManager> state_manager;
     std::unique_ptr<CommandManager> command_manager;
 
