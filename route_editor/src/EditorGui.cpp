@@ -87,7 +87,7 @@ EditorGui::EditorGui(EditorContext& context, EditorState& editor_state)
 {
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
-    io.IniFilename = nullptr;
+    // io.IniFilename = nullptr;
 
     const auto& gui_settings = context.gui_settings;
 
@@ -95,6 +95,7 @@ EditorGui::EditorGui(EditorContext& context, EditorState& editor_state)
         nullptr, io.Fonts->GetGlyphRangesCyrillic());
 
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+    io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
     if (!gui_settings.is_editable)
     {
@@ -103,6 +104,7 @@ EditorGui::EditorGui(EditorContext& context, EditorState& editor_state)
 
     ImGuiStyle& style = ImGui::GetStyle();
     style.FrameBorderSize = 1.0f;
+    style.FrameRounding = 3.0f;
     style.ScrollbarSize = 16.0f;
     style.GrabMinSize = 16.0f;
 
@@ -116,6 +118,8 @@ EditorGui::~EditorGui()
 
 void EditorGui::record([[maybe_unused]] vsg::CommandBuffer& command_buffer) const
 {
+    ImGui::DockSpaceOverViewport();
+
     draw_main_menu_bar();
     draw_status_bar();
     draw_load_route_file_dialog();
@@ -134,8 +138,8 @@ void EditorGui::record([[maybe_unused]] vsg::CommandBuffer& command_buffer) cons
         }
         default:
         {
-            ImGui::SetNextWindowPos(viewport->WorkPos);
-            ImGui::Begin("Settings", nullptr, window_flags_ | ImGuiWindowFlags_AlwaysAutoResize);
+            // ImGui::SetNextWindowPos(viewport->WorkPos);
+            ImGui::Begin("Settings", nullptr, window_flags_);
             ImGui::Checkbox("Show objects.ref", &gui_settings.show_objects_ref);
             ImGui::Checkbox("Show route1.map", &gui_settings.show_route_map);
             ImGui::Checkbox("Show stations", &gui_settings.show_stations_conf);
@@ -147,7 +151,7 @@ void EditorGui::record([[maybe_unused]] vsg::CommandBuffer& command_buffer) cons
             ImGui::Checkbox("Show commands", &gui_settings.show_commands);
             ImGui::End();
 
-            ImGui::ShowDemoWindow();
+            // ImGui::ShowDemoWindow();
 
             show_objects_ref();
             show_route_map();
