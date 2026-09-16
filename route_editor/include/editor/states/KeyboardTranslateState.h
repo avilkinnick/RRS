@@ -1,25 +1,25 @@
-#ifndef KEYBOARD_TRANSLATE_STATE_H
-#define KEYBOARD_TRANSLATE_STATE_H
+#ifndef EDITOR_STATES_KEYBOARD_TRANSLATE_STATE_H
+#define EDITOR_STATES_KEYBOARD_TRANSLATE_STATE_H
 
-#include "editor/states/State.h"
+#include "editor/states/KeyboardTransformState.h"
 
 #include <vsg/maths/vec3.h>
 
-class KeyboardTranslateState : public State
+class KeyboardTranslateState : public KeyboardTransformState
 {
 public:
     KeyboardTranslateState(EditorContext& editor_context);
     virtual ~KeyboardTranslateState() override;
 
-    virtual void handle_key_press() override;
-    virtual void handle_button_press() override;
     virtual void handle_mouse_move() override;
 
-    void set_begin_intersection(vsg::dvec3 begin_intersection);
+    virtual void set_begin_intersection(vsg::dvec3 begin_intersection) override;
 
 private:
-    vsg::dvec3 begin_intersection;
     vsg::dvec3 prev_intersection;
+
+private:
+    virtual void confirm_transform() const override;
 };
 
-#endif // KEYBOARD_TRANSLATE_STATE_H
+#endif // EDITOR_STATES_KEYBOARD_TRANSLATE_STATE_H

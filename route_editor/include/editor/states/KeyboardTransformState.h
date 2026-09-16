@@ -25,6 +25,8 @@ protected:
 protected:
     virtual void confirm_transform() const;
     void cancel_transform() const;
+
+    vsg::dvec3 calculate_world_intersection() const;
 };
 
 #endif // EDITOR_STATES_KEYBOARD_TRANSFORM_STATE_H

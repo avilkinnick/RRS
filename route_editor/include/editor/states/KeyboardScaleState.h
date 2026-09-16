@@ -1,25 +1,25 @@
-#ifndef KEYBOARD_SCALE_STATE_H
-#define KEYBOARD_SCALE_STATE_H
+#ifndef EDITOR_STATES_KEYBOARD_SCALE_STATE_H
+#define EDITOR_STATES_KEYBOARD_SCALE_STATE_H
 
-#include "editor/states/State.h"
+#include "editor/states/KeyboardTransformState.h"
 
 #include <vsg/maths/vec3.h>
 
-class KeyboardScaleState : public State
+class KeyboardScaleState : public KeyboardTransformState
 {
 public:
     KeyboardScaleState(EditorContext& editor_context);
     virtual ~KeyboardScaleState() override;
 
-    virtual void handle_key_press() override;
-    virtual void handle_button_press() override;
     virtual void handle_mouse_move() override;
 
-    void set_begin_intersection(vsg::dvec3 begin_intersection);
+    virtual void set_begin_intersection(vsg::dvec3 begin_intersection) override;
 
 private:
-    vsg::dvec3 begin_intersection;
     vsg::dvec3 scale;
+
+private:
+    virtual void confirm_transform() const override;
 };
 
-#endif // KEYBOARD_SCALE_STATE_H
+#endif // EDITOR_STATES_KEYBOARD_SCALE_STATE_H
