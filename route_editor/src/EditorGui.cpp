@@ -118,7 +118,7 @@ EditorGui::~EditorGui()
 
 void EditorGui::record([[maybe_unused]] vsg::CommandBuffer& command_buffer) const
 {
-    ImGui::DockSpaceOverViewport();
+    // ImGui::DockSpaceOverViewport(0, viewport);
 
     draw_main_menu_bar();
     draw_status_bar();
