@@ -109,7 +109,7 @@ void Route::load()
     const auto& vsg_options = editor_context.vsg_options;
     auto& objects_ref = editor_context.objects_ref;
     auto& load_static_objects_thread = editor_context.load_static_objects_thread;
-    // auto& load_topology_thread = editor_context.load_topology_thread;
+    auto& load_topology_thread = editor_context.load_topology_thread;
 
     for (auto& [label, ref] : objects_ref)
     {
@@ -119,7 +119,7 @@ void Route::load()
     }
 
     load_static_objects_thread = std::thread(&Route::load_static_objects, this);
-    // load_topology_thread = std::thread(&Route::load_topology, this);
+    load_topology_thread = std::thread(&Route::load_topology, this);
 }
 
 bool Route::load_objects_ref()
@@ -405,6 +405,7 @@ bool Route::load_topology()
 
                 continue;
             }
+            signal->calcPosition();
 
             const std::string signal_model_name =
                 signal->getSignalModel().toStdString();
@@ -448,6 +449,10 @@ bool Route::load_topology()
             editor_context.compile_infos.emplace_back(CompileInfo{
                 vsg::ref_ptr(this), object, vsg::MASK_ALL});
             editor_context.compile_infos_mutex.unlock();
+
+            editor_context.static_objects_mutex.lock();
+            editor_context.static_objects.emplace_back(object);
+            editor_context.static_objects_mutex.unlock();
         }
     };
 
