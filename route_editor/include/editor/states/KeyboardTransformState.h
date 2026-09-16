@@ -13,11 +13,11 @@ public:
     KeyboardTransformState(EditorContext& editor_context);
     virtual ~KeyboardTransformState() override;
 
+    virtual void on_activate() override;
+
     virtual void handle_key_press() override;
     virtual void handle_button_press() override;
     virtual void handle_mouse_move() override;
-
-    virtual void set_begin_intersection(vsg::dvec3 begin_intersection);
 
 protected:
     vsg::dvec3 begin_intersection;

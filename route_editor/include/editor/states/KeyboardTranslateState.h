@@ -11,9 +11,9 @@ public:
     KeyboardTranslateState(EditorContext& editor_context);
     virtual ~KeyboardTranslateState() override;
 
-    virtual void handle_mouse_move() override;
+    virtual void on_activate() override;
 
-    virtual void set_begin_intersection(vsg::dvec3 begin_intersection) override;
+    virtual void handle_mouse_move() override;
 
 private:
     vsg::dvec3 prev_intersection;

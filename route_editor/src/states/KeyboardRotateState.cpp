@@ -19,6 +19,12 @@ KeyboardRotateState::KeyboardRotateState(EditorContext& editor_context)
 
 KeyboardRotateState::~KeyboardRotateState() = default;
 
+void KeyboardRotateState::on_activate()
+{
+    KeyboardTransformState::on_activate();
+    rotation_rad = 0.0;
+}
+
 void KeyboardRotateState::handle_mouse_move()
 {
     const auto& camera = editor_context.camera;
@@ -62,12 +68,6 @@ void KeyboardRotateState::handle_mouse_move()
         object->set_matrix(object->get_initial_matrix());
         object->rotate_around_pivot(gizmo_pos, front, rotation_rad, object->matrix);
     }
-}
-
-void KeyboardRotateState::set_begin_intersection(vsg::dvec3 begin_intersection)
-{
-    KeyboardTransformState::set_begin_intersection(begin_intersection);
-    rotation_rad = 0.0;
 }
 
 void KeyboardRotateState::confirm_transform() const

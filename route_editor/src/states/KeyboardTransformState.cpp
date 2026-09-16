@@ -22,6 +22,11 @@ KeyboardTransformState::KeyboardTransformState(EditorContext& editor_context)
 
 KeyboardTransformState::~KeyboardTransformState() = default;
 
+void KeyboardTransformState::on_activate()
+{
+    begin_intersection = calculate_world_intersection();
+}
+
 void KeyboardTransformState::handle_key_press()
 {
     const auto& keyboard = editor_context.keyboard;
@@ -61,11 +66,6 @@ void KeyboardTransformState::handle_button_press()
 
 void KeyboardTransformState::handle_mouse_move()
 {
-}
-
-void KeyboardTransformState::set_begin_intersection(vsg::dvec3 begin_intersection)
-{
-    this->begin_intersection = begin_intersection;
 }
 
 void KeyboardTransformState::confirm_transform() const

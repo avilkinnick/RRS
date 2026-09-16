@@ -14,10 +14,6 @@
 #include "editor/commands/DeleteObjectsCommand.h"
 #include "editor/commands/PasteObjectsCommand.h"
 #include "editor/commands/SelectObjectsCommand.h"
-#include "editor/editor_math.h"
-#include "editor/states/KeyboardTranslateState.h"
-#include "editor/states/KeyboardRotateState.h"
-#include "editor/states/KeyboardScaleState.h"
 
 #include <Journal.h>
 #include <filesystem.h>
@@ -37,13 +33,10 @@ BasicEditorState::~BasicEditorState() = default;
 void BasicEditorState::handle_key_press()
 {
     const auto& keyboard = editor_context.keyboard;
-    const auto& mouse = editor_context.mouse;
     const auto& camera = editor_context.camera;
     const auto& command_manager = editor_context.command_manager;
     const auto& selected_objects = editor_context.selected_objects;
     auto& copied_objects = editor_context.copied_objects;
-    const auto& window = editor_context.window;
-    const auto& gizmo = editor_context.gizmo;
     const auto& state_manager = editor_context.state_manager;
 
     if (keyboard->pressed_once(ACTION_UNDO_COMMAND))
@@ -89,12 +82,6 @@ void BasicEditorState::handle_key_press()
             return;
         }
 
-        vsg::dvec3 world_intersection;
-        calculate_intersection_mouse_and_plane(mouse->get_x(), mouse->get_y(),
-            window->extent2D(), camera->get_inverse_view_matrix(),
-            camera->get_inverse_projection_matrix(), gizmo->get_curr_pos(),
-            camera->get_front(), world_intersection);
-
         for (const auto& object : selected_objects)
         {
             object->save_matrix();
@@ -102,20 +89,14 @@ void BasicEditorState::handle_key_press()
 
         if (pressed_action_move)
         {
-            auto* const state = state_manager->get_keyboard_translate_state();
-            state->set_begin_intersection(world_intersection);
             state_manager->defer_switch_to(STATE_KEYBOARD_TRANSLATE);
         }
         else if (pressed_action_rotate)
         {
-            auto* const state = state_manager->get_keyboard_rotate_state();
-            state->set_begin_intersection(world_intersection);
             state_manager->defer_switch_to(STATE_KEYBOARD_ROTATE);
         }
         else if (pressed_action_scale)
         {
-            auto* const state = state_manager->get_keyboard_scale_state();
-            state->set_begin_intersection(world_intersection);
             state_manager->defer_switch_to(STATE_KEYBOARD_SCALE);
         }
     }

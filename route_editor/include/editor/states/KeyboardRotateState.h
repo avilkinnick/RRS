@@ -11,9 +11,9 @@ public:
     KeyboardRotateState(EditorContext& editor_context);
     virtual ~KeyboardRotateState() override;
 
-    virtual void handle_mouse_move() override;
+    virtual void on_activate() override;
 
-    virtual void set_begin_intersection(vsg::dvec3 begin_intersection) override;
+    virtual void handle_mouse_move() override;
 
 private:
     double rotation_rad;

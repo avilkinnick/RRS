@@ -24,6 +24,12 @@ KeyboardTranslateState::KeyboardTranslateState(EditorContext& editor_context)
 
 KeyboardTranslateState::~KeyboardTranslateState() = default;
 
+void KeyboardTranslateState::on_activate()
+{
+    KeyboardTransformState::on_activate();
+    prev_intersection = begin_intersection;
+}
+
 void KeyboardTranslateState::handle_mouse_move()
 {
     const auto& selected_objects = editor_context.selected_objects;
@@ -36,12 +42,6 @@ void KeyboardTranslateState::handle_mouse_move()
     {
         object->move(translation);
     }
-}
-
-void KeyboardTranslateState::set_begin_intersection(vsg::dvec3 begin_intersection)
-{
-    KeyboardTransformState::set_begin_intersection(begin_intersection);
-    prev_intersection = begin_intersection;
 }
 
 void KeyboardTranslateState::confirm_transform() const

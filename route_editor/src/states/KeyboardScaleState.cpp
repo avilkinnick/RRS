@@ -20,6 +20,12 @@ KeyboardScaleState::KeyboardScaleState(EditorContext& editor_context)
 
 KeyboardScaleState::~KeyboardScaleState() = default;
 
+void KeyboardScaleState::on_activate()
+{
+    KeyboardTransformState::on_activate();
+    scale = {1.0, 1.0, 1.0};
+}
+
 void KeyboardScaleState::handle_mouse_move()
 {
     const auto& gizmo = editor_context.gizmo;
@@ -45,12 +51,6 @@ void KeyboardScaleState::handle_mouse_move()
         object->set_matrix(object->get_initial_matrix());
         object->scale_relative_to_pivot(gizmo_pos, scale, object->matrix);
     }
-}
-
-void KeyboardScaleState::set_begin_intersection(vsg::dvec3 begin_intersection)
-{
-    KeyboardTransformState::set_begin_intersection(begin_intersection);
-    scale = {1.0, 1.0, 1.0};
 }
 
 void KeyboardScaleState::confirm_transform() const
