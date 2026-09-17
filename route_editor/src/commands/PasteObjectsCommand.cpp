@@ -44,9 +44,7 @@ void PasteObjectsCommand::execute()
             editor_context.route, pasted_object, vsg::MASK_ALL});
         editor_context.compile_infos_mutex.unlock();
 
-        editor_context.static_objects_mutex.lock();
-        editor_context.static_objects.emplace_back(pasted_object);
-        editor_context.static_objects_mutex.unlock();
+        editor_context.static_objects.lock()->emplace_back(pasted_object);
 
         pasted_object->select();
     }
@@ -60,10 +58,7 @@ void PasteObjectsCommand::undo()
     {
         pasted_object->deselect();
 
-        auto& static_objects = editor_context.static_objects;
-        editor_context.static_objects_mutex.lock();
-        static_objects.remove(pasted_object);
-        editor_context.static_objects_mutex.unlock();
+        editor_context.static_objects.lock()->remove(pasted_object);
 
         auto& route_children = editor_context.route->children;
 

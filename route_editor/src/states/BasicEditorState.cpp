@@ -176,8 +176,6 @@ void BasicEditorState::handle_mouse_scroll()
 void BasicEditorState::save_route()
 {
     const auto& route = editor_context.route;
-    const auto& static_objects = editor_context.static_objects;
-    auto& static_objects_mutex = editor_context.static_objects_mutex;
 
     const auto& fs = FileSystem::getInstance();
     const std::string save_dir = fs.combinePath(route->route_dir,
@@ -198,8 +196,8 @@ void BasicEditorState::save_route()
     // Перезаписываем рабочую копию
     std::ofstream route_map_file{fs.combinePath(save_dir, "route1.map")};
 
-    static_objects_mutex.lock();
-    for (const auto& object : static_objects)
+    auto static_objects = editor_context.static_objects.lock();
+    for (const auto& object : *static_objects)
     {
         const vsg::dvec3& translation{object->get_translation()};
         const vsg::dvec3 rotation_deg{-object->get_rotation_deg()};
@@ -208,7 +206,6 @@ void BasicEditorState::save_route()
             translation.x << "," << translation.y << "," << translation.z << "," <<
             rotation_deg.x << "," << rotation_deg.y << "," << rotation_deg.z << ";\n";
     }
-    static_objects_mutex.unlock();
 }
 
 void BasicEditorState::select_object(const vsg::ref_ptr<RouteObject>& object)

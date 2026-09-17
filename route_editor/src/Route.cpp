@@ -304,9 +304,7 @@ void Route::load_static_objects()
                 vsg::ref_ptr(this), object, vsg::MASK_ALL});
             editor_context.compile_infos_mutex.unlock();
 
-            editor_context.static_objects_mutex.lock();
-            editor_context.static_objects.emplace_back(object);
-            editor_context.static_objects_mutex.unlock();
+            editor_context.static_objects.lock()->emplace_back(object);
 
             constexpr vsg::dvec3 X_AXIS = {1.0, 0.0, 0.0};
             constexpr vsg::dvec3 Y_AXIS = {0.0, 1.0, 0.0};
@@ -450,9 +448,7 @@ bool Route::load_topology()
                 vsg::ref_ptr(this), object, vsg::MASK_ALL});
             editor_context.compile_infos_mutex.unlock();
 
-            editor_context.static_objects_mutex.lock();
-            editor_context.static_objects.emplace_back(object);
-            editor_context.static_objects_mutex.unlock();
+            editor_context.static_objects.lock()->emplace_back(object);
         }
     };
 

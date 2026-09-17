@@ -33,9 +33,7 @@ void AddObjectCommand::execute()
         editor_context.route, object_to_add_, vsg::MASK_ALL});
     editor_context.compile_infos_mutex.unlock();
 
-    editor_context.static_objects_mutex.lock();
-    editor_context.static_objects.emplace_back(object_to_add_);
-    editor_context.static_objects_mutex.unlock();
+    editor_context.static_objects.lock()->emplace_back(object_to_add_);
 
     editor_context.deferred_selection.emplace_back(object_to_add_);
 }
@@ -44,10 +42,7 @@ void AddObjectCommand::undo()
 {
     object_to_add_->deselect();
 
-    auto& static_objects = editor_context.static_objects;
-    editor_context.static_objects_mutex.lock();
-    static_objects.remove(object_to_add_);
-    editor_context.static_objects_mutex.unlock();
+    editor_context.static_objects.lock()->remove(object_to_add_);
 
     auto& route_children = editor_context.route->children;
 

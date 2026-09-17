@@ -25,9 +25,7 @@ void DeleteObjectsCommand::execute()
     {
         object->deselect();
 
-        editor_context.static_objects_mutex.lock();
-        editor_context.static_objects.remove(object);
-        editor_context.static_objects_mutex.unlock();
+        editor_context.static_objects.lock()->remove(object);
 
         auto& route_children = editor_context.route->children;
 
@@ -57,9 +55,7 @@ void DeleteObjectsCommand::undo()
             editor_context.route, object, vsg::MASK_ALL});
         editor_context.compile_infos_mutex.unlock();
 
-        editor_context.static_objects_mutex.lock();
-        editor_context.static_objects.emplace_back(object);
-        editor_context.static_objects_mutex.unlock();
+        editor_context.static_objects.lock()->emplace_back(object);
 
         object->select();
     }
