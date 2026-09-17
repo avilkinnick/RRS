@@ -102,8 +102,7 @@ struct EditorContext
     RouteObjects copied_objects;
     RouteObjects hidden_objects;
 
-    std::vector<CompileInfo> compile_infos;
-    std::mutex compile_infos_mutex;
+    ThreadSafe<std::vector<CompileInfo>> compile_infos;
 
     std::unique_ptr<Topology> topology;
     std::mutex topology_mutex;

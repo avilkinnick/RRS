@@ -28,10 +28,8 @@ void AddObjectCommand::execute()
         object->deselect();
     }
 
-    editor_context.compile_infos_mutex.lock();
-    editor_context.compile_infos.emplace_back(CompileInfo{
+    editor_context.compile_infos.lock()->emplace_back(CompileInfo{
         editor_context.route, object_to_add_, vsg::MASK_ALL});
-    editor_context.compile_infos_mutex.unlock();
 
     editor_context.static_objects.lock()->emplace_back(object_to_add_);
 
@@ -60,9 +58,8 @@ void AddObjectCommand::undo()
         object->select();
     }
 
-    editor_context.compile_infos_mutex.lock();
-    editor_context.compile_infos.emplace_back(CompileInfo{nullptr, editor_context.route});
-    editor_context.compile_infos_mutex.unlock();
+    editor_context.compile_infos.lock()->emplace_back(CompileInfo{
+        nullptr, editor_context.route});
 
     editor_context.gizmo->update_visibility();
 }

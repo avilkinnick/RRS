@@ -37,14 +37,15 @@ void PasteObjectsCommand::execute()
         }
     }
 
+    auto compile_infos = editor_context.compile_infos.lock();
+    auto static_objects = editor_context.static_objects.lock();
+
     for (const auto& pasted_object : pasted_objects_)
     {
-        editor_context.compile_infos_mutex.lock();
-        editor_context.compile_infos.emplace_back(CompileInfo{
+        compile_infos->emplace_back(CompileInfo{
             editor_context.route, pasted_object, vsg::MASK_ALL});
-        editor_context.compile_infos_mutex.unlock();
 
-        editor_context.static_objects.lock()->emplace_back(pasted_object);
+        static_objects->emplace_back(pasted_object);
 
         pasted_object->select();
     }
@@ -77,9 +78,8 @@ void PasteObjectsCommand::undo()
         object->select();
     }
 
-    editor_context.compile_infos_mutex.lock();
-    editor_context.compile_infos.emplace_back(CompileInfo{nullptr, editor_context.route});
-    editor_context.compile_infos_mutex.unlock();
+    editor_context.compile_infos.lock()->emplace_back(CompileInfo{
+        nullptr, editor_context.route});
 
     editor_context.gizmo->update_visibility();
 }

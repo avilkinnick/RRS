@@ -39,23 +39,23 @@ void DeleteObjectsCommand::execute()
         );
     }
 
-    editor_context.compile_infos_mutex.lock();
-    editor_context.compile_infos.emplace_back(CompileInfo{nullptr, editor_context.route});
-    editor_context.compile_infos_mutex.unlock();
+    editor_context.compile_infos.lock()->emplace_back(CompileInfo{
+        nullptr, editor_context.route});
 
     editor_context.gizmo->update_visibility();
 }
 
 void DeleteObjectsCommand::undo()
 {
+    auto compile_infos = editor_context.compile_infos.lock();
+    auto static_objects = editor_context.static_objects.lock();
+
     for (const auto& object : objects_)
     {
-        editor_context.compile_infos_mutex.lock();
-        editor_context.compile_infos.emplace_back(CompileInfo{
+        compile_infos->emplace_back(CompileInfo{
             editor_context.route, object, vsg::MASK_ALL});
-        editor_context.compile_infos_mutex.unlock();
 
-        editor_context.static_objects.lock()->emplace_back(object);
+        static_objects->emplace_back(object);
 
         object->select();
     }
