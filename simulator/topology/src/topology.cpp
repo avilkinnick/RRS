@@ -1064,7 +1064,7 @@ std::vector<std::vector<module_cfg_t>> Topology::load_topology_configs(QString r
     const QDir topology_dir = QDir(topology_path);
 
     const QStringList traj_modules_dirs = topology_dir.entryList(
-        {"trajectory-*"}, QDir::Dirs);
+        QStringList(QList<QString>(QString("trajectory-*"))), QDir::Dirs);
 
     // Из папок trajectory-* загружаем все конфиги *.xml
     std::vector<std::vector<module_cfg_t>> all_modules;
@@ -1081,7 +1081,7 @@ std::vector<std::vector<module_cfg_t>> Topology::load_topology_configs(QString r
         const QDir traj_module_dir = QDir(traj_module_path);
 
         const QStringList cfg_files = traj_module_dir.entryList(
-            {"*.xml"}, QDir::Files);
+            QStringList(QList<QString>(QString("*.xml"))), QDir::Files);
 
         std::vector<module_cfg_t> all_cfgs;
         for (const QString& cfg_name : cfg_files)
