@@ -61,7 +61,7 @@ void KeyBindings::read(CfgReader& cfg)
 
     for (int i = 0; i < TOTAL_ACTIONS; ++i)
     {
-        const auto action_setting_name = action_setting_names[i].c_str();
+        const char* action_setting_name = action_setting_names[i].c_str();
 
         QString line;
         if (!cfg.getString("Keys", action_setting_name, line))

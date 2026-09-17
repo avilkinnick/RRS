@@ -31,7 +31,6 @@ void EventHandler::apply([[maybe_unused]] vsg::ButtonReleaseEvent& buttonRelease
     editor_context.state_manager->get_current_editor_state()->handle_button_release();
 }
 
-
 void EventHandler::apply([[maybe_unused]] vsg::MoveEvent& moveEvent)
 {
     editor_context.state_manager->get_current_editor_state()->handle_mouse_move();

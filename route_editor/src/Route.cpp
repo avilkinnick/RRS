@@ -140,7 +140,7 @@ bool Route::load_objects_ref()
     std::string line;
     while (std::getline(objects_ref_file, line))
     {
-        std::istringstream iss(std::move(line));
+        std::istringstream iss(line);
         std::string label, relative_path;
 
         if (iss >> label >> relative_path)
@@ -184,7 +184,7 @@ bool Route::load_route_map()
 
         std::replace(line.begin(), line.end(), ',', ' ');
 
-        std::istringstream iss(std::move(line));
+        std::istringstream iss(line);
         std::string label;
         vsg::dvec3 translation, rotation;
 
@@ -222,7 +222,7 @@ bool Route::load_stations_conf()
             continue;
         }
 
-        std::istringstream iss(std::move(line));
+        std::istringstream iss(line);
         std::string label;
         vsg::dvec3 translation;
         if (iss >> label >> translation)
@@ -258,7 +258,7 @@ bool Route::load_waypoints_conf()
             continue;
         }
 
-        std::istringstream iss(std::move(line));
+        std::istringstream iss(line);
         std::string label;
         WaypointData data;
         std::string direction_string;
