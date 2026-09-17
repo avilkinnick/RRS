@@ -75,7 +75,10 @@ bool Trajectory::load(const QString &route_dir, const QString &traj_name,
 
     if (lines.size() < 2)
     {
-        Journal::instance()->error(QString("TOPOLOGY WARNING: No tracks in trajectory %1").arg(traj_name));
+        Journal::instance()->error(
+            QString("TOPOLOGY WARNING: No tracks in trajectory %1")
+            .arg(traj_name));
+
         if (solve_errors)
         {
             return false;

@@ -3,9 +3,9 @@
 
 #include    <QObject>
 #include    <atomic>
-#include    <unordered_map>
+// #include    <unordered_map>
 #include    <vector>
-#include    <string>
+// #include    <string>
 #include    <utility>
 
 #include    <topology-export.h>
@@ -36,7 +36,8 @@ public:
     ~Topology();
 
     /// Загрузка топологии ж/д полигона
-    bool load(QString route_dir, bool solve_errors = true, std::atomic_bool* finish_thread = nullptr);
+    bool load(const QString& route_dir, bool solve_errors = true,
+        std::atomic_bool* finish_thread = nullptr);
 
     /// Инициализация поезда
     bool addTrain(const topology_pos_t &tp, std::vector<Vehicle *> *vehicles);
@@ -122,7 +123,7 @@ private:
     QString route_name = "";
 
     /// Получить список имен всех имеющихся траекторий
-    QStringList getTrajNamesList(QString route_dir);
+    QStringList getTrajNamesList(const QString& route_dir);
 
     /// Загрузка конфиг-файлов модулей путевой инфраструктуры
     std::vector<std::vector<module_cfg_t>> load_topology_configs(QString route_path);

@@ -44,15 +44,15 @@ Topology::~Topology() = default;
 //------------------------------------------------------------------------------
 //
 //------------------------------------------------------------------------------
-bool Topology::load(QString route_dir, bool solve_errors, std::atomic_bool* finish_thread)
+bool Topology::load(const QString& route_dir, bool solve_errors,
+    std::atomic_bool* finish_thread)
 {
     const FileSystem& fs = FileSystem::getInstance();
 
     const QString route_path = QString(fs.getRouteRootDir().c_str()) +
         QDir::separator() + route_dir;
 
-    QStringList names = getTrajNamesList(route_path);
-
+    const QStringList names = getTrajNamesList(route_path);
     if (names.isEmpty())
     {
         Journal::instance()->error("TRAJECTORIES NOT FOUND!!!");
@@ -156,23 +156,15 @@ bool Topology::addTrain(const topology_pos_t &tp, std::vector<Vehicle *> *vehicl
         dir_t move_dir;
         while (true)
         {
-            if (begin_coord < end_coord)
+            const bool traj_is_busy = (begin_coord < end_coord)
+                ? check_traj->isBusy(begin_coord, end_coord)
+                : check_traj->isBusy(end_coord, begin_coord);
+
+            if (traj_is_busy)
             {
-                if (check_traj->isBusy(begin_coord, end_coord))
-                {
-                    // Если этот участок траектории уже занят подвижным составом, выходим
-                    Journal::instance()->critical(check_traj->getName() + " TRAJECTORY IS BUSY!!!");
-                    return false;
-                }
-            }
-            else
-            {
-                if (check_traj->isBusy(end_coord, begin_coord))
-                {
-                    // Если этот участок траектории уже занят подвижным составом, выходим
-                    Journal::instance()->critical(check_traj->getName() + " TRAJECTORY IS BUSY!!!");
-                    return false;
-                }
+                // Если этот участок траектории уже занят подвижным составом, выходим
+                Journal::instance()->critical(check_traj->getName() + " TRAJECTORY IS BUSY!!!");
+                return false;
             }
 
             if (end_coord < 0.0)
@@ -1022,29 +1014,26 @@ QString Topology::getRouteName() const
 //------------------------------------------------------------------------------
 //
 //------------------------------------------------------------------------------
-QStringList Topology::getTrajNamesList(QString route_dir)
+QStringList Topology::getTrajNamesList(const QString& route_dir)
 {
-    QString path = route_dir + QDir::separator() +
-                   "topology" + QDir::separator() +
-                   + "trajectories";
-
-    QDir traj_dir(path);
+    const QString path = route_dir + QDir::separator() +
+        "topology" + QDir::separator() +
+        "trajectories";
 
     Journal::instance()->info("Check trajectories at directory " + path);
 
-    QDirIterator traj_files(traj_dir.path(),
-                            QStringList() << "*.traj",
-                            QDir::NoDotAndDotDot | QDir::Files);
+    QDirIterator traj_files(path, QStringList() << "*.traj",
+        QDir::NoDotAndDotDot | QDir::Files);
 
     QStringList names_list;
 
     while (traj_files.hasNext())
     {
-        QString fullpath = traj_files.next();
+        const QString fullpath = traj_files.next();
 
         Journal::instance()->info("Found trajectory " + fullpath);
 
-        QFileInfo file_info(fullpath);
+        const QFileInfo file_info(fullpath);
 
         names_list << file_info.baseName();
     }
