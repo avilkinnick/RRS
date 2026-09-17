@@ -63,7 +63,6 @@
 #include <cstdio>
 #include <functional>
 #include <memory>
-#include <mutex>
 #include <string>
 
 static bool drag_double(const char* label, double* data,
