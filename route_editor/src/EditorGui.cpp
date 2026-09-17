@@ -327,15 +327,13 @@ void EditorGui::show_waypoints_conf() const
         return;
     }
 
-    std::lock_guard<std::mutex> lock(editor_context.topology_mutex);
-        auto& topology = editor_context.topology;
-
     if (!editor_context.topology_loaded.load())
     {
         return;
     }
 
-    const auto& camera = editor_context.camera;
+    auto topology_guard = editor_context.topology.lock();
+    auto& topology = *topology_guard;
 
     ImGui::Begin("waypoints.conf", nullptr, window_flags_);
 
@@ -369,6 +367,8 @@ void EditorGui::show_waypoints_conf() const
                     const dvec3 pos = pd.position;
 
                     double h = 5.0;
+
+                    const auto& camera = editor_context.camera;
 
                     camera->get_look_at()->eye =
                         vsg::dvec3(pos.x + pd.up.x * h,
@@ -493,8 +493,9 @@ void EditorGui::show_topology() const
         return;
     }
 
-    std::lock_guard<std::mutex> lock(editor_context.topology_mutex);
-    auto& topology = editor_context.topology;
+    auto topology_guard = editor_context.topology.lock();
+    auto& topology = *topology_guard;
+
     if (!topology)
     {
         ImGui::Text("Topology not yet loaded");

@@ -364,8 +364,9 @@ bool Route::load_topology()
 
     const signals_data_t* signals_data = nullptr;
 
-    editor_context.topology_mutex.lock();
-    auto& topology = editor_context.topology;
+    auto topology_guard = editor_context.topology.lock();
+    auto& topology = *topology_guard;
+
     topology = std::make_unique<Topology>();
 
     const auto directory_name = std::filesystem::path(route_dir).filename();
@@ -528,7 +529,6 @@ bool Route::load_topology()
 
         state_group->addChild(geometry);
     }
-    editor_context.topology_mutex.unlock();
 
     group->addChild(state_group);
 
