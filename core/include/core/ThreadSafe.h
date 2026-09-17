@@ -1,47 +1,47 @@
-#ifndef THREAD_SAFE_H
-#define THREAD_SAFE_H
+#ifndef CORE_THREAD_SAFE_H
+#define CORE_THREAD_SAFE_H
 
 #include <mutex>
 
 template <typename T>
-class ThreadSafeValue
-{
-public:
-    ThreadSafeValue(T& value, std::mutex& mutex)
-        : value(value)
-        , mutex(mutex)
-    {
-        mutex.lock();
-    }
-
-    ~ThreadSafeValue()
-    {
-        mutex.unlock();
-    }
-
-    ThreadSafeValue(const ThreadSafeValue&) = delete;
-    ThreadSafeValue& operator=(const ThreadSafeValue&) = delete;
-    ThreadSafeValue(ThreadSafeValue&&) = delete;
-    ThreadSafeValue& operator=(ThreadSafeValue&&) = delete;
-
-    T& operator*() { return value; }
-    const T& operator*() const { return value; }
-
-    T* operator->() { return &value; }
-    const T* operator->() const { return &value; }
-
-private:
-    T& value;
-    std::mutex& mutex;
-};
-
-template <typename T>
 class ThreadSafe
 {
-public:
-    ThreadSafeValue<T> lock()
+private:
+    class ThreadSafeValue
     {
-        return ThreadSafeValue<T>(value, mutex);
+    public:
+        ThreadSafeValue(T& value, std::mutex& mutex)
+            : value(value)
+            , mutex(mutex)
+        {
+            mutex.lock();
+        }
+
+        ~ThreadSafeValue()
+        {
+            mutex.unlock();
+        }
+
+        ThreadSafeValue(const ThreadSafeValue&) = delete;
+        ThreadSafeValue& operator=(const ThreadSafeValue&) = delete;
+        ThreadSafeValue(ThreadSafeValue&&) = delete;
+        ThreadSafeValue& operator=(ThreadSafeValue&&) = delete;
+
+        T& operator*() { return value; }
+        const T& operator*() const { return value; }
+
+        T* operator->() { return &value; }
+        const T* operator->() const { return &value; }
+
+    private:
+        T& value;
+        std::mutex& mutex;
+    };
+
+public:
+    ThreadSafeValue lock()
+    {
+        return ThreadSafeValue(value, mutex);
     }
 
 private:
@@ -49,4 +49,4 @@ private:
     std::mutex mutex;
 };
 
-#endif // THREAD_SAFE_H
+#endif // CORE_THREAD_SAFE_H
