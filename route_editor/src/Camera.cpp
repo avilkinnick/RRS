@@ -178,6 +178,12 @@ const vsg::dmat4& Camera::get_inverse_view_matrix() const
     return inverse_view_matrix;
 }
 
+void Camera::look_on(const vsg::dvec3& pos, double distance)
+{
+    look_at->eye = pos - front * distance;
+    look_at->center = look_at->eye + front;
+}
+
 void Camera::create_orthographic_projection(double aspect_ratio)
 {
     const auto& camera_settings = editor_context.camera_settings;

@@ -102,8 +102,8 @@ EditorGui::EditorGui(EditorContext& context)
 
     ImGuiStyle& style = ImGui::GetStyle();
     style.FrameBorderSize = 1.0f;
-    style.FrameRounding = 3.0f;
-    style.WindowRounding = 3.0f;
+    // style.FrameRounding = 3.0f;
+    // style.WindowRounding = 3.0f;
     style.ScrollbarSize = 16.0f;
     style.GrabMinSize = 16.0f;
 
@@ -298,12 +298,7 @@ void EditorGui::show_stations_conf() const
             ImGui::TableNextColumn();
             if (ImGui::Button(label.c_str()))
             {
-                camera->get_look_at()->eye = translation +
-                    vsg::dvec3(0.0, 0.0, 50.0);
-
-                camera->get_look_at()->center =
-                    camera->get_look_at()->eye +
-                    camera->get_front();
+                camera->look_on(translation);
             }
             ImGui::TableNextColumn();
             ImGui::Text(number_format, translation.x);
@@ -366,18 +361,9 @@ void EditorGui::show_waypoints_conf() const
 
                     const dvec3 pos = pd.position;
 
-                    double h = 5.0;
-
                     const auto& camera = editor_context.camera;
 
-                    camera->get_look_at()->eye =
-                        vsg::dvec3(pos.x + pd.up.x * h,
-                            pos.y + pd.up.y * h,
-                            pos.z + pd.up.z * h);
-
-                    camera->get_look_at()->center =
-                        camera->get_look_at()->eye +
-                        camera->get_front();
+                    camera->look_on(vsg::dvec3(pos.x, pos.y, pos.z));
                 }
             }
             ImGui::TableNextColumn();
@@ -511,7 +497,8 @@ void EditorGui::show_topology() const
         const auto* trajectories = topology->getTrajectoriesList();
         for (const Trajectory* trajectory : *trajectories)
         {
-            if (ImGui::TreeNode(trajectory->getName().toStdString().c_str()))
+            const std::string trajectory_name = trajectory->getName().toStdString();
+            if (ImGui::TreeNode(trajectory_name.c_str()))
             {
                 const auto& tracks = trajectory->getTracks();
                 const auto tracks_size = tracks.size();
@@ -519,8 +506,17 @@ void EditorGui::show_topology() const
                 for (auto i = decltype(tracks_size){0}; i < tracks_size; ++i)
                 {
                     const track_t& track = tracks[i];
-                    const dvec3& begin_point = track.begin_point;
-                    const dvec3& end_point = track.end_point;
+                    const dvec3& p1 = track.begin_point;
+                    const dvec3& p2 = track.end_point;
+
+                    if (i == 0)
+                    {
+                        std::string label = "Jump##" + trajectory_name;
+                        if (ImGui::Button(label.c_str()))
+                        {
+                            editor_context.camera->look_on(vsg::dvec3(p1.x, p1.y, p1.z));
+                        }
+                    }
 
                     std::string label = "[";
                     label += std::to_string(i);
@@ -528,9 +524,9 @@ void EditorGui::show_topology() const
                     label += trajectory->getName().toStdString();
                     ImGui::SeparatorText(label.c_str());
                     ImGui::Text("         begin: %12.3f %12.3f %12.3f",
-                        begin_point.x, begin_point.y, begin_point.z);
+                        p1.x, p1.y, p1.z);
                     ImGui::Text("           end: %12.3f %12.3f %12.3f",
-                        end_point.x, end_point.y, end_point.z);
+                        p2.x, p2.y, p2.z);
                     ImGui::Text("railway_coords: %12.3f %12.3f",
                         track.railway_coord0, track.railway_coord1);
                     ImGui::Text("    traj_coord: %12.3f", track.traj_coord);

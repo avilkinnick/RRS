@@ -52,6 +52,8 @@ public:
 
     const vsg::dmat4& get_inverse_view_matrix() const;
 
+    void look_on(const vsg::dvec3& pos, double distance = 50.0);
+
 private:
     void create_orthographic_projection(double aspect_ratio);
 
