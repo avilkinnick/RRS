@@ -1006,6 +1006,9 @@ void RouteViewer::initTcpClient()
         is_connection_abandoned = true;
     });
 
+    connect(tcp_client.get(), &TcpClient::sigVehicleControlInputInit,
+            vehicles_handler.get(), &VehiclesHandler::slotVehicleControlInputInit);
+
     tcp_client->init(settings.tcp_config);
 
     GUIparams->tcp_client = tcp_client.get();

@@ -142,6 +142,20 @@ private:
 
     QByteArray stations_data;
 
+    struct control_input_init_t
+    {
+        int vehicle_idx;
+        int cab_idx;
+        int signal_id;
+        float value;
+
+        bool match(int v, int c, int s) const
+        {
+            return vehicle_idx == v && cab_idx == c && signal_id == s;
+        }
+    };
+    QVector<control_input_init_t> pending_input_inits;
+
     QByteArray vehicles_state;
 
     QByteArray trains_state;
@@ -189,6 +203,8 @@ public slots:
     void slotSendTopologyModuleState(QByteArray module_state);
 
     void slotUpdateSignal(QByteArray signal_data);
+
+    void slotInitClientInputSignal(int vehicle_idx, int cab_idx, int signal_id, float value);
 };
 
 #endif
