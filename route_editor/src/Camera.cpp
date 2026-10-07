@@ -93,9 +93,7 @@ void Camera::update_move_direction()
         right * right_move_direction;
 
     if (projectionMatrix == orthographic)
-    {
         move_direction.z = 0.0;
-    }
 
     move_direction = vsg::normalize(move_direction);
 }

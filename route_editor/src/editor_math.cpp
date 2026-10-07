@@ -23,9 +23,7 @@ bool calculate_mouse_world_coordinates(double norm_x, double norm_y, double z,
 
     vsg::dvec4 world = inv_view_mat * inv_proj_mat * clip;
     if (std::abs(world.w) < 1.0e-6)
-    {
         return false;
-    }
 
     out = vsg::dvec3(world.x, world.y, world.z) / world.w;
 
@@ -81,15 +79,11 @@ bool solve_quadratic_equation(double a, double b, double c, double& x1,
     double& x2)
 {
     if (std::abs(a) < 1.0e-6)
-    {
         return false;
-    }
 
     const double D = b * b - 4 * a * c;
     if (D < 0.0)
-    {
         return false;
-    }
 
     const double sqrt_D = std::sqrt(D);
     const double inv_2a = 1.0 / (2.0 * a);
@@ -111,9 +105,7 @@ bool calculate_intersection_line_and_plane(vsg::dvec3 line_orig,
 
     const double denom = vsg::dot(norm, dir);
     if (std::abs(denom) < 1.0e-6)
-    {
         return false;
-    }
 
     const double t = (vsg::dot(norm, point) - vsg::dot(norm, orig)) / denom;
     out = orig + dir * t;
