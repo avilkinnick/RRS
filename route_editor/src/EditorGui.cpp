@@ -518,18 +518,44 @@ void EditorGui::show_topology() const
                         }
                     }
 
-                    std::string label = "[";
-                    label += std::to_string(i);
-                    label += "]##";
-                    label += trajectory->getName().toStdString();
+                    constexpr const char* const float_format = "%12.3f";
+                    constexpr std::size_t format_size = 64;
+                    constexpr int alignment = 14;
+                    char outer_format1[format_size];
+                    char outer_format2[format_size];
+                    char format[format_size];
+
+                    std::snprintf(outer_format1, format_size, "%%%ds: %%s",
+                        alignment);
+
+                    std::string label = "[" + std::to_string(i) + "]##" +
+                        trajectory_name;
                     ImGui::SeparatorText(label.c_str());
-                    ImGui::Text("         begin: %12.3f %12.3f %12.3f",
-                        p1.x, p1.y, p1.z);
-                    ImGui::Text("           end: %12.3f %12.3f %12.3f",
-                        p2.x, p2.y, p2.z);
-                    ImGui::Text("railway_coords: %12.3f %12.3f",
-                        track.railway_coord0, track.railway_coord1);
-                    ImGui::Text("    traj_coord: %12.3f", track.traj_coord);
+
+                    std::snprintf(outer_format2, format_size, outer_format1,
+                        "begin", "%s %s %s");
+                    std::snprintf(format, format_size, outer_format2,
+                        float_format, float_format, float_format);
+                    ImGui::Text(format, p1.x, p1.y, p1.z);
+
+                    std::snprintf(outer_format2, format_size, outer_format1,
+                        "end", "%s %s %s");
+                    std::snprintf(format, format_size, outer_format2,
+                        float_format, float_format, float_format);
+                    ImGui::Text(format, p2.x, p2.y, p2.z);
+
+                    std::snprintf(outer_format2, format_size, outer_format1,
+                        "railway_coords", "%s %s");
+                    std::snprintf(format, format_size, outer_format2,
+                        float_format, float_format);
+                    ImGui::Text(format, track.railway_coord0,
+                        track.railway_coord1);
+
+                    std::snprintf(outer_format2, format_size, outer_format1,
+                        "traj_coord", "%s");
+                    std::snprintf(format, format_size, outer_format2,
+                        float_format);
+                    ImGui::Text(format, track.traj_coord);
                 }
 
                 ImGui::TreePop();
