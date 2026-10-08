@@ -12,4 +12,6 @@ ObjectsRefWindow::ObjectsRefWindow(EditorContext& editor_context,
 
 void ObjectsRefWindow::show() const
 {
+    if (!gui_settings.show_objects_ref)
+        return;
 }

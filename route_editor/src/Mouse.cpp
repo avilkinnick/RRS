@@ -6,9 +6,7 @@
 void Mouse::apply(vsg::ButtonPressEvent& buttonPress)
 {
     if (buttonPress.handled)
-    {
         return;
-    }
 
     button_mask = buttonPress.mask;
 }
@@ -16,9 +14,7 @@ void Mouse::apply(vsg::ButtonPressEvent& buttonPress)
 void Mouse::apply(vsg::ButtonReleaseEvent& buttonRelease)
 {
     if (buttonRelease.handled)
-    {
         return;
-    }
 
     button_mask = buttonRelease.mask;
 }
@@ -26,9 +22,7 @@ void Mouse::apply(vsg::ButtonReleaseEvent& buttonRelease)
 void Mouse::apply(vsg::MoveEvent& moveEvent)
 {
     if (moveEvent.handled)
-    {
         return;
-    }
 
     static int prev_x = moveEvent.x;
     static int prev_y = moveEvent.y;
@@ -46,9 +40,7 @@ void Mouse::apply(vsg::MoveEvent& moveEvent)
 void Mouse::apply(vsg::ScrollWheelEvent& scrollWheel)
 {
     if (scrollWheel.handled)
-    {
         return;
-    }
 
     scroll = scrollWheel.delta.y;
 }

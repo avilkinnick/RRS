@@ -172,9 +172,7 @@ bool RouteObject::select()
     {
         auto outline = editor_context.outline_builder->create_outline(paged_lod_);
         if (!outline)
-        {
             return false;
-        }
 
         editor_context.compile_infos.lock()->emplace_back(CompileInfo{
             outline_switch_, outline});

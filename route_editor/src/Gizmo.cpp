@@ -35,12 +35,12 @@ static void rotate_geometry_info(
 )
 {
     constexpr vsg::vec3 Z_AXIS = {0.0f, 0.0f, 1.0f};
-    if (vsg::length(vsg::cross(Z_AXIS, direction)) > 0.001f)
-    {
-        const vsg::vec3 axis = vsg::cross(Z_AXIS, direction);
-        const float angle = std::acos(vsg::dot(Z_AXIS, direction));
-        geometry_info.transform = vsg::rotate(angle, axis);
-    }
+    if (vsg::length(vsg::cross(Z_AXIS, direction)) < 1.0e-6f)
+        return;
+
+    const vsg::vec3 axis = vsg::cross(Z_AXIS, direction);
+    const float angle = std::acos(vsg::dot(Z_AXIS, direction));
+    geometry_info.transform = vsg::rotate(angle, axis);
 }
 
 Gizmo::Gizmo(EditorContext& context)
@@ -170,7 +170,8 @@ bool Gizmo::handle_intersections()
     double arrow_dots[3];
     for (int i = 0; i < 3; ++i)
     {
-        arrow_dots[i] = std::abs(vsg::dot(camera->get_front(), arrow_directions[i]));
+        arrow_dots[i] = std::abs(vsg::dot(camera->get_front(),
+            arrow_directions[i]));
     }
 
     // Normalized mouse coordinates [-1.0; 1.0]
@@ -360,18 +361,11 @@ bool Gizmo::handle_intersections()
     {
         active_arrow_index = hit_arrow_index;
 
-        if (hit_arrow_index == 0)
-        {
-            active_plain_index = (arrow_dots[1] > arrow_dots[2]) ? 1 : 2;
-        }
-        else if (hit_arrow_index == 1)
-        {
-            active_plain_index = (arrow_dots[2] > arrow_dots[0]) ? 2 : 0;
-        }
-        else
-        {
-            active_plain_index = (arrow_dots[0] > arrow_dots[1]) ? 0 : 1;
-        }
+        int axis_1 = (hit_arrow_index + 1) % 3;
+        int axis_2 = (hit_arrow_index + 2) % 3;
+
+        active_plain_index = (arrow_dots[axis_1] > arrow_dots[axis_2])
+            ? axis_1 : axis_2;
 
         vsg::dvec3 click_pos = curr_pos_;
         click_pos[active_arrow_index] = hit_point[active_arrow_index];
@@ -396,9 +390,7 @@ bool Gizmo::handle_intersections()
 void Gizmo::apply(const vsg::ButtonReleaseEvent& buttonRelease)
 {
     if (buttonRelease.handled || active_arrow_index < 0)
-    {
         return;
-    }
 
     auto command = std::make_unique<TranslateObjectsCommand>(editor_context,
         editor_context.selected_objects, total_translation_);
@@ -414,27 +406,23 @@ void Gizmo::apply(const vsg::ButtonReleaseEvent& buttonRelease)
 void Gizmo::apply(const vsg::MoveEvent& moveEvent)
 {
     if (moveEvent.handled || active_plain_index < 0)
-    {
         return;
-    }
 
     const auto& camera = editor_context.camera;
 
     const auto intersector = vsg::LineSegmentIntersector::create(*camera,
         moveEvent.x, moveEvent.y);
+
     if (!intersector)
-    {
         return;
-    }
+
     intersector->traversalMask = MASK_CLICKABLE;
 
     this->accept(*intersector);
 
     auto& intersections = intersector->intersections;
     if (intersections.empty())
-    {
         return;
-    }
 
     std::sort(intersections.begin(), intersections.end(),
         [](const auto& lhs, const auto& rhs) -> bool {
@@ -448,7 +436,8 @@ void Gizmo::apply(const vsg::MoveEvent& moveEvent)
 
     for (const vsg::Node* const node : intersection->nodePath)
     {
-        if ((node != plane_switches[active_plain_index]) || (active_arrow_index < 0))
+        if ((node != plane_switches[active_plain_index]) ||
+            (active_arrow_index < 0))
         {
             continue;
         }

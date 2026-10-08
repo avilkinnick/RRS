@@ -40,18 +40,14 @@ WindowHandler::WindowHandler(EditorContext& editor_context)
 
     window = vsg::Window::create(window_traits);
     if (!window)
-    {
         Journal::instance()->error("Failed to create window");
-    }
 }
 
 void WindowHandler::apply(vsg::ConfigureWindowEvent& configureWindow)
 {
     const auto& camera = editor_context.camera;
     if (!camera)
-    {
         return;
-    }
 
     const std::uint32_t width{configureWindow.width};
     const std::uint32_t height{configureWindow.height};
@@ -65,19 +61,11 @@ void WindowHandler::apply(vsg::ConfigureWindowEvent& configureWindow)
 VkSampleCountFlags samples_bit_flag(int samples)
 {
     if (samples >= 8)
-    {
         return VK_SAMPLE_COUNT_8_BIT;
-    }
     else if (samples >= 4)
-    {
         return VK_SAMPLE_COUNT_4_BIT;
-    }
     else if (samples >= 2)
-    {
         return VK_SAMPLE_COUNT_2_BIT;
-    }
     else
-    {
         return VK_SAMPLE_COUNT_1_BIT;
-    }
 }

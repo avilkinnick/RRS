@@ -65,9 +65,7 @@ vsg::ref_ptr<vsg::Node> OutlineBuilder::create_outline(
     const vsg::ref_ptr<vsg::PagedLOD>& paged_lod)
 {
     if (!paged_lod->pending)
-    {
         return nullptr;
-    }
 
     vsg::ComputeBounds compute_bounds;
     compute_bounds.useNodeBounds = false;

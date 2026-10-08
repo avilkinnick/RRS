@@ -77,9 +77,7 @@ void KeyBindings::read(CfgReader& cfg)
             Qt::SkipEmptyParts);
 
         if (strings.size() <= 0)
-        {
             continue;
-        }
 
         keys[i] = static_cast<vsg::KeySymbol>(strings.back().front().toLatin1());
 

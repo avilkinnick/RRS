@@ -14,16 +14,14 @@ void Keyboard::apply(vsg::KeyPressEvent& keyPress)
 {
     vsg::Keyboard::apply(keyPress);
     modifiers = keyPress.keyModifier & (
-        vsg::MODKEY_Alt | vsg::MODKEY_Control | vsg::MODKEY_Shift
-    );
+        vsg::MODKEY_Alt | vsg::MODKEY_Control | vsg::MODKEY_Shift);
 }
 
 void Keyboard::apply(vsg::KeyReleaseEvent& keyRelease)
 {
     vsg::Keyboard::apply(keyRelease);
     modifiers = keyRelease.keyModifier & (
-        vsg::MODKEY_Alt | vsg::MODKEY_Control | vsg::MODKEY_Shift
-    );
+        vsg::MODKEY_Alt | vsg::MODKEY_Control | vsg::MODKEY_Shift);
 }
 
 bool Keyboard::get_shift_state() const
@@ -45,9 +43,7 @@ bool Keyboard::pressed_once(vsg::KeySymbol key, bool ignore_handled_keys) const
 {
     auto itr = keyState.find(key);
     if (itr == keyState.end())
-    {
         return false;
-    }
 
     const auto& keyHistory = itr->second;
 

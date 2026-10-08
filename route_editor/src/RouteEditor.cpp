@@ -73,9 +73,7 @@ bool RouteEditor::initialize()
 
     window_handler_ = WindowHandler::create(editor_context);
     if (!editor_context.window)
-    {
         return false;
-    }
 
     editor_context.mouse = Mouse::create();
     editor_context.keyboard = Keyboard::create(editor_context.key_bindings);
@@ -197,14 +195,10 @@ void RouteEditor::run()
     editor_context.finish_topology_thread.store(true);
 
     if (editor_context.load_static_objects_thread.joinable())
-    {
         editor_context.load_static_objects_thread.join();
-    }
 
     if (editor_context.load_topology_thread.joinable())
-    {
         editor_context.load_topology_thread.join();
-    }
 }
 
 void RouteEditor::initialize_journal(const char* filename) const
@@ -240,9 +234,7 @@ void RouteEditor::read_settings()
 
     CfgReader cfg;
     if (!cfg.load(cfg_path.c_str()))
-    {
         return;
-    }
 
     editor_context.camera_settings.read(cfg);
     editor_context.gizmo_settings.read(cfg);
@@ -312,9 +304,7 @@ void RouteEditor::compile_models()
 {
     auto compile_infos = editor_context.compile_infos.lock();
     if (compile_infos->empty())
-    {
         return;
-    }
 
     vsg::CompileResult compile_result;
 
@@ -327,17 +317,11 @@ void RouteEditor::compile_models()
         if (group_node)
         {
             if (auto group = group_node.cast<vsg::Group>())
-            {
                 group->addChild(node);
-            }
             else if (auto switch_ = group_node.cast<vsg::Switch>())
-            {
                 switch_->addChild(mask, node);
-            }
             else if (auto single_switch = group_node.cast<SingleSwitch>())
-            {
                 single_switch->node = node;
-            }
         }
 
         compile_result.add(viewer_->compileManager->compile(node));
@@ -358,7 +342,5 @@ void RouteEditor::handle_deferred_selection()
     );
 
     if (editor_context.deferred_selection.size() != size)
-    {
         editor_context.gizmo->update_visibility();
-    }
 }

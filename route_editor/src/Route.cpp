@@ -89,24 +89,16 @@ Route::Route(EditorContext& context)
 void Route::load()
 {
     if (!load_objects_ref())
-    {
         return;
-    }
 
     if (!load_route_map())
-    {
         return;
-    }
 
     if (!load_stations_conf())
-    {
         return;
-    }
 
     if (!load_waypoints_conf())
-    {
         return;
-    }
 
     const auto& fs = FileSystem::getInstance();
     const auto& camera_settings = editor_context.camera_settings;
@@ -178,14 +170,10 @@ bool Route::load_route_map()
     while (std::getline(route_map_file, line))
     {
         if (line.empty())
-        {
             continue;
-        }
 
         if (line.back() == ';')
-        {
             line.pop_back();
-        }
 
         std::replace(line.begin(), line.end(), ',', ' ');
 
@@ -223,17 +211,14 @@ bool Route::load_stations_conf()
     while (std::getline(stations_conf_file, line))
     {
         if (line.empty())
-        {
             continue;
-        }
 
         std::istringstream iss(line);
         std::string label;
         vsg::dvec3 translation;
+
         if (iss >> label >> translation)
-        {
             editor_context.stations_conf[label] = translation;
-        }
     }
 
     return true;
@@ -259,9 +244,7 @@ bool Route::load_waypoints_conf()
     while (std::getline(waypoints_conf_file, line))
     {
         if (line.empty())
-        {
             continue;
-        }
 
         std::istringstream iss(line);
         std::string label;
@@ -293,9 +276,7 @@ void Route::load_static_objects()
     {
         const auto ref_it = editor_context.objects_ref.find(label);
         if (ref_it == editor_context.objects_ref.cend())
-        {
             continue;
-        }
 
         for (const auto& transform : transforms)
         {
@@ -386,9 +367,7 @@ bool Route::load_topology()
 
     signals_data = topology->getSignalsData();
     if (!signals_data)
-    {
         return false;
-    }
 
     PagedLodMap paged_lods;
 
@@ -412,9 +391,7 @@ bool Route::load_topology()
                 signal->getSignalModel().toStdString();
 
             if (signal_model_name.empty() || signal_model_name == "empty_line")
-            {
                 continue;
-            }
 
             const std::string signal_model_path = fs.combinePath(
                 models_dir, signal_model_name) + ".gltf";
@@ -501,9 +478,7 @@ bool Route::load_topology()
     {
         const auto& tracks = trajectory->getTracks();
         if (tracks.empty())
-        {
             continue;
-        }
 
         const std::size_t tracks_size = tracks.size();
         const std::size_t points_size = tracks_size + 1;
