@@ -68,13 +68,6 @@
 #define DECOMPOSE_VEC2(vec) vec.x, vec.y
 #define DECOMPOSE_VEC3(vec) vec.x, vec.y, vec.z
 
-static bool drag_double(const char* label, double* data,
-    const double* min = nullptr)
-{
-    return ImGui::DragScalar(label, ImGuiDataType_Double, data,
-        1.0f, min, nullptr, "%.3f");
-}
-
 static bool drag_double3(const char* label, double* data, float speed = 1.0f,
     const double* min = nullptr, const double* max = nullptr,
     ImGuiSliderFlags flags = 0)
