@@ -16,7 +16,7 @@
 #include "editor/commands/RotateObjectsCommand.h"
 #include "editor/commands/ScaleObjectsCommand.h"
 #include "editor/commands/TranslateObjectsCommand.h"
-#include "editor/settings/CameraSettings.h"
+#include "editor/gui/CameraSettingsWindow.h"
 #include "editor/settings/GuiSettings.h"
 #include "editor/states/State.h"
 
@@ -109,6 +109,9 @@ EditorGui::EditorGui(EditorContext& context)
     style.GrabMinSize = 16.0f;
 
     viewport = ImGui::GetMainViewport();
+
+    camera_settings_window = std::make_unique<CameraSettingsWindow>(
+        editor_context, window_flags_);
 }
 
 EditorGui::~EditorGui()
@@ -154,7 +157,7 @@ void EditorGui::record([[maybe_unused]] vsg::CommandBuffer& command_buffer) cons
         show_stations_conf();
         show_waypoints_conf();
         show_key_bindings();
-        show_camera_settings();
+        camera_settings_window->show();
         show_topology();
         show_selected_objects_properties();
         show_commands();
@@ -412,48 +415,14 @@ void EditorGui::show_key_bindings() const
     ImGui::End();
 }
 
-void EditorGui::show_camera_settings() const
-{
-    const auto& camera = editor_context.camera;
-    auto& camera_settings = editor_context.camera_settings;
-    const auto& gui_settings = editor_context.gui_settings;
-
-    if (!gui_settings.show_camera_settings)
-        return;
-
-    ImGui::Begin("Camera Settings", nullptr, window_flags_);
-
-    constexpr double min = 0.0;
-
-    ImGui::Text("Move speed:");
-    drag_double("##move_speed", &camera_settings.move_speed, &min);
-
-    ImGui::Text("Rotate speed:");
-    drag_double("##rotate_speed", &camera_settings.rotate_speed, &min);
-
-    ImGui::Text("Zoom power:");
-    drag_double("##zoom_power", &camera_settings.zoom_power, &min);
-
-    ImGui::Text("FovY:");
-
-    if (ImGui::SliderScalar("##fovy", ImGuiDataType_Double,
-        &camera_settings.fovy, &camera_settings.fovy_min,
-        &camera_settings.fovy_max, "%.3f"))
-    {
-        camera->get_perspective()->fieldOfViewY = camera_settings.fovy;
-    }
-
-    ImGui::End();
-}
-
 void EditorGui::show_topology() const
 {
-    if (!editor_context.gui_settings.show_topology)
-    {
-        return;
-    }
+    auto& gui_settings = editor_context.gui_settings;
 
-    ImGui::Begin("Topology", nullptr, window_flags_);
+    if (!gui_settings.show_topology)
+        return;
+
+    ImGui::Begin("Topology", &gui_settings.show_topology, window_flags_);
 
     if (!editor_context.route)
     {

@@ -7,10 +7,12 @@
 #include <vsgImGui/imgui.h>
 
 #include <cstddef>
+#include <memory>
 #include <string>
 
 struct EditorContext;
 class RouteObject;
+class CameraSettingsWindow;
 
 namespace vsg
 {
@@ -34,7 +36,6 @@ public:
     void show_waypoints_conf() const;
 
     void show_key_bindings() const;
-    void show_camera_settings() const;
     void show_topology() const;
 
     void show_selected_objects_properties() const;
@@ -71,6 +72,7 @@ private:
 
     ImGuiWindowFlags window_flags_;
     ImGuiViewport* viewport;
+    std::unique_ptr<CameraSettingsWindow> camera_settings_window;
 
 private:
     void add_ttf_font(
