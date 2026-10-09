@@ -145,7 +145,7 @@ bool RouteEditor::initialize()
     viewer_->addEventHandler(window_handler_);
     viewer_->addEventHandler(editor_context.mouse);
 
-    viewer_->addEventHandler(EventHandler::create(editor_context));
+    viewer_->addEventHandler(EventHandler::create(editor_context.state_manager));
 
     viewer_->addEventHandler(editor_context.object_selector);
 
