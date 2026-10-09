@@ -164,17 +164,10 @@ void EditorGui::show_objects_ref() const
     if (!editor_context.gui_settings.show_objects_ref)
         return;
 
-    ImGui::Begin("objects_ref", nullptr, window_flags_);
-
-    if (!editor_context.route)
-    {
-        ImGui::Text("There is no route yet");
-        ImGui::End();
-        return;
-    }
+    ImGui::Begin("objects_ref", &editor_context.gui_settings.show_objects_ref, window_flags_);
 
     static char search_buffer[256] = "";
-    ImGui::InputTextWithHint("search_label", "", search_buffer, 256);
+    ImGui::InputText("label", search_buffer, 256);
 
     std::string search_lower = search_buffer;
     std::transform(search_lower.begin(), search_lower.end(),
@@ -217,14 +210,7 @@ void EditorGui::show_route_map() const
     if (!editor_context.gui_settings.show_route_map)
         return;
 
-    ImGui::Begin("route1.map", nullptr, window_flags_);
-
-    if (!editor_context.route)
-    {
-        ImGui::Text("There is no route yet");
-        ImGui::End();
-        return;
-    }
+    ImGui::Begin("route1.map", &editor_context.gui_settings.show_route_map, window_flags_);
 
     if (ImGui::BeginTable("route_map_table", 7,
         ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_Borders |
@@ -270,7 +256,7 @@ void EditorGui::show_stations_conf() const
 
     const auto& camera = editor_context.camera;
 
-    ImGui::Begin("stations.conf", nullptr, window_flags_);
+    ImGui::Begin("stations.conf", &editor_context.gui_settings.show_stations_conf, window_flags_);
 
     if (ImGui::BeginTable("stations_conf_table", 4,
         ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_Borders |
@@ -312,7 +298,7 @@ void EditorGui::show_waypoints_conf() const
     auto topology_guard = editor_context.topology.lock();
     auto& topology = *topology_guard;
 
-    ImGui::Begin("waypoints.conf", nullptr, window_flags_);
+    ImGui::Begin("waypoints.conf", &editor_context.gui_settings.show_waypoints_conf, window_flags_);
 
     if (ImGui::BeginTable("waypoints_conf_table", 5,
         ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_Borders |
@@ -362,13 +348,13 @@ void EditorGui::show_waypoints_conf() const
 
 void EditorGui::show_key_bindings() const
 {
-    const auto& gui_settings = editor_context.gui_settings;
+    auto& gui_settings = editor_context.gui_settings;
     const auto& key_bindings = editor_context.key_bindings;
 
     if (!gui_settings.show_key_bindings)
         return;
 
-    ImGui::Begin("Key Bindings", nullptr, window_flags_);
+    ImGui::Begin("Key Bindings", &gui_settings.show_key_bindings, window_flags_);
 
     if (ImGui::BeginTable("key_bindings_table", 2,
         ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_Borders |
@@ -383,7 +369,7 @@ void EditorGui::show_key_bindings() const
 
             std::string label;
 
-            static const std::map<vsg::KeyModifier, const char*> test_map = {
+            static const std::map<vsg::KeyModifier, std::string> test_map = {
                 {vsg::MODKEY_Shift, "Shift"},
                 {vsg::MODKEY_Control, "Ctrl"},
                 {vsg::MODKEY_Alt, "Alt"}
@@ -392,10 +378,7 @@ void EditorGui::show_key_bindings() const
             for (const auto& [modifier, name] : test_map)
             {
                 if (key_bindings.modifiers[i] & modifier)
-                {
-                    label += name;
-                    label += " + ";
-                }
+                    label += name + " + ";
             }
 
             label += std::toupper(key_bindings.keys[i]);
@@ -576,7 +559,7 @@ void EditorGui::show_selected_objects_properties() const
     if (selected_objects.empty())
         return;
 
-    ImGui::Begin("Selected objects", nullptr, window_flags_);
+    ImGui::Begin("Selected objects", &editor_context.gui_settings.show_selected_objects_properties, window_flags_);
 
     static bool dragging = false;
 
@@ -600,7 +583,7 @@ void EditorGui::show_commands() const
     if (!editor_context.gui_settings.show_commands)
         return;
 
-    ImGui::Begin("Commands");
+    ImGui::Begin("Commands", &editor_context.gui_settings.show_commands, window_flags_);
 
     const auto& command_manager = editor_context.command_manager;
 
