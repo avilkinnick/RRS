@@ -266,12 +266,29 @@ void EditorGui::show_stations_conf() const
 
     ImGui::Begin("stations.conf", &gui_settings.show_stations_conf, window_flags_);
 
+    static char search_buffer[256] = "";
+    ImGui::InputText("label", search_buffer, 256);
+
+    std::string search_lower = search_buffer;
+    std::transform(search_lower.begin(), search_lower.end(),
+        search_lower.begin(), ::tolower);
+
     if (ImGui::BeginTable("stations_conf_table", 4,
         ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_Borders |
         ImGuiTableFlags_RowBg))
     {
         for (const auto& [label, translation] : stations_conf)
         {
+            std::string label_lower = label;
+            std::transform(label_lower.begin(), label_lower.end(),
+                label_lower.begin(), ::tolower);
+
+            if (search_buffer[0] != '\0' &&
+                label_lower.find(search_lower) == std::string::npos)
+            {
+                continue;
+            }
+
             constexpr const char* number_format = "%10.3f";
 
             ImGui::TableNextRow();
@@ -310,12 +327,29 @@ void EditorGui::show_waypoints_conf() const
 
     ImGui::Begin("waypoints.conf", &gui_settings.show_waypoints_conf, window_flags_);
 
+    static char search_buffer[256] = "";
+    ImGui::InputText("label", search_buffer, 256);
+
+    std::string search_lower = search_buffer;
+    std::transform(search_lower.begin(), search_lower.end(),
+        search_lower.begin(), ::tolower);
+
     if (ImGui::BeginTable("waypoints_conf_table", 5,
         ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_Borders |
         ImGuiTableFlags_RowBg))
     {
         for (const auto& [label, data] : waypoints_conf)
         {
+            std::string label_lower = label;
+            std::transform(label_lower.begin(), label_lower.end(),
+                label_lower.begin(), ::tolower);
+
+            if (search_buffer[0] != '\0' &&
+                label_lower.find(search_lower) == std::string::npos)
+            {
+                continue;
+            }
+
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
 
@@ -424,10 +458,27 @@ void EditorGui::show_topology() const
 
     if (ImGui::CollapsingHeader("Trajectories"))
     {
+        static char search_buffer[256] = "";
+        ImGui::InputText("traj_name", search_buffer, 256);
+
+        std::string search_lower = search_buffer;
+        std::transform(search_lower.begin(), search_lower.end(),
+            search_lower.begin(), ::tolower);
+
         const auto* trajectories = topology->getTrajectoriesList();
         for (const Trajectory* trajectory : *trajectories)
         {
             const std::string trajectory_name = trajectory->getName().toStdString();
+            std::string label_lower = trajectory_name;
+            std::transform(label_lower.begin(), label_lower.end(),
+                label_lower.begin(), ::tolower);
+
+            if (search_buffer[0] != '\0' &&
+                label_lower.find(search_lower) == std::string::npos)
+            {
+                continue;
+            }
+
             if (ImGui::TreeNode(trajectory_name.c_str()))
             {
                 const auto& tracks = trajectory->getTracks();
