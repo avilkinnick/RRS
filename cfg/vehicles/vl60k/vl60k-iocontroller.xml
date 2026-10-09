@@ -346,21 +346,6 @@
 		<ObjectNameCab2>Cab2_Tumbl_BF-color_R</ObjectNameCab2>
 	</Control>
 
-	<!-- ЭПТ -->
-	<Control>
-		<ID>123</ID>
-		<Name>ЭПТ</Name>
-		<Description>Включение питания ЭПТ</Description>
-		<Type>Toggle</Type>
-		<value1>0.0</value1>
-		<value2>0.0</value2>
-		<KeyName>KEY_V</KeyName>
-		<KeyModOnName>Shift</KeyModOnName>
-		<KeyModOffName>Ctrl</KeyModOffName>
-		<ObjectNameCab1>Cab1_ept_onOff</ObjectNameCab1>
-		<ObjectNameCab2>Cab2_ept_onOff</ObjectNameCab2>
-	</Control>
-
 	<!-- Реверсивный вал -->
 	<Control>
 		<ID>124</ID>
@@ -473,7 +458,7 @@
 	<!-- Поездной кран машиниста -->
 	<Control>
 		<ID>130</ID>
-		<Name>Поездной кран машиниста 395</Name>
+		<Name>Поездной кран машиниста 394</Name>
 		<Description>Рукоятка крана. Управление тормозами поезда</Description>
 		<Type>Switcher</Type>
 		<value1>1</value1>
@@ -492,8 +477,8 @@
 		<PositionModkey>Alt</PositionModkey>
 		<PositionKeys>(KEY_1;0),(KEY_2;1),(KEY_3;2),(KEY_4;3),(KEY_5;4),(KEY_6;5),(KEY_7;6)</PositionKeys>
 				
-		<ObjectNameCab1>Cab1_Kran395-ruk</ObjectNameCab1>
-		<ObjectNameCab2>Cab2_Kran395-ruk</ObjectNameCab2>
+		<ObjectNameCab1>Cab1_Kran394-ruk</ObjectNameCab1>
+		<ObjectNameCab2>Cab2_Kran394-ruk</ObjectNameCab2>
 
 	</Control>
 

@@ -1,4 +1,4 @@
-#include    <vl60pk.h>
+#include    <vl60k.h>
 #include    <vl60-controls.h>
 #include    <kme-60-044.h>
 #include    <automatic-train-stop.h>
@@ -8,14 +8,14 @@
 #include    <sanding-system.h>
 #include    <train-horn.h>
 #include    <pneumo-anglecock.h>
-#include    <pneumo-hose-epb.h>
+#include    <pneumo-hose.h>
 #include    <coupling-operating-rod.h>
 #include    <Journal.h>
 
 //------------------------------------------------------------------------------
 //
 //------------------------------------------------------------------------------
-void VL60pk::stepControls(const double &t, const double &dt)
+void VL60k::stepControls(const double &t, const double &dt)
 {
     // Не допускаем двух реверсивных рукояток в контроллерах машиниста
     controller[CAB2]->allowReversHandle(!(controller[CAB1]->isReversHandle()));
@@ -72,7 +72,6 @@ void VL60pk::stepControls(const double &t, const double &dt)
         P_buffercolor_L_toogle[cab_idx].step();
         P_buffercolor_R_toogle[cab_idx].step();
 
-        epb_switch[cab_idx].step();
         autopilot_switcher[cab_idx].step();
         tumbler_shunting_mode[cab_idx].step();
 
@@ -180,9 +179,6 @@ void VL60pk::stepControls(const double &t, const double &dt)
 
         bool is_buf_color_r = control_inputs[cab_idx][CTRL_TUMBLER_BUF_COLOR_R].toBool();
         is_buf_color_r ? P_buffercolor_R_toogle[cab_idx].set() : P_buffercolor_R_toogle[cab_idx].reset();
-
-        bool is_epb = control_inputs[cab_idx][CTRL_TUMBLER_EPB].toBool();
-        is_epb ? epb_switch[cab_idx].set() : epb_switch[cab_idx].reset();
 
         // Радиостанция
         control_inputs[cab_idx][CTRL_TUMBLER_RADIO].toBool() ? radio_tumbler[cab_idx].set() : radio_tumbler[cab_idx].reset();

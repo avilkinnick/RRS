@@ -65,7 +65,9 @@ void VL60pk::slotAutoStart()
         // Синхронизируем control_inputs с текущим состоянием тумблеров,
         // чтобы stepControls не сбросил их после завершения автозапуска
         int cab = autostart_cab;
-        initClientInputSignal(cab, CTRL_REVERS_POSITION, controller[cab]->getReversHandlePos());
+        // Явно задаём целевое положение реверсора: кэш getReversHandlePos()
+        // обновляется только в preStep() контроллера и мог ещё не актуализироваться
+        initClientInputSignal(cab, CTRL_REVERS_POSITION, REVERS_FORWARD);
         initClientInputSignal(cab, CTRL_TUMBLER_PNT, pants_tumbler[cab].getState() ? 1.0f : 0.0f);
         initClientInputSignal(cab, CTRL_TUMBLER_PNT2, pant2_tumbler[cab].getState() ? 1.0f : 0.0f);
         initClientInputSignal(cab, CTRL_MAIN_SWITCH_ON, gv_tumbler[cab].getState() ? 1.0f : 0.0f);
@@ -78,17 +80,15 @@ void VL60pk::slotAutoStart()
             initClientInputSignal(cab, static_cast<int>(CTRL_TUMBLER_MV1 + i), mv_tumblers[cab][i].getState() ? 1.0f : 0.0f);
         }
 
-        initClientInputSignal(cab, CTRL_TUMBLER_CU, cu_tumbler[cab].getState() ? 1.0f : 0.0f);
-
-        /*if (!epk[cab]->isKeyOn())
-        {
-            initClientInputSignal(cab, CTRL_RBS_BUTTON, rb[cab][RBS].getState() ? 1.0f : 0.0f);
-        }*/
+        initClientInputSignal(cab, CTRL_TUMBLER_CU, cu_tumbler[cab].getState() ? 1.0f : 0.0f);        
+        initClientInputSignal(cab, CTRL_EPK_INSERTION, epk[cab]->isKey() ? 1.0f : 0.0f);
+        initClientInputSignal(cab, CTRL_KEY_EPK, epk[cab]->isKeyOn() ? 1.0f : 0.0f);
+        initClientInputSignal(cab, CTRL_KM_MAIN_POSITION, controller[cab]->getMainPos());
 
         if (auto_start_autopilot)
         {
             autopilot_switcher[autostart_cab].set();
-            //autopilot_switcher[CAB2].set();
+            initClientInputSignal(cab, CTRL_AUTOPILOT, 1.0f);
         }
     }
 }
@@ -115,14 +115,7 @@ void VL60pk::slotAutoStop()
         controller[autostart_cab]->setReversHandlePos(REVERS_ZERO);
 
         // Отключаем ЭПК, ключ остаётся в замке
-        epk[autostart_cab]->setKeyOn(false);
-
-        /*controller[CAB1]->setControl(&pressed_keys_by_cabine[CAB1]);
-        controller[CAB2]->setControl(&pressed_keys_by_cabine[CAB2]);
-        brake_lock[CAB1]->setControl(&pressed_keys_by_cabine[CAB1]);
-        brake_lock[CAB2]->setControl(&pressed_keys_by_cabine[CAB2]);
-        epk[CAB1]->setControl(&pressed_keys_by_cabine[CAB1]);
-        epk[CAB2]->setControl(&pressed_keys_by_cabine[CAB2]);*/
+        epk[autostart_cab]->setKeyOn(false);        
 
         autopilot_switcher[autostart_cab].reset();
 
@@ -134,10 +127,18 @@ void VL60pk::slotAutoStop()
         initClientInputSignal(cab, CTRL_RETURN_PROTECTION, 0.0f);
         initClientInputSignal(cab, CTRL_TUMBLER_FR, 0.0f);
         initClientInputSignal(cab, CTRL_TUMBLER_MK, 0.0f);
+
         for (size_t i = 0; i < NUM_MOTOR_FANS; ++i)
+        {
             initClientInputSignal(cab, static_cast<int>(CTRL_TUMBLER_MV1 + i), 0.0f);
+        }
+
         initClientInputSignal(cab, CTRL_TUMBLER_CU, 0.0f);
         initClientInputSignal(cab, CTRL_RBS_BUTTON, 0.0f);
+        // Явно задаём целевое положение реверсора: кэш getReversHandlePos()
+        // обновляется только в preStep() контроллера и мог ещё не актуализироваться
+        initClientInputSignal(cab, CTRL_REVERS_POSITION, REVERS_ZERO);
+        initClientInputSignal(cab, CTRL_KEY_EPK, epk[cab]->isKeyOn() ? 1.0f : 0.0f);
     }
 }
 
