@@ -161,10 +161,13 @@ void EditorGui::record([[maybe_unused]] vsg::CommandBuffer& command_buffer) cons
 
 void EditorGui::show_objects_ref() const
 {
-    if (!editor_context.gui_settings.show_objects_ref)
+    auto& gui_settings = editor_context.gui_settings;
+    const auto& objects_ref = editor_context.objects_ref;
+
+    if (!gui_settings.show_objects_ref)
         return;
 
-    ImGui::Begin("objects_ref", &editor_context.gui_settings.show_objects_ref, window_flags_);
+    ImGui::Begin("objects_ref", &gui_settings.show_objects_ref, window_flags_);
 
     static char search_buffer[256] = "";
     ImGui::InputText("label", search_buffer, 256);
@@ -177,7 +180,7 @@ void EditorGui::show_objects_ref() const
         ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_Borders |
         ImGuiTableFlags_RowBg))
     {
-        for (const auto& [label, ref] : editor_context.objects_ref)
+        for (const auto& [label, ref] : objects_ref)
         {
             std::string label_lower = label;
             std::transform(label_lower.begin(), label_lower.end(),
@@ -207,16 +210,19 @@ void EditorGui::show_objects_ref() const
 
 void EditorGui::show_route_map() const
 {
-    if (!editor_context.gui_settings.show_route_map)
+    auto& gui_settings = editor_context.gui_settings;
+    const auto& route_map = editor_context.route_map;
+
+    if (!gui_settings.show_route_map)
         return;
 
-    ImGui::Begin("route1.map", &editor_context.gui_settings.show_route_map, window_flags_);
+    ImGui::Begin("route1.map", &gui_settings.show_route_map, window_flags_);
 
     if (ImGui::BeginTable("route_map_table", 7,
         ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_Borders |
         ImGuiTableFlags_RowBg))
     {
-        for (const auto& [label, transforms] : editor_context.route_map)
+        for (const auto& [label, transforms] : route_map)
         {
             for (const auto& transform : transforms)
             {
@@ -251,27 +257,29 @@ void EditorGui::show_route_map() const
 
 void EditorGui::show_stations_conf() const
 {
-    if (!editor_context.gui_settings.show_stations_conf)
+    const auto& camera = editor_context.camera;
+    auto& gui_settings = editor_context.gui_settings;
+    const auto& stations_conf = editor_context.stations_conf;
+
+    if (!gui_settings.show_stations_conf)
         return;
 
-    const auto& camera = editor_context.camera;
-
-    ImGui::Begin("stations.conf", &editor_context.gui_settings.show_stations_conf, window_flags_);
+    ImGui::Begin("stations.conf", &gui_settings.show_stations_conf, window_flags_);
 
     if (ImGui::BeginTable("stations_conf_table", 4,
         ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_Borders |
         ImGuiTableFlags_RowBg))
     {
-        for (const auto& [label, translation] : editor_context.stations_conf)
+        for (const auto& [label, translation] : stations_conf)
         {
             constexpr const char* number_format = "%10.3f";
 
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
+
             if (ImGui::Button(label.c_str()))
-            {
                 camera->look_on(translation);
-            }
+
             ImGui::TableNextColumn();
             ImGui::Text(number_format, translation.x);
             ImGui::TableNextColumn();
@@ -289,49 +297,50 @@ void EditorGui::show_stations_conf() const
 // TODO: Сделать, чтобы реальные позиции грузились один раз?
 void EditorGui::show_waypoints_conf() const
 {
-    if (!editor_context.gui_settings.show_waypoints_conf)
+    const auto& camera = editor_context.camera;
+    auto& gui_settings = editor_context.gui_settings;
+    const auto& topology_loaded = editor_context.topology_loaded;
+    const auto& waypoints_conf = editor_context.waypoints_conf;
+
+    if (!gui_settings.show_waypoints_conf || !topology_loaded.load())
         return;
 
-    if (!editor_context.topology_loaded.load())
-        return;
+    const auto topology_guard = editor_context.topology.lock();
+    const auto& topology = *topology_guard;
 
-    auto topology_guard = editor_context.topology.lock();
-    auto& topology = *topology_guard;
-
-    ImGui::Begin("waypoints.conf", &editor_context.gui_settings.show_waypoints_conf, window_flags_);
+    ImGui::Begin("waypoints.conf", &gui_settings.show_waypoints_conf, window_flags_);
 
     if (ImGui::BeginTable("waypoints_conf_table", 5,
         ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_Borders |
         ImGuiTableFlags_RowBg))
     {
-        for (const auto& [label, data] : editor_context.waypoints_conf)
+        for (const auto& [label, data] : waypoints_conf)
         {
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
+
+            const QString traj_name = QString::fromStdString(data.trajectory_name);
 
             if (ImGui::Button(label.c_str()))
             {
                 const traj_list_t* const traj_list = topology->getTrajectoriesList();
 
-                const QString traj_name = QString::fromStdString(
-                    data.trajectory_name);
-
                 const auto found_it = traj_list->find(traj_name);
                 if (found_it == traj_list->cend())
                 {
-                    Journal::instance()->error(QString("Failed to find trajectory %1")
-                        .arg(data.trajectory_name.c_str()));
+                    Journal::instance()->error(
+                        QString("Failed to find trajectory %1").arg(traj_name));
                     return;
                 }
 
-                Trajectory* const trajectory = *found_it;
-                auto pd = trajectory->getPosition(data.coord, data.direction);
-                const dvec3 pos = pd.position;
-                const auto& camera = editor_context.camera;
-                camera->look_on(vsg::dvec3(pos.x, pos.y, pos.z));
+                const Trajectory* const trajectory = *found_it;
+                const auto traj_pos = trajectory->getPosition(data.coord, data.direction);
+                const dvec3 pos = traj_pos.position;
+                camera->look_on(vsg::dvec3(DECOMPOSE_VEC3(pos)));
             }
+
             ImGui::TableNextColumn();
-            ImGui::Text("%s", data.trajectory_name.c_str());
+            ImGui::Text("%s", traj_name.toStdString().c_str());
             ImGui::TableNextColumn();
             ImGui::Text("%d", data.direction);
             ImGui::TableNextColumn();
@@ -399,13 +408,6 @@ void EditorGui::show_topology() const
         return;
 
     ImGui::Begin("Topology", &gui_settings.show_topology, window_flags_);
-
-    if (!editor_context.route)
-    {
-        ImGui::Text("There is no route yet");
-        ImGui::End();
-        return;
-    }
 
     auto topology_guard = editor_context.topology.lock();
     auto& topology = *topology_guard;
