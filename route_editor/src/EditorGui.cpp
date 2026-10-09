@@ -373,7 +373,7 @@ void EditorGui::show_key_bindings() const
         {
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
-            ImGui::Text("%s", to_c_string(static_cast<Action>(i)));
+            ImGui::Text("%s", to_string(static_cast<Action>(i)).c_str());
             ImGui::TableNextColumn();
 
             std::string label;
