@@ -170,14 +170,7 @@ void MainWindow::updateSimSpeedMenu(int speed_factor)
     {
         int idx = ui->mSimSpeed->actions().indexOf(action);
 
-        if (idx == speed_factor)
-        {
-            action->setChecked(true);
-        }
-        else
-        {
-            action->setChecked(false);
-        }
+        action->setChecked(idx == speed_factor);
     }
 }
 
@@ -334,7 +327,7 @@ void MainWindow::updateStations()
 
     for (int i = 0; i < stations_size; ++i)
     {
-        topology_station_t ts = topology->getStationsList()->at(i);
+        const topology_station_t& ts = topology->getStationsList()->at(i);
 
         QAction *action_station = new QAction(ts.name);
         ui->mStations->addAction(action_station);
@@ -1134,8 +1127,7 @@ void MainWindow::slotUpdateSignal(QByteArray signal_data)
             sig->deserialize(signal_data);
         }
     }
-
-    if (signal_dir == -1)
+    else if (signal_dir == -1)
     {
         Signal* sig = conn->getSignalBwd();
         if (sig)
