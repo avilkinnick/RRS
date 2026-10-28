@@ -7,6 +7,7 @@
 #include <vsg/nodes/Switch.h>
 
 #include <cstddef>
+#include <cstdint>
 #include <string>
 #include <vector>
 
@@ -35,6 +36,8 @@ public:
 
     bool remove_object(std::size_t id);
 
+    bool select_object(std::size_t id);
+
 private:
     EditorContext& editor_ctx;
 
@@ -42,6 +45,7 @@ private:
     std::vector<std::string> rel_paths; // Replace on absolute?
 
     std::vector<vsg::ref_ptr<vsg::MatrixTransform>> mat_transforms;
+    std::vector<vsg::ref_ptr<vsg::Switch>> vsg_switches;
     std::vector<vsg::Switch::Child*> paged_lod_switches;
     std::vector<vsg::Switch::Child*> outline_switches;
     // std::vector<vsg::ref_ptr<vsg::PagedLOD>> paged_lods;
@@ -52,6 +56,8 @@ private:
 
     std::vector<bool> is_selected;
     std::vector<bool> is_hidden;
+
+    std::vector<std::uint32_t> generations;
 
     std::size_t object_count;
     const std::size_t max_object_count;
