@@ -1,12 +1,12 @@
 #ifndef     BUTTON_HANDLER_H
 #define     BUTTON_HANDLER_H
 
-#include    <control-handler.h>
+#include    <bistate-handler.h>
 
 //------------------------------------------------------------------------------
 //
 //------------------------------------------------------------------------------
-class ButtonHandler : public ControlHandler
+class ButtonHandler : public BiStateHandler
 {
 public:
 
@@ -31,6 +31,9 @@ private:
 
     /// Флаг того, что кнопка в режиме удержания
     bool is_holded = false;
+
+    QString pressButton = "LEFT_BUTTON";
+    QString holdButton = "RIGHT_BUTTON";
 };
 
 #endif
