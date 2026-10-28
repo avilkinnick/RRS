@@ -35,6 +35,7 @@ StaticObjectManager::StaticObjectManager(EditorContext& editor_ctx,
     , vsg_switches(max_object_count)
     , paged_lod_switches(max_object_count)
     , outline_switches(max_object_count, nullptr)
+    , paged_lods(max_object_count)
     , init_mats(max_object_count)
     , is_selected(max_object_count)
     , is_hidden(max_object_count)
@@ -63,15 +64,11 @@ bool StaticObjectManager::add_object(
     labels[object_count] = label;
     rel_paths[object_count] = rel_path;
 
-    // const auto outline = editor_ctx.outline_builder->create_outline(paged_lod);
-
     const auto vsg_switch = vsg::Switch::create();
     vsg_switch->addChild(vsg::Mask{MASK_SCENE | MASK_CLICKABLE}, paged_lod);
-    // vsg_switch->addChild(vsg::MASK_OFF, outline);
 
     vsg_switches[object_count] = vsg_switch;
     paged_lod_switches[object_count] = &vsg_switch->children[0];
-    // outline_switches[object_count] = &vsg_switch->children[1];
 
     const auto mat_transform = vsg::MatrixTransform::create();
     mat_transform->addChild(vsg_switch);
@@ -82,6 +79,7 @@ bool StaticObjectManager::add_object(
                             vsg::scale(scale);
 
     mat_transforms[object_count] = mat_transform;
+    paged_lods[object_count] = paged_lod;
 
     editor_ctx.compile_info_switch_nodes.lock()->emplace_back(
         CompileInfoSwitchNode{editor_ctx.route, mat_transform, vsg::MASK_ALL});
@@ -117,6 +115,7 @@ bool StaticObjectManager::remove_object(std::size_t id)
     vsg_switches[id] = vsg_switches[last_object_id];
     paged_lod_switches[id] = paged_lod_switches[last_object_id];
     outline_switches[id] = outline_switches[last_object_id];
+    paged_lods[id] = paged_lods[last_object_id];
 
     is_selected[id] = is_selected[last_object_id];
     is_hidden[id] = is_hidden[last_object_id];
@@ -134,6 +133,34 @@ bool StaticObjectManager::select_object(std::size_t id)
     {
         return false;
     }
+
+    if (is_selected[id])
+    {
+        outline_switches[id]->mask = vsg::MASK_OFF;
+        is_selected[id] = false;
+
+        return true;
+    }
+
+    if (!outline_switches[id])
+    {
+        const auto outline = editor_ctx.outline_builder->create_outline(
+            paged_lods[id]);
+
+        if (!outline)
+        {
+            return false;
+        }
+
+        vsg_switches[id]->addChild(vsg::Mask{MASK_GUI2}, outline);
+        outline_switches[id] = &vsg_switches[id]->children[1];
+
+        editor_ctx.compile_info_nodes.lock()->emplace_back(
+            CompileInfoNode{vsg_switches[id]});
+    }
+
+    outline_switches[id]->mask = vsg::Mask{MASK_GUI2};
+    is_selected[id] = true;
 
     return true;
 }

@@ -18,7 +18,6 @@ namespace vsg
 
 class MatrixTransform;
 class PagedLOD;
-class Switch;
 
 }
 
@@ -48,10 +47,10 @@ private:
     std::vector<vsg::ref_ptr<vsg::Switch>> vsg_switches;
     std::vector<vsg::Switch::Child*> paged_lod_switches;
     std::vector<vsg::Switch::Child*> outline_switches;
-    // std::vector<vsg::ref_ptr<vsg::PagedLOD>> paged_lods;
+    std::vector<vsg::ref_ptr<vsg::PagedLOD>> paged_lods;
 
-    // Vector init_mats is used to return the initial matrices when the command
-    // is canceled
+    // Vector init_mats is used to return the initial matrices
+    // when the command is canceled
     std::vector<vsg::dmat4> init_mats;
 
     std::vector<bool> is_selected;

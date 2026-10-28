@@ -15,6 +15,8 @@
 #include "editor/commands/PasteObjectsCommand.h"
 #include "editor/commands/SelectObjectsCommand.h"
 
+// #include "editor/StaticObjectManager.h"
+
 #include <Journal.h>
 #include <filesystem.h>
 
@@ -42,6 +44,8 @@ void BasicEditorState::handle_key_press()
     if (keyboard->pressed_once(ACTION_UNDO_COMMAND))
     {
         command_manager->undo();
+        // auto& object_manager = editor_ctx.object_manager;
+        // for (std::size_t&)
     }
     else if (keyboard->pressed_once(ACTION_REDO_COMMAND))
     {

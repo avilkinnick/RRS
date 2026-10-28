@@ -331,14 +331,7 @@ void Route::load_static_objects()
                 vsg::rotate(rot_rad.x, X_AXIS);
 
             // auto& object_manager = editor_ctx.object_manager;
-
-            // object_manager->labels.push_back(label);
-            // object_manager->rel_paths.push_back(
-            //     ref_it->second.relative_path);
-            // object_manager->mat_transforms.push_back(matrix_transform);
-            // object_manager->init_mats.push_back(
-            //     matrix_transform->matrix);
-            // object_manager->is_selected.push_back(false);
+            // object_manager->add_object(label, ref_it->second.relative_path, ref_it->second.paged_lod, transform.translation, rot_deg, vsg::dvec3{1.0, 1.0, 1.0});
         }
     }
 }
