@@ -37,6 +37,8 @@ public:
 
     bool select_object(std::size_t id);
 
+    std::size_t get_object_count() const;
+
 private:
     EditorContext& editor_ctx;
 

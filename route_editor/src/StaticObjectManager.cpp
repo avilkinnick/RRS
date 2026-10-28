@@ -164,3 +164,8 @@ bool StaticObjectManager::select_object(std::size_t id)
 
     return true;
 }
+
+std::size_t StaticObjectManager::get_object_count() const
+{
+    return object_count;
+}
