@@ -78,6 +78,7 @@ bool RouteEditor::initialize()
     const auto& scene_settings = editor_ctx.scene_settings;
     auto& state_manager = editor_ctx.state_manager;
     auto& window = editor_ctx.window;
+    auto& viewer = editor_ctx.viewer;
 
     initialize_journal();
     read_settings();
@@ -173,6 +174,8 @@ bool RouteEditor::initialize()
 
 void RouteEditor::run()
 {
+    const auto& viewer = editor_ctx.viewer;
+
     while (viewer->advanceToNextFrame())
     {
         static double prev_time = viewer->getFrameStamp()->simulationTime;
@@ -321,6 +324,8 @@ void RouteEditor::configure_shaders()
 
 void RouteEditor::compile_models()
 {
+    const auto& viewer = editor_ctx.viewer;
+
     auto& compile_manager = viewer->compileManager;
 
     vsg::CompileResult compile_result;

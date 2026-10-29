@@ -299,13 +299,16 @@ void Route::load_static_objects()
             continue;
         }
 
+        const std::string& rel_path = ref_it->second.relative_path;
+        const auto& paged_lod = ref_it->second.paged_lod;
+
         for (const auto& transform : transforms)
         {
-            const auto object = RouteObject::create(editor_ctx,
-                                                    ref_it->second.paged_lod,
-                                                    label,
-                                                    transform.translation,
-                                                    -transform.rotation_deg);
+            const vsg::dvec3& pos = transform.translation;
+            const vsg::dvec3& rot_deg = transform.rotation_deg;
+
+            const auto object = RouteObject::create(editor_ctx, paged_lod,
+                                                    label, pos, -rot_deg);
 
             editor_ctx.compile_info_switch_nodes.lock()->emplace_back(
                 CompileInfoSwitchNode{vsg::ref_ptr(this), object,
@@ -317,21 +320,20 @@ void Route::load_static_objects()
             constexpr vsg::dvec3 Y_AXIS = {0.0, 1.0, 0.0};
             constexpr vsg::dvec3 Z_AXIS = {0.0, 0.0, 1.0};
 
-            const vsg::dvec3 rot_deg = transform.rotation_deg;
             const vsg::dvec3 rot_rad = {vsg::radians(rot_deg.x),
                                         vsg::radians(rot_deg.y),
                                         vsg::radians(rot_deg.z)};
 
             auto matrix_transform = vsg::MatrixTransform::create();
-            matrix_transform->children = {ref_it->second.paged_lod};
-            matrix_transform->matrix =
-                vsg::translate(transform.translation) *
-                vsg::rotate(rot_rad.z, Z_AXIS) *
-                vsg::rotate(rot_rad.y, Y_AXIS) *
-                vsg::rotate(rot_rad.x, X_AXIS);
+            matrix_transform->children = {paged_lod};
+            matrix_transform->matrix = vsg::translate(pos) *
+                                       vsg::rotate(rot_rad.z, Z_AXIS) *
+                                       vsg::rotate(rot_rad.y, Y_AXIS) *
+                                       vsg::rotate(rot_rad.x, X_AXIS);
 
             // auto& object_manager = editor_ctx.object_manager;
-            // object_manager->add_object(label, ref_it->second.relative_path, ref_it->second.paged_lod, transform.translation, rot_deg, vsg::dvec3{1.0, 1.0, 1.0});
+            // object_manager->add_object(label, rel_path, paged_lod, pos, rot_deg,
+            //     vsg::dvec3{1.0, 1.0, 1.0});
         }
     }
 }

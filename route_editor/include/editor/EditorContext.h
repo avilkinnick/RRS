@@ -111,6 +111,7 @@ struct EditorContext
     vsg::ref_ptr<Gizmo> gizmo;
     std::unique_ptr<StaticObjectManager> object_manager;
     vsg::ref_ptr<WorldCulling> world_culling;
+    vsg::ref_ptr<vsg::Viewer> viewer;
 
     EditorState editor_state = EditorState::SELECT_ROUTE;
     std::unique_ptr<StateManager> state_manager;
