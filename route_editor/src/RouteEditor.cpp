@@ -157,7 +157,7 @@ bool RouteEditor::initialize()
     viewer->addEventHandler(close_handler);
     viewer->addEventHandler(window_handler_);
     viewer->addEventHandler(mouse);
-    viewer->addEventHandler(EventHandler::create(state_manager));
+    viewer->addEventHandler(EventHandler::create(*state_manager));
     viewer->addEventHandler(object_selector);
 
     viewer->assignRecordAndSubmitTaskAndPresentation({command_graph});

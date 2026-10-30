@@ -756,8 +756,8 @@ void EditorGui::add_object(const vsg::ref_ptr<vsg::PagedLOD>& paged_lod,
     const auto& command_manager = editor_ctx.command_manager;
 
     const auto object = RouteObject::create(editor_ctx, paged_lod, label,
-                                            camera->get_look_at()->eye
-                                                + camera->get_front() * 20.0);
+                                            camera->get_look_at()->eye +
+                                            camera->get_front() * 20.0);
 
     auto command = std::make_unique<AddObjectCommand>(editor_ctx, object);
     command->execute();
