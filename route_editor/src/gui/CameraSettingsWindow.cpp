@@ -1,10 +1,11 @@
 #include "editor/gui/CameraSettingsWindow.h"
 
-// #include "editor/Camera.h"
+#include "editor/Camera.h"
 #include "editor/EditorContext.h"
 #include "editor/settings/CameraSettings.h"
 #include "editor/settings/GuiSettings.h"
 
+#include <vsg/app/ProjectionMatrix.h>
 #include <vsgImGui/imgui.h>
 
 #include <cfloat>
@@ -20,15 +21,16 @@ CameraSettingsWindow::CameraSettingsWindow(EditorContext& editor_ctx,
 
 void CameraSettingsWindow::show() const
 {
-    if (!gui_settings.show_camera_settings)
+    bool& show_camera_settings = gui_settings.show_camera_settings;
+
+    if (!show_camera_settings)
     {
         return;
     }
 
     constexpr double min_drag_value = 0.0;
 
-    ImGui::Begin("Camera settings", &gui_settings.show_camera_settings,
-                 window_flags);
+    ImGui::Begin("Camera settings", &show_camera_settings, window_flags);
 
     ImGui::PushItemWidth(-FLT_MIN);
 
@@ -45,9 +47,11 @@ void CameraSettingsWindow::show() const
                       nullptr, "Zoom power: %.3f");
 
     if (ImGui::SliderScalar("##CameraFovY", ImGuiDataType_Double,
-            &camera_settings.fovy, &camera_settings.fovy_min,
-            &camera_settings.fovy_max, "FovY: %.3f"))
+                            &camera_settings.fovy, &camera_settings.fovy_min,
+                            &camera_settings.fovy_max, "FovY: %.3f"))
+    {
         camera->get_perspective()->fieldOfViewY = camera_settings.fovy;
+    }
 
     ImGui::PopItemWidth();
 
