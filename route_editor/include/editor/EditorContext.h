@@ -5,7 +5,6 @@
 #include "editor/KeyBindings.h"
 #include "editor/RouteMap.h"
 #include "editor/RouteObjects.h"
-#include "editor/SingleSwitch.h"
 #include "editor/settings/CameraSettings.h"
 #include "editor/settings/GizmoSettings.h"
 #include "editor/settings/GuiSettings.h"
@@ -23,14 +22,13 @@
 #include <string>
 #include <thread>
 #include <vector>
-#include <vsg/nodes/Group.h>
-#include <vsg/nodes/Switch.h>
 
 class Camera;
 class CommandManager;
 class Gizmo;
 class Keyboard;
 class Mouse;
+class SingleSwitch;
 class StaticObjectManager;
 class ObjectSelector;
 class OutlineBuilder;
@@ -43,8 +41,10 @@ class WorldCulling;
 namespace vsg
 {
 
+class Group;
 class Node;
 class PagedLOD;
+class Switch;
 class Window;
 
 } // namespace vsg

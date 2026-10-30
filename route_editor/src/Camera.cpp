@@ -30,7 +30,7 @@ Camera::Camera(EditorContext& editor_ctx)
     assert(editor_ctx.window && "Window must be created before camera");
 
     const auto& camera_settings = editor_ctx.camera_settings;
-    const auto& window_extent = editor_ctx.window->extent2D();
+    const VkExtent2D window_extent = editor_ctx.window->extent2D();
 
     const double window_width = static_cast<double>(window_extent.width);
     const double window_height = static_cast<double>(window_extent.height);
@@ -71,13 +71,13 @@ void Camera::update_move_dir()
 {
     const auto& keyboard = editor_ctx.keyboard;
 
-    const int forward_move_dir
-        = static_cast<int>(keyboard->pressed(ACTION_MOVE_CAMERA_FORWARD))
-          - static_cast<int>(keyboard->pressed(ACTION_MOVE_CAMERA_BACKWARD));
+    const int forward_move_dir =
+        static_cast<int>(keyboard->pressed(ACTION_MOVE_CAMERA_FORWARD)) -
+        static_cast<int>(keyboard->pressed(ACTION_MOVE_CAMERA_BACKWARD));
 
-    const int right_move_dir
-        = static_cast<int>(keyboard->pressed(ACTION_MOVE_CAMERA_RIGHT))
-          - static_cast<int>(keyboard->pressed(ACTION_MOVE_CAMERA_LEFT));
+    const int right_move_dir =
+        static_cast<int>(keyboard->pressed(ACTION_MOVE_CAMERA_RIGHT)) -
+        static_cast<int>(keyboard->pressed(ACTION_MOVE_CAMERA_LEFT));
 
     if ((forward_move_dir == 0) && (right_move_dir == 0))
     {
@@ -181,9 +181,7 @@ void Camera::look_on(const vsg::dvec3& pos, double distance)
 
 void Camera::create_orthographic_projection(double aspect_ratio)
 {
-    const auto& camera_settings = editor_ctx.camera_settings;
-
-    const double radius = camera_settings.view_distance;
+    const double radius = editor_ctx.camera_settings.view_distance;
 
     const double halfDim = 100.0;
     double halfHeight, halfWidth;
