@@ -18,7 +18,7 @@ public:
     void show() const;
 
 private:
-    const vsg::ref_ptr<Camera>& camera;
+    const vsg::ref_ptr<Camera> camera;
     camera_settings_t& camera_settings;
     gui_settings_t& gui_settings;
     const ImGuiWindowFlags window_flags;

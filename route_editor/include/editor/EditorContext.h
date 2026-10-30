@@ -3,6 +3,7 @@
 
 #include "editor/EditorState.h"
 #include "editor/KeyBindings.h"
+#include "editor/ObjectRef.h"
 #include "editor/RouteMap.h"
 #include "editor/RouteObjects.h"
 #include "editor/settings/CameraSettings.h"
@@ -48,12 +49,6 @@ class Switch;
 class Window;
 
 } // namespace vsg
-
-struct ObjectRef
-{
-    std::string relative_path;
-    vsg::ref_ptr<vsg::PagedLOD> paged_lod;
-};
 
 struct CompileInfoNode
 {
