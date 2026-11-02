@@ -8,7 +8,6 @@
 #include "MyGui.h"
 #include "NewSkybox.h"
 #include "Route.h"
-#include "RouteLoader.h"
 #include "ScreenshotWriter.h"
 // #include "Skybox.h"
 #include "StationsHandler.h"
@@ -1035,11 +1034,10 @@ bool RouteViewer::loadRoute()
     // Загрузка информации о моделях в маршруте
     Route route;
 
-    RouteLoader loader(settings.route_dir_full_path);
-    loader.read_description();
     const std::string objects_ref_path{route_dir_path + "/objects.ref"};
-    route.objects_ref.read(objects_ref_path);
     const std::string route_map_path{route_dir_path + "/topology/map/route1.map"};
+
+    route.objects_ref.read(objects_ref_path);
     route.route_map.read(route_map_path);
 
     // Создание PagedLOD для моделей в маршруте
