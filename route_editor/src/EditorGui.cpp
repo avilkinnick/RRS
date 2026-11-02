@@ -62,7 +62,6 @@
 #include <cctype>
 #include <cstddef>
 #include <cstdio>
-#include <functional>
 #include <memory>
 #include <string>
 
@@ -431,10 +430,9 @@ void EditorGui::show_waypoints_conf() const
                 }
 
                 const Trajectory* const trajectory = *found_it;
-                const auto traj_pos =
-                    trajectory->getPosition(data.coord, data.direction);
-                const dvec3 pos = traj_pos.position;
-                camera->look_on(pos);
+                const auto traj_pos = trajectory->getPosition(data.coord,
+                                                              data.direction);
+                camera->look_on(traj_pos.position);
             }
 
             ImGui::TableNextColumn();
@@ -566,8 +564,7 @@ void EditorGui::show_topology() const
                         std::string label = "Jump##" + trajectory_name;
                         if (ImGui::Button(label.c_str()))
                         {
-                            editor_ctx.camera->look_on(
-                                vsg::dvec3(DECOMPOSE_VEC3(p1)));
+                            editor_ctx.camera->look_on(p1);
                         }
                     }
 

@@ -64,11 +64,6 @@
 #include <string>
 #include <thread>
 
-static vsg::dvec3 to_vsg_vec3(dvec3 vec)
-{
-    return vsg::dvec3{vec.x, vec.y, vec.z};
-}
-
 static vsg::ref_ptr<vsg::PagedLOD>
 construct_paged_lod(const vsg::Path& filename, double radius,
                     const vsg::ref_ptr<vsg::Options>& options)
@@ -446,10 +441,10 @@ bool Route::load_topology()
 
             paged_lod = paged_lod_it->second;
 
-            const vsg::dvec3 pos = to_vsg_vec3(signal->getPos());
-            const vsg::dvec3 right = to_vsg_vec3(signal->getRight());
-            const vsg::dvec3 orth = to_vsg_vec3(signal->getOrth());
-            const vsg::dvec3 up = to_vsg_vec3(signal->getUp());
+            const vsg::dvec3 pos = signal->getPos();
+            const vsg::dvec3 right = signal->getRight();
+            const vsg::dvec3 orth = signal->getOrth();
+            const vsg::dvec3 up = signal->getUp();
 
             const vsg::dvec3 rotation_deg
                 = {vsg::degrees(atan2(orth.z, up.z)),
@@ -527,12 +522,10 @@ bool Route::load_topology()
 
         for (const track_t& track : tracks)
         {
-            const dvec3& p = track.begin_point;
-            points.emplace_back(vsg::dvec3{p.x, p.y, p.z});
+            points.emplace_back(track.begin_point);
         }
 
-        const dvec3& p = tracks.back().end_point;
-        points.emplace_back(vsg::dvec3{p.x, p.y, p.z});
+        points.emplace_back(tracks.back().end_point);
 
         const auto vertices = vsg::vec3Array::create(points_size * 2);
         const auto colors = vsg::vec3Array::create(points_size * 2);
