@@ -169,8 +169,14 @@ void MainWindow::updateSimSpeedMenu(int speed_factor)
     for (auto *action : ui->mSimSpeed->actions())
     {
         int idx = ui->mSimSpeed->actions().indexOf(action);
-
-        action->setChecked(idx == speed_factor);
+        if (idx == 0)
+        {
+            action->setChecked(speed_factor == 0);
+        }
+        else
+        {
+            action->setChecked(speed_factor == (1 << (idx - 1)));
+        }
     }
 }
 
