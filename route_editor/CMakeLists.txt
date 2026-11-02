@@ -43,6 +43,8 @@ target_link_libraries(route_editor PRIVATE
     topology
 )
 
+target_compile_definitions(route_editor PRIVATE vsg_FOUND)
+
 if(MSVC)
     target_compile_options(route_editor PRIVATE /W3)
 else()

@@ -434,7 +434,7 @@ void EditorGui::show_waypoints_conf() const
                 const auto traj_pos =
                     trajectory->getPosition(data.coord, data.direction);
                 const dvec3 pos = traj_pos.position;
-                camera->look_on(vsg::dvec3(DECOMPOSE_VEC3(pos)));
+                camera->look_on(pos);
             }
 
             ImGui::TableNextColumn();
