@@ -7,6 +7,7 @@ add_library(RouteReader STATIC)
 target_sources(RouteReader
     PRIVATE
         src/ObjectsRef.cpp
+        src/RouteMap.cpp
 
     PUBLIC
         FILE_SET HEADERS
@@ -14,6 +15,7 @@ target_sources(RouteReader
             include
         FILES
             include/RouteReader/ObjectsRef.h
+            include/RouteReader/RouteMap.h
 )
 
 target_link_libraries(RouteReader PRIVATE
