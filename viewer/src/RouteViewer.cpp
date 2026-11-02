@@ -40,6 +40,7 @@
 #include <vsg/lighting/AmbientLight.h>
 #include <vsg/lighting/DirectionalLight.h>
 #include <vsg/lighting/HardShadows.h>
+#include <vsg/maths/common.h>
 #include <vsg/maths/sphere.h>
 #include <vsg/maths/transform.h>
 #include <vsg/maths/vec3.h>
@@ -1036,14 +1037,16 @@ bool RouteViewer::loadRoute()
 
     RouteLoader loader(settings.route_dir_full_path);
     loader.read_description();
-    loader.parse_objects_ref(route);
-    loader.parse_route_map(route);
+    const std::string objects_ref_path{route_dir_path + "/objects.ref"};
+    route.objects_ref.read(objects_ref_path);
+    const std::string route_map_path{route_dir_path + "/topology/map/route1.map"};
+    route.route_map.read(route_map_path);
 
     // Создание PagedLOD для моделей в маршруте
     for (auto& [label, transforms] : route.route_map)
     {
-        auto found_it = route.object_ref.find(label);
-        if (found_it == route.object_ref.end())
+        auto found_it = route.objects_ref.find(label);
+        if (found_it == route.objects_ref.end())
         {
             continue;
         }
@@ -1064,28 +1067,34 @@ bool RouteViewer::loadRoute()
 
             for (auto& transform : transforms)
             {
-                vsg::vec3& rotation_deg = transform.rotation_deg;
+                const auto& pos_arr = transform.pos;
+                const auto& rot_deg = transform.rot_deg;
 
-                auto matrix = vsg::MatrixTransform::create();
-                rotation_deg.x = -vsg::radians(rotation_deg.x);
-                rotation_deg.y = -vsg::radians(rotation_deg.y);
-                rotation_deg.z = -vsg::radians(rotation_deg.z);
+                const vsg::vec3 pos{pos_arr[0], pos_arr[1], pos_arr[2]};
+                const vsg::vec3 rot_rad{
+                    -vsg::radians(rot_deg[0]),
+                    -vsg::radians(rot_deg[1]),
+                    -vsg::radians(rot_deg[2])
+                };
 
-                auto rotate_x = vsg::rotate(rotation_deg.x, vsg::vec3(1.0f, 0.0f, 0.0f));
-                auto rotate_y = vsg::rotate(rotation_deg.y, vsg::vec3(0.0f, 1.0f, 0.0f));
-                auto rotate_z = vsg::rotate(rotation_deg.z, vsg::vec3(0.0f, 0.0f, 1.0f));
-                auto translate = vsg::translate(transform.translation);
+                const auto rotate_x = vsg::rotate(rot_rad.x, vsg::vec3(1.0f, 0.0f, 0.0f));
+                const auto rotate_y = vsg::rotate(rot_rad.y, vsg::vec3(0.0f, 1.0f, 0.0f));
+                const auto rotate_z = vsg::rotate(rot_rad.z, vsg::vec3(0.0f, 0.0f, 1.0f));
+                const auto translate = vsg::translate(pos);
 
+                const auto matrix = vsg::MatrixTransform::create();
                 matrix->matrix = translate * rotate_z * rotate_y * rotate_x;
                 matrix->addChild(pagedLOD);
 
-                vsg::dvec3 position = vsg::dvec3(matrix->matrix[3][0], matrix->matrix[3][1], matrix->matrix[3][2]);
+                vsg::dvec3 position = vsg::dvec3(matrix->matrix[3][0],
+                                                 matrix->matrix[3][1],
+                                                 matrix->matrix[3][2]);
                 world_culling->add(position, matrix);
             }
         }
     }
 
-    route.object_ref.clear();
+    route.objects_ref.clear();
     route.route_map.clear();
 
     return true;

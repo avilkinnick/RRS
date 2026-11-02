@@ -15,8 +15,6 @@ public:
     explicit RouteLoader(const std::string& route_path);
 
     void read_description();
-    bool parse_objects_ref(Route& route);
-    bool parse_route_map(Route& route);
 
 private:
     std::string route_path;
