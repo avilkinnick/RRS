@@ -84,7 +84,10 @@ Route::Route(EditorContext& context)
 
 void Route::load()
 {
-    if (!load_objects_ref())
+    const FileSystem& fs = FileSystem::getInstance();
+    const std::string objects_ref_path = fs.combinePath(route_dir, "objects.ref");
+
+    if (!editor_ctx.objects_ref.read(objects_ref_path))
     {
         return;
     }
@@ -104,54 +107,22 @@ void Route::load()
         return;
     }
 
-    const auto& fs = FileSystem::getInstance();
     const auto& camera_settings = editor_ctx.camera_settings;
     const auto& vsg_options = editor_ctx.vsg_options;
     auto& objects_ref = editor_ctx.objects_ref;
     auto& load_static_objects_thread = editor_ctx.load_static_objects_thread;
     auto& load_topology_thread = editor_ctx.load_topology_thread;
 
-    for (auto& [label, ref] : objects_ref)
+    for (auto& [label, rel_path] : objects_ref)
     {
-        ref.paged_lod = construct_paged_lod(
-            fs.combinePath(route_dir, ref.relative_path),
-            camera_settings.view_distance, vsg_options);
+        paged_lods.emplace(label, construct_paged_lod(
+                                      fs.combinePath(route_dir, rel_path),
+                                      camera_settings.view_distance,
+                                      vsg_options));
     }
 
     load_static_objects_thread = std::thread(&Route::load_static_objects, this);
     load_topology_thread = std::thread(&Route::load_topology, this);
-}
-
-bool Route::load_objects_ref()
-{
-    const FileSystem& fs = FileSystem::getInstance();
-    const std::string objects_ref_path =
-        fs.combinePath(route_dir, "objects.ref");
-
-    std::ifstream objects_ref_file(objects_ref_path);
-    if (!objects_ref_file)
-    {
-        Journal::instance()->error(
-            QString("Failed to open %1").arg(objects_ref_path.c_str()));
-
-        return false;
-    }
-
-    std::string line;
-    while (std::getline(objects_ref_file, line))
-    {
-        std::istringstream iss(line);
-        std::string label, relative_path;
-
-        if (iss >> label >> relative_path)
-        {
-            editor_ctx.objects_ref.emplace(std::move(label),
-                                           ObjectRef{std::move(relative_path),
-                                           nullptr});
-        }
-    }
-
-    return true;
 }
 
 bool Route::load_route_map()
@@ -288,14 +259,14 @@ void Route::load_static_objects()
 {
     for (const auto& [label, transforms] : editor_ctx.route_map)
     {
-        const auto ref_it = editor_ctx.objects_ref.find(label);
-        if (ref_it == editor_ctx.objects_ref.cend())
+        const auto found_it = editor_ctx.objects_ref.find(label);
+        if (found_it == editor_ctx.objects_ref.cend())
         {
             continue;
         }
 
-        const std::string& rel_path = ref_it->second.relative_path;
-        const auto& paged_lod = ref_it->second.paged_lod;
+        const std::string& rel_path = found_it->second;
+        const auto& paged_lod = paged_lods[label];
 
         for (const auto& transform : transforms)
         {

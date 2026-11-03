@@ -3,7 +3,6 @@
 
 #include "editor/EditorState.h"
 #include "editor/KeyBindings.h"
-#include "editor/ObjectRef.h"
 #include "editor/RouteMap.h"
 #include "editor/RouteObjects.h"
 #include "editor/settings/CameraSettings.h"
@@ -12,6 +11,7 @@
 #include "editor/settings/SceneSettings.h"
 #include "editor/settings/WindowSettings.h"
 
+#include <RouteReader/ObjectsRef.h>
 #include <core/ThreadSafe.h>
 
 #include <vsg/core/Mask.h>
@@ -133,7 +133,7 @@ struct EditorContext
     vsg::ref_ptr<ObjectSelector> object_selector;
     vsg::ref_ptr<OutlineBuilder> outline_builder;
 
-    std::map<std::string, ObjectRef> objects_ref;
+    ObjectsRef objects_ref;
     RouteMap route_map;
     std::map<std::string, vsg::dvec3> stations_conf;
     std::map<std::string, WaypointData> waypoints_conf;

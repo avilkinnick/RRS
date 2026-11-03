@@ -186,7 +186,7 @@ void EditorGui::show_objects_ref() const
                           ImGuiTableFlags_Borders |
                           ImGuiTableFlags_RowBg))
     {
-        for (const auto& [label, ref] : editor_ctx.objects_ref)
+        for (const auto& [label, rel_path] : editor_ctx.objects_ref)
         {
             std::string label_lower = label;
             std::transform(label_lower.begin(), label_lower.end(),
@@ -203,11 +203,12 @@ void EditorGui::show_objects_ref() const
 
             if (ImGui::Button(label.c_str()))
             {
-                add_object(ref.paged_lod, label);
+                auto& paged_lods = editor_ctx.route->get_paged_lods();
+                add_object(paged_lods[label], label);
             }
 
             ImGui::TableNextColumn();
-            ImGui::Text("%s", ref.relative_path.c_str());
+            ImGui::Text("%s", rel_path.c_str());
         }
 
         ImGui::EndTable();
