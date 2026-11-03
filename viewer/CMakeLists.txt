@@ -63,3 +63,5 @@ target_include_directories(${TARGET} PRIVATE
     display/include
     ./include
 )
+
+target_compile_definitions(${TARGET} PRIVATE vsg_FOUND)
