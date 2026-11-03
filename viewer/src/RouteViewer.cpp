@@ -1065,19 +1065,18 @@ bool RouteViewer::loadRoute()
 
             for (auto& transform : transforms)
             {
-                const auto& pos_arr = transform.pos;
-                const auto& rot_deg = transform.rot_deg;
+                const vsg::dvec3 pos = transform.pos;
+                const vsg::dvec3 rot_deg = transform.rot_deg;
 
-                const vsg::vec3 pos{pos_arr[0], pos_arr[1], pos_arr[2]};
-                const vsg::vec3 rot_rad{
-                    -vsg::radians(rot_deg[0]),
-                    -vsg::radians(rot_deg[1]),
-                    -vsg::radians(rot_deg[2])
+                const vsg::dvec3 rot_rad{
+                    -vsg::radians(rot_deg.x),
+                    -vsg::radians(rot_deg.y),
+                    -vsg::radians(rot_deg.z)
                 };
 
-                const auto rotate_x = vsg::rotate(rot_rad.x, vsg::vec3(1.0f, 0.0f, 0.0f));
-                const auto rotate_y = vsg::rotate(rot_rad.y, vsg::vec3(0.0f, 1.0f, 0.0f));
-                const auto rotate_z = vsg::rotate(rot_rad.z, vsg::vec3(0.0f, 0.0f, 1.0f));
+                const auto rotate_x = vsg::rotate(rot_rad.x, vsg::dvec3(1.0, 0.0, 0.0));
+                const auto rotate_y = vsg::rotate(rot_rad.y, vsg::dvec3(0.0, 1.0, 0.0));
+                const auto rotate_z = vsg::rotate(rot_rad.z, vsg::dvec3(0.0, 0.0, 1.0));
                 const auto translate = vsg::translate(pos);
 
                 const auto matrix = vsg::MatrixTransform::create();

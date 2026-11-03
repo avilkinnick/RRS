@@ -36,8 +36,8 @@ void RouteMap::parse_line(const std::string& line)
     Transform transform{};
     auto& pos = transform.pos;
     auto& rot_deg = transform.rot_deg;
-    iss >> label >> pos[0] >> pos[1] >> pos[2] >>
-           rot_deg[0] >> rot_deg[1] >> rot_deg[2];
+    iss >> label >> pos.x >> pos.y >> pos.z >>
+           rot_deg.x >> rot_deg.y >> rot_deg.z;
     if (iss)
     {
         (*this)[label].emplace_back(transform);
