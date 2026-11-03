@@ -38,6 +38,7 @@ target_link_libraries(route_editor PRIVATE
     CfgReader
     Journal
     core
+    RouteReader
     filesystem
     graphics
     topology
