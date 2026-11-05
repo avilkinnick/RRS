@@ -14,15 +14,15 @@
 
 static void initialize_journal(const char* log_filename)
 {
-    const auto& fs{FileSystem::getInstance()};
-    auto* const journal_file{new JournalFile{
+    const FileSystem& fs = FileSystem::getInstance();
+    JournalFile* const journal_file = new JournalFile{
         to_qstring(fs.combinePath(fs.getLogsDir(), log_filename)),
-        JournalLevel::All}};
+        JournalLevel::All};
 
-    auto& journal{*Journal::instance()};
+    Journal& journal = *Journal::instance();
     journal.addStorage(journal_file);
 
-    const auto dash_line{QString{'='}.repeated(80)};
+    const QString dash_line = QString{'='}.repeated(80);
 
     journal.message(dash_line);
     journal.message("Started new session");
