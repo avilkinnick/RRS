@@ -2,15 +2,12 @@
 
 #include "editor/EditorContext.h"
 #include "editor/Mask.h"
-#include "editor/PagedLodMap.h"
 #include "editor/RouteObject.h"
 #include "editor/StaticObjectManager.h"
 #include "editor/settings/CameraSettings.h"
 
 #include <CfgReader.h>
 #include <Journal.h>
-#include <cstdlib>
-#include <ctime>
 #include <filesystem.h>
 #include <graphics/pipeline_funcs.h>
 #include <rail-signal.h>
@@ -56,12 +53,17 @@
 
 #include <cmath>
 #include <cstdio>
+#include <cstdlib>
+#include <ctime>
 #include <filesystem>
 #include <fstream>
+#include <map>
 #include <memory>
 #include <sstream>
 #include <string>
 #include <thread>
+
+using PagedLodMap = std::map<std::string, vsg::ref_ptr<vsg::PagedLOD>>;
 
 static vsg::ref_ptr<vsg::PagedLOD>
 construct_paged_lod(const vsg::Path& filename, double radius,
