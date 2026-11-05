@@ -265,15 +265,14 @@ bool Route::load_topology()
 {
     const FileSystem& fs = FileSystem::getInstance();
 
-    const std::string cfg_path =
-        fs.combinePath(route_dir, "topology", "models-config.xml");
+    const std::string cfg_path = fs.combinePath(route_dir, "topology",
+                                                "models-config.xml");
 
     CfgReader cfg;
     if (!cfg.load(QString::fromStdString(cfg_path)))
     {
-        Journal::instance()->error(
-            QString("Failed to load %1").arg(cfg_path.c_str()));
-
+        Journal::instance()->error(QString("Failed to load %1")
+                                       .arg(cfg_path.c_str()));
         return false;
     }
 
@@ -283,8 +282,8 @@ bool Route::load_topology()
     if (!cfg.getString(section_name, "SignalModelsDir", signal_models_dir))
     {
         Journal::instance()->error(
-            QString("Failed to find field "
-                    "\"SignalModelsDir\" in section %1 in %2")
+            QString("Failed to find field \"SignalModelsDir\" "
+                    "in section %1 in %2")
                 .arg(section_name)
                 .arg(cfg_path.c_str()));
 
@@ -293,11 +292,11 @@ bool Route::load_topology()
 
     const std::string models_dir_name = signal_models_dir.toStdString();
 
-    const std::string models_dir
-        = fs.combinePath(fs.getDataDir(), "models", models_dir_name);
+    const std::string models_dir = fs.combinePath(fs.getDataDir(), "models",
+                                                  models_dir_name);
 
-    Journal::instance()->info(
-        QString("Signals directory %1").arg(models_dir.c_str()));
+    Journal::instance()->info(QString("Signals directory %1")
+                                  .arg(models_dir.c_str()));
 
     const signals_data_t* signals_data = nullptr;
 
@@ -342,16 +341,16 @@ bool Route::load_topology()
             }
             signal->calcPosition();
 
-            const std::string signal_model_name
-                = signal->getSignalModel().toStdString();
+            const std::string signal_model_name =
+                signal->getSignalModel().toStdString();
 
             if (signal_model_name.empty() || signal_model_name == "empty_line")
             {
                 continue;
             }
 
-            const std::string signal_model_path
-                = fs.combinePath(models_dir, signal_model_name) + ".gltf";
+            const std::string signal_model_path =
+                fs.combinePath(models_dir, signal_model_name) + ".gltf";
 
             vsg::ref_ptr<vsg::PagedLOD> paged_lod;
 
@@ -362,9 +361,8 @@ bool Route::load_topology()
                     signal_model_path, camera_settings.view_distance,
                     vsg_options);
 
-                paged_lod_it
-                    = paged_lods.emplace(signal_model_path, new_paged_lod)
-                          .first;
+                paged_lod_it = paged_lods.emplace(signal_model_path,
+                                                  new_paged_lod).first;
             }
 
             paged_lod = paged_lod_it->second;
@@ -374,14 +372,15 @@ bool Route::load_topology()
             const vsg::dvec3 orth = signal->getOrth();
             const vsg::dvec3 up = signal->getUp();
 
-            const vsg::dvec3 rotation_deg
-                = {vsg::degrees(atan2(orth.z, up.z)),
-                   vsg::degrees(atan2(-right.z, hypot(orth.z, up.z))),
-                   vsg::degrees(atan2(-right.y, right.x))};
+            const vsg::dvec3 rotation_deg = {
+                vsg::degrees(std::atan2(orth.z, up.z)),
+                vsg::degrees(std::atan2(-right.z, std::hypot(orth.z, up.z))),
+                vsg::degrees(std::atan2(-right.y, right.x))
+            };
 
-            const auto object
-                = RouteObject::create(editor_ctx, paged_lod,
-                                      signal_model_name, pos, -rotation_deg);
+            const auto object = RouteObject::create(editor_ctx, paged_lod,
+                                                    signal_model_name, pos,
+                                                    -rotation_deg);
 
             editor_ctx.compile_info_switch_nodes.lock()->emplace_back(
                 CompileInfoSwitchNode{vsg::ref_ptr(this), object,
@@ -397,8 +396,8 @@ bool Route::load_topology()
 
     const auto group = vsg::Group::create();
 
-    const std::string shaders_dir_path
-        = fs.combinePath(fs.getDataDir(), "shaders");
+    const std::string shaders_dir_path = fs.combinePath(fs.getDataDir(),
+                                                        "shaders");
 
     const auto input_assembly_state = vsg::InputAssemblyState::create();
     input_assembly_state->topology = VK_PRIMITIVE_TOPOLOGY_LINE_LIST;
@@ -414,12 +413,14 @@ bool Route::load_topology()
             VkVertexInputBindingDescription{0, sizeof(vsg::vec3),
                                             VK_VERTEX_INPUT_RATE_VERTEX},
             VkVertexInputBindingDescription{1, sizeof(vsg::vec3),
-                                            VK_VERTEX_INPUT_RATE_VERTEX}},
+                                            VK_VERTEX_INPUT_RATE_VERTEX}
+        },
         vsg::VertexInputState::Attributes{
             VkVertexInputAttributeDescription{0, 0, VK_FORMAT_R32G32B32_SFLOAT,
                                               0},
             VkVertexInputAttributeDescription{1, 1, VK_FORMAT_R32G32B32_SFLOAT,
-                                              0}},
+                                              0}
+        },
         vsg::DescriptorSetLayoutBindings{}, vsg::Descriptors{},
         input_assembly_state, rasterization_state,
         vsg::MultisampleState::create(), vsg::ColorBlendState::create(),
@@ -427,11 +428,11 @@ bool Route::load_topology()
 
     srand(time(NULL));
 
-    auto font_path
-        = fs.combinePath(fs.getFontsDir(), "JetBrainsMono-Regular.ttf");
+    auto font_path = fs.combinePath(fs.getFontsDir(),
+                                    "JetBrainsMono-Regular.ttf");
     auto font = vsg::read_cast<vsg::Font>(font_path, vsg_options);
-    auto text_shader_set = vsg_options->shaderSets["text"]
-        = vsg::createTextShaderSet(vsg_options);
+    auto text_shader_set = vsg_options->shaderSets["text"] =
+        vsg::createTextShaderSet(vsg_options);
 
     const traj_list_t* traj_list = topology->getTrajectoriesList();
     for (const Trajectory* trajectory : *traj_list)
@@ -471,8 +472,8 @@ bool Route::load_topology()
         for (std::size_t i = 0; i < points_size; ++i)
         {
             vertices->at(vertex_index++) = points[i];
-            vertices->at(vertex_index++)
-                = points[i] + vsg::dvec3(0.0, 0.0, 10.0);
+            vertices->at(vertex_index++) = points[i] +
+                                           vsg::dvec3(0.0, 0.0, 10.0);
             colors->at(color_index++) = color;
             colors->at(color_index++) = color;
             indices->at(index_index++) = i * 2;
@@ -508,8 +509,8 @@ bool Route::load_topology()
         auto text = vsg::Text::create();
         text->font = font;
         text->layout = layout;
-        text->text = vsg::stringValue::create(
-            trajectory->getName().toStdString().c_str());
+        text->text = vsg::stringValue::create(trajectory->getName()
+                                                  .toStdString().c_str());
         text->setup(0, vsg_options);
         group->addChild(text);
     }

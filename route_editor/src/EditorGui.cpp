@@ -276,26 +276,24 @@ void EditorGui::show_route_map() const
                         break;
                     }
 
-                    const vsg::dvec3& pos = transform.pos;
-                    const vsg::dvec3& rot_deg = transform.rot_deg;
-
                     constexpr const char* float_format = "%10.3f";
 
                     ImGui::TableNextRow();
+
                     ImGui::TableNextColumn();
                     ImGui::Text("%s", label.c_str());
-                    ImGui::TableNextColumn();
-                    ImGui::Text(float_format, pos.x);
-                    ImGui::TableNextColumn();
-                    ImGui::Text(float_format, pos.y);
-                    ImGui::TableNextColumn();
-                    ImGui::Text(float_format, pos.z);
-                    ImGui::TableNextColumn();
-                    ImGui::Text(float_format, rot_deg.x);
-                    ImGui::TableNextColumn();
-                    ImGui::Text(float_format, rot_deg.y);
-                    ImGui::TableNextColumn();
-                    ImGui::Text(float_format, rot_deg.z);
+
+                    for (int i = 0; i < 3; ++i)
+                    {
+                        ImGui::TableNextColumn();
+                        ImGui::Text(float_format, transform.pos[i]);
+                    }
+
+                    for (int i = 0; i < 3; ++i)
+                    {
+                        ImGui::TableNextColumn();
+                        ImGui::Text(float_format, transform.rot_deg[i]);
+                    }
 
                     ++curr_row;
                     ++row;
@@ -355,12 +353,11 @@ void EditorGui::show_stations_conf() const
                 camera->look_on(translation);
             }
 
-            ImGui::TableNextColumn();
-            ImGui::Text(number_format, translation.x);
-            ImGui::TableNextColumn();
-            ImGui::Text(number_format, translation.y);
-            ImGui::TableNextColumn();
-            ImGui::Text(number_format, translation.z);
+            for (int i = 0; i < 3; ++i)
+            {
+                ImGui::TableNextColumn();
+                ImGui::Text(number_format, translation[i]);
+            }
         }
 
         ImGui::EndTable();
@@ -478,10 +475,11 @@ void EditorGui::show_key_bindings() const
 
             std::string label;
 
-            static const std::map<vsg::KeyModifier, std::string> test_map
-                = {{vsg::MODKEY_Shift, "Shift"},
-                   {vsg::MODKEY_Control, "Ctrl"},
-                   {vsg::MODKEY_Alt, "Alt"}};
+            static const std::map<vsg::KeyModifier, std::string> test_map = {
+                {vsg::MODKEY_Shift, "Shift"},
+                {vsg::MODKEY_Control, "Ctrl"},
+                {vsg::MODKEY_Alt, "Alt"}
+            };
 
             for (const auto& [modifier, name] : test_map)
             {
@@ -537,8 +535,8 @@ void EditorGui::show_topology() const
         const auto* trajectories = topology->getTrajectoriesList();
         for (const Trajectory* trajectory : *trajectories)
         {
-            const std::string trajectory_name
-                = trajectory->getName().toStdString();
+            const std::string trajectory_name =
+                trajectory->getName().toStdString();
             std::string label_lower = trajectory_name;
             std::transform(label_lower.begin(), label_lower.end(),
                            label_lower.begin(), ::tolower);
@@ -616,36 +614,36 @@ void EditorGui::show_topology() const
 
     if (ImGui::CollapsingHeader("Switches"))
     {
-        const auto print_traj
-            = [](const char* type, const Trajectory* trajectory) -> void
+        const auto print_traj = [](const char* type,
+                                   const Trajectory* trajectory) -> void
         {
-            ImGui::Text("%s: %s", type,
-                        trajectory ? trajectory->getName().toStdString().c_str()
-                                   : "nullptr");
+            const std::string trajectory_name =
+                trajectory->getName().toStdString();
+
+            ImGui::Text("%s: %s", type, trajectory ? trajectory_name.c_str()
+                                                   : "nullptr");
         };
 
-        const auto print_signal =
-            [](const char* type, const Signal* signal) -> void
+        const auto print_signal = [](const char* type,
+                                     const Signal* signal) -> void
         {
             if (!signal)
             {
                 return;
             }
 
-            ImGui::Text("SignalLiter%s: %s", type,
-                        signal->getLetter().toStdString().c_str());
+            const std::string signal_letter = signal->getLetter().toStdString();
+            const std::string signal_model =
+                signal->getSignalModel().toStdString();
 
-            ImGui::Text("SignalModel%s: %s", type,
-                        signal->getSignalModel().toStdString().c_str());
-
-            const dvec3& rel_pos = signal->getRelPos();
-            const dvec3& rel_rot = signal->getRelRot();
+            ImGui::Text("SignalLiter%s: %s", type, signal_letter.c_str());
+            ImGui::Text("SignalModel%s: %s", type, signal_model.c_str());
 
             ImGui::Text("RelPos%s: %8.3f %8.3f %8.3f", type,
-                        DECOMPOSE_VEC3(rel_pos));
+                        DECOMPOSE_VEC3(signal->getRelPos()));
 
             ImGui::Text("RelRot%s: %8.3f %8.3f %8.3f", type,
-                        DECOMPOSE_VEC3(rel_rot));
+                        DECOMPOSE_VEC3(signal->getRelRot()));
         };
 
         const sw_list_t* const connectors = topology->getConnectorsList();
@@ -937,16 +935,16 @@ void EditorGui::draw_main_menu_bar() const
 
 void EditorGui::draw_status_bar() const
 {
-    ImGui::SetNextWindowPos(
-        ImVec2(viewport->Pos.x, viewport->Pos.y + viewport->Size.y
-                                    - ImGui::GetFrameHeight() * 1.5));
+    ImGui::SetNextWindowPos(ImVec2(viewport->Pos.x,
+                                   viewport->Pos.y + viewport->Size.y -
+                                       ImGui::GetFrameHeight() * 1.5));
 
-    ImGui::SetNextWindowSize(
-        ImVec2(viewport->Size.x, ImGui::GetFrameHeight() * 1.5));
+    ImGui::SetNextWindowSize(ImVec2(viewport->Size.x,
+                                    ImGui::GetFrameHeight() * 1.5));
 
-    ImGuiWindowFlags flags = ImGuiWindowFlags_NoTitleBar
-                             | ImGuiWindowFlags_NoScrollbar
-                             | ImGuiWindowFlags_NoResize;
+    ImGuiWindowFlags flags = ImGuiWindowFlags_NoTitleBar |
+                             ImGuiWindowFlags_NoScrollbar |
+                             ImGuiWindowFlags_NoResize;
 
     const auto& state_manager = editor_ctx.state_manager;
 
@@ -960,8 +958,8 @@ void EditorGui::draw_status_bar() const
 void EditorGui::draw_invalid_route_popup() const
 {
     if (ImGui::BeginPopupModal("InvalidRoute", nullptr,
-                               ImGuiWindowFlags_NoTitleBar
-                                   | ImGuiWindowFlags_NoResize))
+                               ImGuiWindowFlags_NoTitleBar |
+                                   ImGuiWindowFlags_NoResize))
     {
         ImGui::Text("Invalid route!\n"
                     "Route must contain:\n"

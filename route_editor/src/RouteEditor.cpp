@@ -13,7 +13,6 @@
 #include "editor/Outline.h"
 #include "editor/Route.h"
 #include "editor/RouteObject.h"
-#include "editor/SingleSwitch.h"
 #include "editor/StateManager.h"
 #include "editor/StaticObjectManager.h"
 #include "editor/WindowHandler.h"
