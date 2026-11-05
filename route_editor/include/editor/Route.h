@@ -28,7 +28,6 @@ public:
     }
 
 private:
-    bool load_route_map();
     bool load_stations_conf();
     bool load_waypoints_conf();
 

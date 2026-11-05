@@ -3,7 +3,6 @@
 
 #include "editor/EditorState.h"
 #include "editor/KeyBindings.h"
-#include "editor/RouteMap.h"
 #include "editor/RouteObjects.h"
 #include "editor/settings/CameraSettings.h"
 #include "editor/settings/GizmoSettings.h"
@@ -12,6 +11,7 @@
 #include "editor/settings/WindowSettings.h"
 
 #include <RouteReader/ObjectsRef.h>
+#include <RouteReader/RouteMap.h>
 #include <core/ThreadSafe.h>
 
 #include <vsg/core/Mask.h>

@@ -3,7 +3,6 @@
 #include "editor/EditorContext.h"
 #include "editor/Mask.h"
 #include "editor/PagedLodMap.h"
-#include "editor/RouteMap.h"
 #include "editor/RouteObject.h"
 #include "editor/StaticObjectManager.h"
 #include "editor/settings/CameraSettings.h"
@@ -85,14 +84,17 @@ Route::Route(EditorContext& context)
 void Route::load()
 {
     const FileSystem& fs = FileSystem::getInstance();
-    const std::string objects_ref_path = fs.combinePath(route_dir, "objects.ref");
+    const std::string objects_ref_path = fs.combinePath(route_dir,
+                                                        "objects.ref");
+    const std::string route_map_path = fs.combinePath(route_dir, "topology",
+                                                      "map", "route1.map");
 
     if (!editor_ctx.objects_ref.read(objects_ref_path))
     {
         return;
     }
 
-    if (!load_route_map())
+    if (!editor_ctx.route_map.read(route_map_path))
     {
         return;
     }
@@ -123,51 +125,6 @@ void Route::load()
 
     load_static_objects_thread = std::thread(&Route::load_static_objects, this);
     load_topology_thread = std::thread(&Route::load_topology, this);
-}
-
-bool Route::load_route_map()
-{
-    const FileSystem& fs = FileSystem::getInstance();
-
-    const std::string route_map_path =
-        fs.combinePath(route_dir, "topology", "map", "route1.map");
-
-    std::ifstream route_map_file(route_map_path);
-    if (!route_map_file)
-    {
-        Journal::instance()->error(QString("Failed to open %1")
-                                       .arg(route_map_path.c_str()));
-
-        return false;
-    }
-
-    std::string line;
-    while (std::getline(route_map_file, line))
-    {
-        if (line.empty())
-        {
-            continue;
-        }
-
-        if (line.back() == ';')
-        {
-            line.pop_back();
-        }
-
-        std::replace(line.begin(), line.end(), ',', ' ');
-
-        std::istringstream iss(line);
-        std::string label;
-        vsg::dvec3 translation, rotation;
-
-        if (iss >> label >> translation >> rotation)
-        {
-            editor_ctx.route_map[label].emplace_back(
-                RouteMapTransformation{translation, rotation});
-        }
-    }
-
-    return true;
 }
 
 bool Route::load_stations_conf()
@@ -270,8 +227,8 @@ void Route::load_static_objects()
 
         for (const auto& transform : transforms)
         {
-            const vsg::dvec3& pos = transform.translation;
-            const vsg::dvec3& rot_deg = transform.rotation_deg;
+            const vsg::dvec3& pos = transform.pos;
+            const vsg::dvec3& rot_deg = transform.rot_deg;
 
             const auto object = RouteObject::create(editor_ctx, paged_lod,
                                                     label, pos, -rot_deg);

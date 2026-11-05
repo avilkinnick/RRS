@@ -276,8 +276,8 @@ void EditorGui::show_route_map() const
                         break;
                     }
 
-                    const vsg::dvec3& pos = transform.translation;
-                    const vsg::dvec3& rot_deg = transform.rotation_deg;
+                    const vsg::dvec3& pos = transform.pos;
+                    const vsg::dvec3& rot_deg = transform.rot_deg;
 
                     constexpr const char* float_format = "%10.3f";
 
