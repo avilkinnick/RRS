@@ -20,7 +20,6 @@
 
 #include <CfgReader.h>
 #include <Journal.h>
-#include <JournalFile.h>
 #include <core/string_funcs.h>
 #include <filesystem.h>
 #include <graphics/WorldCulling.h>
@@ -79,7 +78,6 @@ bool RouteEditor::initialize()
     auto& window = editor_ctx.window;
     auto& viewer = editor_ctx.viewer;
 
-    initialize_journal();
     read_settings();
     create_vsg_options();
     configure_shaders();
@@ -217,30 +215,6 @@ void RouteEditor::run()
     {
         load_topology_thread.join();
     }
-}
-
-void RouteEditor::initialize_journal(const char* filename) const
-{
-    const FileSystem& fs = FileSystem::getInstance();
-
-    JournalFile* const journal_file = new (std::nothrow)
-        JournalFile(to_qstring(fs.combinePath(fs.getLogsDir(), filename)),
-                    JournalLevel::All);
-
-    if (!journal_file)
-    {
-        std::fputs("Failed to allocate memory for JournalFile\n", stderr);
-        std::exit(EXIT_FAILURE);
-    }
-
-    Journal::instance()->addStorage(journal_file);
-
-    const QString dash_line = QString('=').repeated(80);
-
-    Journal::instance()->message(dash_line);
-    Journal::instance()->message("Started new session");
-    Journal::instance()->message("Journal subsystem is initialized successfully");
-    Journal::instance()->message(dash_line);
 }
 
 void RouteEditor::read_settings()

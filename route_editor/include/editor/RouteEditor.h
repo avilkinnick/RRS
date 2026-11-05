@@ -17,8 +17,6 @@ public:
     void run();
 
 private:
-    void initialize_journal(const char* filename = "editor.log") const;
-
     void read_settings();
 
     void create_vsg_options();
