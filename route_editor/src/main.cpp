@@ -8,6 +8,8 @@
 
 #include <QString>
 
+#include <vsg/core/Exception.h>
+
 #include <cstdio>
 #include <cstdlib>
 #include <exception>
@@ -44,13 +46,26 @@ int main()
         return EXIT_FAILURE;
     }
 
-    RouteEditor route_editor{};
-    if (!route_editor.initialize())
+    try
     {
+        RouteEditor route_editor{};
+        if (!route_editor.initialize())
+        {
+            return EXIT_FAILURE;
+        }
+
+        route_editor.run();
+    }
+    catch (const vsg::Exception& exception)
+    {
+        Journal::instance()->error(exception.message.c_str());
         return EXIT_FAILURE;
     }
-
-    route_editor.run();
+    catch (const std::exception& exception)
+    {
+        Journal::instance()->error(exception.what());
+        return EXIT_FAILURE;
+    }
 
     return EXIT_SUCCESS;
 }

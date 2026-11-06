@@ -35,8 +35,6 @@
 #include <vsg/commands/ClearAttachments.h>
 #include <vsg/core/Mask.h>
 #include <vsg/core/ref_ptr.h>
-#include <vsg/io/FileSystem.h>
-#include <vsg/io/Options.h>
 #include <vsg/lighting/AmbientLight.h>
 #include <vsg/state/ColorBlendState.h>
 #include <vsg/state/DepthStencilState.h>
@@ -51,14 +49,17 @@
 #include <vsg/utils/SharedObjects.h>
 #include <vsgImGui/RenderImGui.h>
 #include <vsgImGui/SendEventsToImGui.h>
-#include <vsgXchange/all.h>
 
 #include <vulkan/vulkan_core.h>
 
 #include <memory>
 #include <string>
 
-RouteEditor::RouteEditor() = default;
+RouteEditor::RouteEditor()
+{
+    read_settings("editor-settings.xml");
+}
+
 RouteEditor::~RouteEditor() = default;
 
 bool RouteEditor::initialize()
@@ -78,8 +79,7 @@ bool RouteEditor::initialize()
     auto& window = editor_ctx.window;
     auto& viewer = editor_ctx.viewer;
 
-    read_settings();
-    create_vsg_options();
+    editor_ctx.vsg_options = create_default_vsg_options();
     configure_shaders();
 
     window_handler_ = WindowHandler::create(editor_ctx);
@@ -217,15 +217,17 @@ void RouteEditor::run()
     }
 }
 
-void RouteEditor::read_settings()
+void RouteEditor::read_settings(const char* filename)
 {
     const FileSystem& fs = FileSystem::getInstance();
-    const std::string cfg_path = fs.combinePath(fs.getConfigDir(),
-                                                "editor-settings.xml");
+    const std::string cfg_path = fs.combinePath(fs.getConfigDir(), filename);
 
-    CfgReader cfg;
+    CfgReader cfg{};
     if (!cfg.load(cfg_path.c_str()))
     {
+        Journal::instance()->warning(
+            QString{"Failed to read settings from \"%1\"\n"
+                    "Using default settings"}.arg(cfg_path.c_str()));
         return;
     }
 
@@ -235,17 +237,6 @@ void RouteEditor::read_settings()
     editor_ctx.scene_settings.read(cfg);
     editor_ctx.window_settings.read(cfg);
     editor_ctx.key_bindings.read(cfg);
-}
-
-void RouteEditor::create_vsg_options()
-{
-    auto& vsg_options = editor_ctx.vsg_options;
-
-    vsg_options = vsg::Options::create();
-    vsg_options->sharedObjects = vsg::SharedObjects::create();
-    vsg_options->fileCache = vsg::getEnv("VSG_FILE_CACHE");
-    vsg_options->paths = vsg::getEnvPaths("VSG_FILE_PATH");
-    vsg_options->add(vsgXchange::all::create());
 }
 
 void RouteEditor::configure_shaders()

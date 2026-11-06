@@ -17,9 +17,7 @@ public:
     void run();
 
 private:
-    void read_settings();
-
-    void create_vsg_options();
+    void read_settings(const char* filename);
 
     void configure_shaders();
 
