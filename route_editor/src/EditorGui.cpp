@@ -68,6 +68,8 @@
 #define DECOMPOSE_VEC2(vec) vec.x, vec.y
 #define DECOMPOSE_VEC3(vec) vec.x, vec.y, vec.z
 
+static std::string imgui_ini_path;
+
 static bool drag_double3(const char* label, double* data, float speed = 1.0f,
                          const double* min = nullptr,
                          const double* max = nullptr,
@@ -83,6 +85,10 @@ EditorGui::EditorGui(EditorContext& context)
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
     // io.IniFilename = nullptr;
+
+    const auto& fs = FileSystem::getInstance();
+    imgui_ini_path = fs.combinePath(fs.getBinaryDir(), "imgui.ini");
+    io.IniFilename = imgui_ini_path.c_str();
 
     const auto& gui_settings = context.gui_settings;
 
