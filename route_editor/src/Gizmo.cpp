@@ -52,9 +52,9 @@ static void rotate_geometry_info(vsg::GeometryInfo& geom_info,
 
 Gizmo::Gizmo(EditorContext& editor_ctx)
     : editor_ctx(editor_ctx)
+    , camera(*editor_ctx.camera)
+    , gizmo_settings(editor_ctx.gizmo_settings)
 {
-    const auto& gizmo_settings = editor_ctx.gizmo_settings;
-
     builder.shaderSet = vsg::createFlatShadedShaderSet();
 
     const float plane_width = 1.0e6f;
@@ -156,8 +156,6 @@ Gizmo::Gizmo(EditorContext& editor_ctx)
 
 bool Gizmo::handle_intersections()
 {
-    const auto& camera = editor_ctx.camera;
-    const auto& gizmo_settings = editor_ctx.gizmo_settings;
     const auto& mouse = editor_ctx.mouse;
     const auto& window_extent = editor_ctx.window->extent2D();
 
@@ -166,8 +164,7 @@ bool Gizmo::handle_intersections()
     double arrow_dots[3];
     for (int i = 0; i < 3; ++i)
     {
-        arrow_dots[i] = std::abs(vsg::dot(camera->get_front(),
-                                          arrow_directions[i]));
+        arrow_dots[i] = std::abs(vsg::dot(camera.get_front(), arrow_directions[i]));
     }
 
     // Normalized mouse coordinates [-1.0; 1.0]
@@ -175,8 +172,8 @@ bool Gizmo::handle_intersections()
     norm_mouse_coords(mouse->get_x(), mouse->get_y(), window_extent,
                       norm_mouse_x, norm_mouse_y);
 
-    const vsg::dmat4& inv_view_mat = camera->get_inv_view_mat();
-    const vsg::dmat4& inv_proj_mat = camera->get_inv_proj_mat();
+    const vsg::dmat4& inv_view_mat = camera.get_inv_view_mat();
+    const vsg::dmat4& inv_proj_mat = camera.get_inv_proj_mat();
 
     vsg::dvec3 ray_origin, ray_end;
     calc_mouse_world_coords(norm_mouse_x, norm_mouse_y, 0.0, inv_view_mat,
@@ -417,11 +414,8 @@ void Gizmo::apply(const vsg::MoveEvent& moveEvent)
         return;
     }
 
-    const auto& camera = editor_ctx.camera;
-
-    const auto intersector = vsg::LineSegmentIntersector::create(*camera,
-                                                                 moveEvent.x,
-                                                                 moveEvent.y);
+    const auto intersector = vsg::LineSegmentIntersector::create(
+        camera, moveEvent.x, moveEvent.y);
 
     if (!intersector)
     {
@@ -486,10 +480,8 @@ void Gizmo::update_visibility()
                     ? vsg::MASK_OFF
                     : MASK_GUI1 | MASK_CLICKABLE;
 
-    const auto& camera = editor_ctx.camera;
-
-    const vsg::dvec3& camera_pos = camera->get_look_at()->eye;
-    const double fov_rad = vsg::radians(camera->get_perspective()->fieldOfViewY);
+    const vsg::dvec3& camera_pos = camera.get_look_at()->eye;
+    const double fov_rad = vsg::radians(camera.get_perspective()->fieldOfViewY);
 
     const double dist_to_camera = vsg::length(curr_pos - camera_pos);
     const double tan_half_fov = std::tan(fov_rad * 0.5);
@@ -523,7 +515,6 @@ static vsg::dvec3 calc_position_center(const RouteObjects& selected_objects)
 
 void Gizmo::update_position()
 {
-    const auto& gizmo_settings = editor_ctx.gizmo_settings;
     const auto& selected_objects = editor_ctx.selected_objects;
 
     curr_pos = gizmo_settings.to_center ? calc_position_center(selected_objects)

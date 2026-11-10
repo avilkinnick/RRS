@@ -9,7 +9,9 @@
 #include <vsg/nodes/Switch.h>
 #include <vsg/utils/Builder.h>
 
+class Camera;
 struct EditorContext;
+struct gizmo_settings_t;
 
 namespace vsg
 {
@@ -38,6 +40,8 @@ public:
 
 private:
     EditorContext& editor_ctx;
+    const Camera& camera;
+    const gizmo_settings_t& gizmo_settings;
 
     vsg::Builder builder;
     vsg::ref_ptr<vsg::MatrixTransform> matrix_transform;

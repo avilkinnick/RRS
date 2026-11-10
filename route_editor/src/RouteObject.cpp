@@ -180,6 +180,8 @@ bool RouteObject::select()
 
     is_selected = true;
 
+    outline_switch->mask = vsg::Mask{MASK_GUI2};
+
     editor_ctx.selected_objects.emplace_back(this);
     editor_ctx.gizmo->update_position();
 
