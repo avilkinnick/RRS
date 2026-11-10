@@ -6,6 +6,7 @@
 #include <vsg/core/Inherit.h>
 #include <vsg/core/ref_ptr.h>
 #include <vsg/maths/vec3.h>
+#include <vsg/nodes/Switch.h>
 #include <vsg/utils/Builder.h>
 
 struct EditorContext;
@@ -41,7 +42,8 @@ private:
     vsg::Builder builder;
     vsg::ref_ptr<vsg::MatrixTransform> matrix_transform;
     vsg::ref_ptr<vsg::Node> arrows[3];
-    vsg::ref_ptr<SingleSwitch> plane_switches[3];
+    vsg::ref_ptr<vsg::Switch> planes_switch;
+    // vsg::ref_ptr<SingleSwitch> plane_switches[3];
     vsg::ref_ptr<SingleSwitch> line_switches[3];
 
     vsg::dvec3 curr_pos;

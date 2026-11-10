@@ -19,6 +19,7 @@
 #include <vsg/nodes/Group.h>
 #include <vsg/nodes/MatrixTransform.h>
 #include <vsg/nodes/Node.h>
+#include <vsg/nodes/Switch.h>
 #include <vsg/ui/PointerEvent.h>
 #include <vsg/utils/Builder.h>
 #include <vsg/utils/LineSegmentIntersector.h>
@@ -135,17 +136,19 @@ Gizmo::Gizmo(EditorContext& editor_ctx)
         = {gizmo_settings.arrow_x_color, gizmo_settings.arrow_y_color,
            gizmo_settings.arrow_z_color};
 
+    planes_switch = vsg::Switch::create();
+
     for (int i = 0; i < 3; ++i)
     {
         arrows[i] = create_arrow(arrow_directions[i], arrow_colors[i]);
-        plane_switches[i] = SingleSwitch::create(
-            vsg::MASK_OFF, create_plane(arrow_directions[i]));
+        planes_switch->addChild(vsg::MASK_OFF, create_plane(arrow_directions[i]));
         line_switches[i] = SingleSwitch::create(
             vsg::MASK_OFF, create_line(arrow_directions[i], arrow_colors[i]));
         matrix_transform->addChild(arrows[i]);
-        matrix_transform->addChild(plane_switches[i]);
         matrix_transform->addChild(line_switches[i]);
     }
+
+    matrix_transform->addChild(planes_switch);
 
     this->node = matrix_transform;
 
@@ -376,7 +379,7 @@ bool Gizmo::handle_intersections()
         prev_intersect_pos = click_pos;
         total_translation.set(0.0, 0.0, 0.0);
 
-        plane_switches[active_plain_index]->mask = MASK_CLICKABLE;
+        planes_switch->children[active_plain_index].mask = MASK_CLICKABLE;
         line_switches[active_arrow_index]->mask = MASK_GUI1;
 
         for (const auto& object : editor_ctx.selected_objects)
@@ -401,7 +404,7 @@ void Gizmo::apply(const vsg::ButtonReleaseEvent& buttonRelease)
         editor_ctx, editor_ctx.selected_objects, total_translation);
     editor_ctx.command_manager->push(std::move(command));
 
-    plane_switches[active_plain_index]->mask = vsg::MASK_OFF;
+    planes_switch->children[active_plain_index].mask = vsg::MASK_OFF;
     line_switches[active_arrow_index]->mask = vsg::MASK_OFF;
 
     active_arrow_index = -1;
@@ -447,7 +450,7 @@ void Gizmo::apply(const vsg::MoveEvent& moveEvent)
 
     for (const vsg::Node* const node : intersection->nodePath)
     {
-        if ((node != plane_switches[active_plain_index]) ||
+        if ((node != planes_switch->children[active_plain_index].node) ||
             (active_arrow_index < 0))
         {
             continue;
