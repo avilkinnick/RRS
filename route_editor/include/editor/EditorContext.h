@@ -61,13 +61,6 @@ struct CompileInfoGroupNode
     vsg::ref_ptr<vsg::Node> node;
 };
 
-struct CompileInfoSwitchNode
-{
-    vsg::ref_ptr<vsg::Switch> vsg_switch;
-    vsg::ref_ptr<vsg::Node> node;
-    vsg::Mask mask = vsg::MASK_OFF;
-};
-
 struct CompileInfoSingleSwitchNode
 {
     vsg::ref_ptr<SingleSwitch> single_switch;
@@ -121,7 +114,6 @@ struct EditorContext
 
     ThreadSafe<std::vector<CompileInfoNode>> compile_info_nodes;
     ThreadSafe<std::vector<CompileInfoGroupNode>> compile_info_group_nodes;
-    ThreadSafe<std::vector<CompileInfoSwitchNode>> compile_info_switch_nodes;
     ThreadSafe<std::vector<CompileInfoSingleSwitchNode>> compile_info_single_switch_nodes;
 
     ThreadSafe<std::unique_ptr<Topology>> topology;
