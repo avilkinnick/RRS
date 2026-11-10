@@ -43,8 +43,7 @@ private:
     vsg::ref_ptr<vsg::MatrixTransform> matrix_transform;
     vsg::ref_ptr<vsg::Node> arrows[3];
     vsg::ref_ptr<vsg::Switch> planes_switch;
-    // vsg::ref_ptr<SingleSwitch> plane_switches[3];
-    vsg::ref_ptr<SingleSwitch> line_switches[3];
+    vsg::ref_ptr<vsg::Switch> lines_switch;
 
     vsg::dvec3 curr_pos;
     vsg::dvec3 prev_intersect_pos;

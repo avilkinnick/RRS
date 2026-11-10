@@ -5,7 +5,6 @@
 #include "editor/Mask.h"
 #include "editor/Mouse.h"
 #include "editor/RouteObject.h"
-#include "editor/SingleSwitch.h"
 #include "editor/commands/CommandManager.h"
 #include "editor/commands/TranslateObjectsCommand.h"
 #include "editor/editor_math.h"
@@ -137,18 +136,18 @@ Gizmo::Gizmo(EditorContext& editor_ctx)
            gizmo_settings.arrow_z_color};
 
     planes_switch = vsg::Switch::create();
+    lines_switch = vsg::Switch::create();
 
     for (int i = 0; i < 3; ++i)
     {
         arrows[i] = create_arrow(arrow_directions[i], arrow_colors[i]);
         planes_switch->addChild(vsg::MASK_OFF, create_plane(arrow_directions[i]));
-        line_switches[i] = SingleSwitch::create(
-            vsg::MASK_OFF, create_line(arrow_directions[i], arrow_colors[i]));
+        lines_switch->addChild(vsg::MASK_OFF, create_line(arrow_directions[i], arrow_colors[i]));
         matrix_transform->addChild(arrows[i]);
-        matrix_transform->addChild(line_switches[i]);
     }
 
     matrix_transform->addChild(planes_switch);
+    matrix_transform->addChild(lines_switch);
 
     this->node = matrix_transform;
 
@@ -380,7 +379,7 @@ bool Gizmo::handle_intersections()
         total_translation.set(0.0, 0.0, 0.0);
 
         planes_switch->children[active_plain_index].mask = MASK_CLICKABLE;
-        line_switches[active_arrow_index]->mask = MASK_GUI1;
+        lines_switch->children[active_arrow_index].mask = MASK_GUI1;
 
         for (const auto& object : editor_ctx.selected_objects)
         {
@@ -405,7 +404,7 @@ void Gizmo::apply(const vsg::ButtonReleaseEvent& buttonRelease)
     editor_ctx.command_manager->push(std::move(command));
 
     planes_switch->children[active_plain_index].mask = vsg::MASK_OFF;
-    line_switches[active_arrow_index]->mask = vsg::MASK_OFF;
+    lines_switch->children[active_arrow_index].mask = vsg::MASK_OFF;
 
     active_arrow_index = -1;
     active_plain_index = -1;
