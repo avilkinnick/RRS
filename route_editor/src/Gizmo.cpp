@@ -149,7 +149,7 @@ Gizmo::Gizmo(EditorContext& editor_ctx)
     matrix_transform->addChild(planes_switch);
     matrix_transform->addChild(lines_switch);
 
-    this->node = matrix_transform;
+    this->addChild(vsg::MASK_OFF, matrix_transform);
 
     update_visibility();
 }
@@ -476,9 +476,9 @@ const vsg::dvec3& Gizmo::get_curr_pos() const
 
 void Gizmo::update_visibility()
 {
-    this->mask = editor_ctx.selected_objects.empty()
-                    ? vsg::MASK_OFF
-                    : MASK_GUI1 | MASK_CLICKABLE;
+    this->children[0].mask = editor_ctx.selected_objects.empty()
+                                 ? vsg::MASK_OFF
+                                 : MASK_GUI1 | MASK_CLICKABLE;
 
     const vsg::dvec3& camera_pos = camera.get_look_at()->eye;
     const double fov_rad = vsg::radians(camera.get_perspective()->fieldOfViewY);

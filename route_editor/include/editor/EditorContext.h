@@ -39,6 +39,8 @@ class StateManager;
 class Topology;
 class WorldCulling;
 
+#include "editor/SingleSwitch.h"
+
 namespace vsg
 {
 

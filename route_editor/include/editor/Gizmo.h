@@ -1,8 +1,6 @@
 #ifndef EDITOR_GIZMO_H
 #define EDITOR_GIZMO_H
 
-#include "SingleSwitch.h"
-
 #include <vsg/core/Inherit.h>
 #include <vsg/core/ref_ptr.h>
 #include <vsg/maths/vec3.h>
@@ -23,7 +21,7 @@ class Node;
 
 } // namespace vsg
 
-class Gizmo : public vsg::Inherit<SingleSwitch, Gizmo>
+class Gizmo : public vsg::Inherit<vsg::Switch, Gizmo>
 {
 public:
     Gizmo(EditorContext& editor_ctx);

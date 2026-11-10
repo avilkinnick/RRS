@@ -17,6 +17,7 @@
 #include "editor/StaticObjectManager.h"
 #include "editor/WindowHandler.h"
 #include "editor/commands/CommandManager.h"
+#include "editor/SingleSwitch.h"
 
 #include <CfgReader.h>
 #include <Journal.h>
