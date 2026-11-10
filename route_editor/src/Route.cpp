@@ -2,6 +2,7 @@
 
 #include "editor/EditorContext.h"
 #include "editor/Mask.h"
+#include "editor/MergeSwitch.h"
 #include "editor/RouteObject.h"
 #include "editor/StaticObjectManager.h"
 #include "editor/settings/CameraSettings.h"
@@ -16,12 +17,15 @@
 #include <trajectory.h>
 #include <vec3.h>
 
+#include <vsg/app/CompileManager.h>
 #include <vsg/app/RecordTraversal.h>
+#include <vsg/app/Viewer.h>
 #include <vsg/commands/DrawIndexed.h>
 #include <vsg/core/Array.h>
 #include <vsg/core/Data.h>
 #include <vsg/core/Mask.h>
 #include <vsg/core/Value.h>
+#include <vsg/core/observer_ptr.h>
 #include <vsg/core/ref_ptr.h>
 #include <vsg/io/Path.h>
 #include <vsg/io/read.h>
@@ -30,6 +34,7 @@
 #include <vsg/maths/vec3.h>
 #include <vsg/nodes/Geometry.h>
 #include <vsg/nodes/MatrixTransform.h>
+#include <vsg/nodes/Node.h>
 #include <vsg/nodes/PagedLOD.h>
 #include <vsg/nodes/StateGroup.h>
 #include <vsg/nodes/VertexDraw.h>
@@ -235,9 +240,14 @@ void Route::load_static_objects()
             const auto object = RouteObject::create(editor_ctx, paged_lod,
                                                     label, pos, -rot_deg);
 
-            editor_ctx.compile_info_switch_nodes.lock()->emplace_back(
-                CompileInfoSwitchNode{vsg::ref_ptr(this), object,
-                                      vsg::MASK_ALL});
+            auto& viewer = editor_ctx.viewer;
+            vsg::observer_ptr<vsg::Viewer> observer_viewer(viewer);
+            auto compile_result = viewer->compileManager->compile(object);
+
+            viewer->addUpdateOperation(MergeSwitch::create(observer_viewer,
+                                                     vsg::ref_ptr(this),
+                                                     vsg::MASK_ALL, object,
+                                                     compile_result));
 
             editor_ctx.static_objects.lock()->emplace_back(object);
 
@@ -384,9 +394,15 @@ bool Route::load_topology()
                                                     signal_model_name, pos,
                                                     -rotation_deg);
 
-            editor_ctx.compile_info_switch_nodes.lock()->emplace_back(
-                CompileInfoSwitchNode{vsg::ref_ptr(this), object,
-                                      vsg::MASK_ALL});
+            auto& viewer = editor_ctx.viewer;
+            vsg::observer_ptr<vsg::Viewer> observer_viewer(viewer);
+            auto compile_result = viewer->compileManager->compile(object);
+
+            viewer->addUpdateOperation(MergeSwitch::create(observer_viewer,
+                                                           vsg::ref_ptr(this),
+                                                           vsg::MASK_ALL,
+                                                           object,
+                                                           compile_result));
 
             editor_ctx.static_objects.lock()->emplace_back(object);
         }
@@ -519,8 +535,14 @@ bool Route::load_topology()
 
     group->addChild(state_group);
 
-    editor_ctx.compile_info_switch_nodes.lock()->emplace_back(
-        CompileInfoSwitchNode{vsg::ref_ptr(this), group, vsg::Mask{MASK_GUI2}});
+    auto& viewer = editor_ctx.viewer;
+    vsg::observer_ptr<vsg::Viewer> observer_viewer(viewer);
+    auto compile_result = viewer->compileManager->compile(group);
+
+    viewer->addUpdateOperation(MergeSwitch::create(observer_viewer,
+                                                   vsg::ref_ptr(this),
+                                                   vsg::Mask{MASK_GUI2}, group,
+                                                   compile_result));
 
     return true;
 }

@@ -81,8 +81,8 @@ bool StaticObjectManager::add_object(
     mat_transforms[object_count] = mat_transform;
     paged_lods[object_count] = paged_lod;
 
-    editor_ctx.compile_info_switch_nodes.lock()->emplace_back(
-        CompileInfoSwitchNode{editor_ctx.route, mat_transform, vsg::MASK_ALL});
+    // editor_ctx.compile_info_switch_nodes.lock()->emplace_back(
+    //     CompileInfoSwitchNode{editor_ctx.route, mat_transform, vsg::MASK_ALL});
 
     this->is_selected[object_count] = is_selected;
     this->is_hidden[object_count] = is_hidden;
