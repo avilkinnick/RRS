@@ -8,6 +8,8 @@
 #include <vsg/core/ref_ptr.h>
 #include <vsg/threading/OperationQueue.h>
 
+#include <functional>
+
 namespace vsg
 {
 
@@ -23,7 +25,8 @@ struct MergeSwitch : public vsg::Inherit<vsg::Operation, MergeSwitch>
                 vsg::ref_ptr<vsg::Switch> attachment_point,
                 vsg::Mask mask,
                 vsg::ref_ptr<vsg::Node> node,
-                const vsg::CompileResult& compile_result);
+                const vsg::CompileResult& compile_result,
+                std::function<void ()> after_merge = 0);
 
     virtual ~MergeSwitch() override;
 
@@ -32,6 +35,7 @@ struct MergeSwitch : public vsg::Inherit<vsg::Operation, MergeSwitch>
     vsg::Mask mask;
     vsg::ref_ptr<vsg::Node> node;
     vsg::CompileResult compile_result;
+    std::function<void ()> after_merge;
 
     virtual void run() override;
 };

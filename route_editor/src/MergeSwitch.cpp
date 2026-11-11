@@ -11,12 +11,14 @@ MergeSwitch::MergeSwitch(vsg::observer_ptr<vsg::Viewer> viewer,
                          vsg::ref_ptr<vsg::Switch> attachment_point,
                          vsg::Mask mask,
                          vsg::ref_ptr<vsg::Node> node,
-                         const vsg::CompileResult& compile_result)
+                         const vsg::CompileResult& compile_result,
+                        std::function<void ()> after_merge)
     : viewer{viewer}
     , attachment_point{attachment_point}
     , mask{mask}
     , node{node}
     , compile_result{compile_result}
+    , after_merge(after_merge)
 {
 }
 
@@ -31,4 +33,9 @@ void MergeSwitch::run()
     }
 
     attachment_point->addChild(mask, node);
+
+    if (after_merge)
+    {
+        after_merge();
+    }
 }
