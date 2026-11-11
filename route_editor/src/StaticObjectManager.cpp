@@ -46,6 +46,9 @@ StaticObjectManager::StaticObjectManager(EditorContext& editor_ctx,
     , init_mats(max_object_count)
     , is_selected(max_object_count)
     , is_hidden(max_object_count)
+    , selected_object_ids(max_object_count)
+    , id_to_selected_object_idx(max_object_count, -1)
+    , selected_object_count(0)
     , object_count(0)
     , max_object_count(max_object_count)
 {
@@ -157,6 +160,21 @@ bool StaticObjectManager::select_object(std::size_t id)
         outline_switches[id]->mask = vsg::MASK_OFF;
         is_selected[id] = false;
 
+        int& selected_object_idx = id_to_selected_object_idx[id];
+        const int last_selected_object_idx = selected_object_count - 1;
+
+        if (selected_object_idx != last_selected_object_idx)
+        {
+            const std::size_t last_selected_object_id =
+                selected_object_ids[last_selected_object_idx];
+
+            selected_object_ids[selected_object_idx] = last_selected_object_id;
+            id_to_selected_object_idx[last_selected_object_id] =
+                selected_object_idx;
+        }
+
+        selected_object_idx = -1;
+        --selected_object_count;
         return true;
     }
 
@@ -181,6 +199,10 @@ bool StaticObjectManager::select_object(std::size_t id)
             compile_result, [&, id]() -> void {
                 outline_switches[id] = &vsg_switches[id]->children[1];
                 is_selected[id] = true;
+
+                selected_object_ids[selected_object_count] = id;
+                id_to_selected_object_idx[id] = selected_object_count;
+                ++selected_object_count;
             }
         ));
 
@@ -189,6 +211,10 @@ bool StaticObjectManager::select_object(std::size_t id)
 
     outline_switches[id]->mask = MASK_GUI2;
     is_selected[id] = true;
+
+    selected_object_ids[selected_object_count] = id;
+    id_to_selected_object_idx[id] = selected_object_count;
+    ++selected_object_count;
 
     return true;
 }

@@ -62,6 +62,10 @@ private:
     std::map<const vsg::MatrixTransform*, std::size_t/* id*/>
     mat_transform_to_id;
 
+    std::vector<std::size_t> selected_object_ids;
+    std::vector<int> id_to_selected_object_idx;
+    std::uint32_t selected_object_count;
+
     std::size_t object_count;
     const std::size_t max_object_count;
 };
