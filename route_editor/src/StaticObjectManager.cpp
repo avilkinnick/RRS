@@ -21,6 +21,7 @@
 
 #include <QString>
 
+#include <cassert>
 #include <cstddef>
 #include <string>
 #include <utility>
@@ -109,13 +110,11 @@ bool StaticObjectManager::add_object(
     return true;
 }
 
-bool StaticObjectManager::remove_object(std::size_t id)
+void StaticObjectManager::remove_object(std::size_t id)
 {
-    if (id >= object_count)
-    {
-        // Print warning with Journal?
-        return false;
-    }
+    assert((object_count > 0) && "Could not call remove_object() when "
+                                 "object count is 0");;
+    assert((id < object_count) && "id must be lower than object count");
 
     const std::size_t last_object_id = object_count - 1;
     if (id == last_object_id)
@@ -123,7 +122,7 @@ bool StaticObjectManager::remove_object(std::size_t id)
         mat_transform_to_id.erase(
             mat_transform_to_id.find(mat_transforms[id].get()));
         --object_count;
-        return true;
+        return;
     }
 
     labels[id] = std::move(labels[last_object_id]);
@@ -143,8 +142,6 @@ bool StaticObjectManager::remove_object(std::size_t id)
     mat_transform_to_id[mat_transforms[last_object_id].get()] = id;
 
     --object_count;
-
-    return true;
 }
 
 bool StaticObjectManager::select_object(std::size_t id)
@@ -231,6 +228,11 @@ bool StaticObjectManager::select_object(
     {
         return select_object(found_it->second);
     }
+}
+
+bool StaticObjectManager::set_position(std::size_t id, const vsg::dvec3& pos)
+{
+    // TODO
 }
 
 std::size_t StaticObjectManager::get_object_count() const

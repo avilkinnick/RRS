@@ -33,10 +33,12 @@ public:
                     const vsg::dvec3& scale, bool is_selected = false,
                     bool is_hidden = false);
 
-    bool remove_object(std::size_t id);
+    void remove_object(std::size_t id);
 
     bool select_object(std::size_t id);
     bool select_object(const vsg::MatrixTransform* mat_transform);
+
+    bool set_position(std::size_t id, const vsg::dvec3& pos);
 
     std::size_t get_object_count() const;
 
