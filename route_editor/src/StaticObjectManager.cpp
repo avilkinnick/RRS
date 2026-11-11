@@ -196,7 +196,15 @@ bool StaticObjectManager::select_object(std::size_t id)
 bool StaticObjectManager::select_object(
     const vsg::MatrixTransform* mat_transform)
 {
-    return select_object(mat_transform_to_id[mat_transform]);
+    const auto found_it = mat_transform_to_id.find(mat_transform);
+    if (found_it == mat_transform_to_id.cend())
+    {
+        return false;
+    }
+    else
+    {
+        return select_object(found_it->second);
+    }
 }
 
 std::size_t StaticObjectManager::get_object_count() const
