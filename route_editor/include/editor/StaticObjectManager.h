@@ -7,6 +7,7 @@
 #include <vsg/nodes/Switch.h>
 
 #include <cstddef>
+#include <map>
 #include <string>
 #include <vector>
 
@@ -35,6 +36,7 @@ public:
     bool remove_object(std::size_t id);
 
     bool select_object(std::size_t id);
+    bool select_object(const vsg::MatrixTransform* mat_transform);
 
     std::size_t get_object_count() const;
 
@@ -56,6 +58,9 @@ private:
 
     std::vector<bool> is_selected;
     std::vector<bool> is_hidden;
+
+    std::map<const vsg::MatrixTransform*, std::size_t/* id*/>
+    mat_transform_to_id;
 
     std::size_t object_count;
     const std::size_t max_object_count;

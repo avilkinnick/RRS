@@ -99,6 +99,8 @@ bool StaticObjectManager::add_object(
     this->is_selected[object_count] = is_selected;
     this->is_hidden[object_count] = is_hidden;
 
+    mat_transform_to_id[mat_transform.get()] = object_count;
+
     ++object_count;
 
     return true;
@@ -115,6 +117,8 @@ bool StaticObjectManager::remove_object(std::size_t id)
     const std::size_t last_object_id = object_count - 1;
     if (id == last_object_id)
     {
+        mat_transform_to_id.erase(
+            mat_transform_to_id.find(mat_transforms[id].get()));
         --object_count;
         return true;
     }
@@ -131,6 +135,10 @@ bool StaticObjectManager::remove_object(std::size_t id)
     is_selected[id] = is_selected[last_object_id];
     is_hidden[id] = is_hidden[last_object_id];
 
+    mat_transform_to_id.erase(
+        mat_transform_to_id.find(mat_transforms[id].get()));
+    mat_transform_to_id[mat_transforms[last_object_id].get()] = id;
+
     --object_count;
 
     return true;
@@ -143,6 +151,7 @@ bool StaticObjectManager::select_object(std::size_t id)
         return false;
     }
 
+    // Deselect if already selected
     if (is_selected[id])
     {
         outline_switches[id]->mask = vsg::MASK_OFF;
@@ -182,6 +191,12 @@ bool StaticObjectManager::select_object(std::size_t id)
     is_selected[id] = true;
 
     return true;
+}
+
+bool StaticObjectManager::select_object(
+    const vsg::MatrixTransform* mat_transform)
+{
+    return select_object(mat_transform_to_id[mat_transform]);
 }
 
 std::size_t StaticObjectManager::get_object_count() const
