@@ -107,7 +107,7 @@ bool StaticObjectManager::add_object(
 void StaticObjectManager::remove_object(std::size_t id)
 {
     assert((object_count > 0) && "Could not call remove_object() when "
-                                 "object count is 0");;
+                                 "object count is 0");
     assert((id < object_count) && "id must be lower than object count");
 
     const std::size_t last_object_id = object_count - 1;
@@ -140,10 +140,9 @@ void StaticObjectManager::remove_object(std::size_t id)
 
 bool StaticObjectManager::select_object(std::size_t id)
 {
-    if (id >= object_count)
-    {
-        return false;
-    }
+    assert((object_count > 0) && "Could not call select_object() when "
+                                 "object count is 0");
+    assert((id < object_count) && "id must be lower than object count");
 
     if (selected_objects.contains(id))
     {
@@ -201,10 +200,26 @@ bool StaticObjectManager::select_object(
 
 void StaticObjectManager::set_position(std::size_t id, const vsg::dvec3& pos)
 {
+    assert((object_count > 0) && "Could not call set_position() when "
+                                 "object count is 0");
+    assert((id < object_count) && "id must be lower than object count");
+
     auto& matrix = mat_transforms[id]->matrix;
     matrix[3][0] = pos.x;
     matrix[3][1] = pos.y;
     matrix[3][2] = pos.z;
+}
+
+void StaticObjectManager::move(std::size_t id, const vsg::dvec3& delta_pos)
+{
+    assert((object_count > 0) && "Could not call move() when "
+                                 "object count is 0");
+    assert((id < object_count) && "id must be lower than object count");
+
+    auto& matrix = mat_transforms[id]->matrix;
+    matrix[3][0] += delta_pos.x;
+    matrix[3][1] += delta_pos.y;
+    matrix[3][2] += delta_pos.z;
 }
 
 std::size_t StaticObjectManager::get_object_count() const
