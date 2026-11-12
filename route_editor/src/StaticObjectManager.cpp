@@ -45,11 +45,8 @@ StaticObjectManager::StaticObjectManager(EditorContext& editor_ctx,
     , outline_switches(max_object_count, nullptr)
     , paged_lods(max_object_count)
     , init_mats(max_object_count)
-    , is_selected(max_object_count)
     , is_hidden(max_object_count)
-    , selected_object_ids(max_object_count)
-    , id_to_selected_object_idx(max_object_count, -1)
-    , selected_object_count(0)
+    , selected_objects(max_object_count)
     , object_count(0)
     , max_object_count(max_object_count)
 {
@@ -59,8 +56,7 @@ StaticObjectManager::StaticObjectManager(EditorContext& editor_ctx,
 bool StaticObjectManager::add_object(
     const std::string& label, const std::string& rel_path,
     const vsg::ref_ptr<vsg::PagedLOD>& paged_lod, const vsg::dvec3& pos,
-    const vsg::dvec3& rot_deg, const vsg::dvec3& scale, bool is_selected,
-    bool is_hidden)
+    const vsg::dvec3& rot_deg, const vsg::dvec3& scale, bool is_hidden)
 {
     if (object_count >= max_object_count)
     {
@@ -100,7 +96,6 @@ bool StaticObjectManager::add_object(
                                                    vsg::MASK_ALL, mat_transform,
                                                    compile_result));
 
-    this->is_selected[object_count] = is_selected;
     this->is_hidden[object_count] = is_hidden;
 
     mat_transform_to_id[mat_transform.get()] = object_count;
@@ -134,7 +129,6 @@ void StaticObjectManager::remove_object(std::size_t id)
     outline_switches[id] = outline_switches[last_object_id];
     paged_lods[id] = paged_lods[last_object_id];
 
-    is_selected[id] = is_selected[last_object_id];
     is_hidden[id] = is_hidden[last_object_id];
 
     mat_transform_to_id.erase(
@@ -151,27 +145,10 @@ bool StaticObjectManager::select_object(std::size_t id)
         return false;
     }
 
-    // Deselect if already selected
-    if (is_selected[id])
+    if (selected_objects.contains(id))
     {
         outline_switches[id]->mask = vsg::MASK_OFF;
-        is_selected[id] = false;
-
-        int& selected_object_idx = id_to_selected_object_idx[id];
-        const int last_selected_object_idx = selected_object_count - 1;
-
-        if (selected_object_idx != last_selected_object_idx)
-        {
-            const std::size_t last_selected_object_id =
-                selected_object_ids[last_selected_object_idx];
-
-            selected_object_ids[selected_object_idx] = last_selected_object_id;
-            id_to_selected_object_idx[last_selected_object_id] =
-                selected_object_idx;
-        }
-
-        selected_object_idx = -1;
-        --selected_object_count;
+        selected_objects.remove(id);
         return true;
     }
 
@@ -195,11 +172,7 @@ bool StaticObjectManager::select_object(std::size_t id)
             observer_viewer, vsg_switches[id], vsg::Mask{MASK_GUI2}, outline,
             compile_result, [&, id]() -> void {
                 outline_switches[id] = &vsg_switches[id]->children[1];
-                is_selected[id] = true;
-
-                selected_object_ids[selected_object_count] = id;
-                id_to_selected_object_idx[id] = selected_object_count;
-                ++selected_object_count;
+                selected_objects.add(id);
             }
         ));
 
@@ -207,11 +180,7 @@ bool StaticObjectManager::select_object(std::size_t id)
     }
 
     outline_switches[id]->mask = MASK_GUI2;
-    is_selected[id] = true;
-
-    selected_object_ids[selected_object_count] = id;
-    id_to_selected_object_idx[id] = selected_object_count;
-    ++selected_object_count;
+    selected_objects.add(id);
 
     return true;
 }

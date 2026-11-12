@@ -1,6 +1,8 @@
 #ifndef EDITOR_STATIC_OBJECT_MANAGER_H
 #define EDITOR_STATIC_OBJECT_MANAGER_H
 
+#include "editor/SparseSet.h"
+
 #include <vsg/core/ref_ptr.h>
 #include <vsg/maths/mat4.h>
 #include <vsg/maths/vec3.h>
@@ -30,8 +32,7 @@ public:
     bool add_object(const std::string& label, const std::string& rel_path,
                     const vsg::ref_ptr<vsg::PagedLOD>& paged_lod,
                     const vsg::dvec3& pos, const vsg::dvec3& rot_deg,
-                    const vsg::dvec3& scale, bool is_selected = false,
-                    bool is_hidden = false);
+                    const vsg::dvec3& scale, bool is_hidden = false);
 
     void remove_object(std::size_t id);
 
@@ -58,15 +59,12 @@ private:
     // when the command is canceled
     std::vector<vsg::dmat4> init_mats;
 
-    std::vector<bool> is_selected;
     std::vector<bool> is_hidden;
 
     std::map<const vsg::MatrixTransform*, std::size_t/* id*/>
     mat_transform_to_id;
 
-    std::vector<std::size_t> selected_object_ids;
-    std::vector<int> id_to_selected_object_idx;
-    std::uint32_t selected_object_count;
+    SparseSet selected_objects;
 
     std::size_t object_count;
     const std::size_t max_object_count;
