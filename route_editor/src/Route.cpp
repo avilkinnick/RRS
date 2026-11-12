@@ -251,21 +251,6 @@ void Route::load_static_objects()
 
             editor_ctx.static_objects.lock()->emplace_back(object);
 
-            constexpr vsg::dvec3 X_AXIS = {1.0, 0.0, 0.0};
-            constexpr vsg::dvec3 Y_AXIS = {0.0, 1.0, 0.0};
-            constexpr vsg::dvec3 Z_AXIS = {0.0, 0.0, 1.0};
-
-            const vsg::dvec3 rot_rad = {vsg::radians(rot_deg.x),
-                                        vsg::radians(rot_deg.y),
-                                        vsg::radians(rot_deg.z)};
-
-            auto matrix_transform = vsg::MatrixTransform::create();
-            matrix_transform->children = {paged_lod};
-            matrix_transform->matrix = vsg::translate(pos) *
-                                       vsg::rotate(rot_rad.z, Z_AXIS) *
-                                       vsg::rotate(rot_rad.y, Y_AXIS) *
-                                       vsg::rotate(rot_rad.x, X_AXIS);
-
             // auto& object_manager = editor_ctx.object_manager;
             // object_manager->add_object(label, rel_path, paged_lod, pos, rot_deg,
             //     vsg::dvec3{1.0, 1.0, 1.0});

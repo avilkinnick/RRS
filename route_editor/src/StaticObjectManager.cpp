@@ -210,7 +210,8 @@ void StaticObjectManager::set_position(std::size_t id, const vsg::dvec3& pos)
     matrix[3][2] = pos.z;
 }
 
-void StaticObjectManager::move(std::size_t id, const vsg::dvec3& delta_pos)
+void StaticObjectManager::move_object(std::size_t id,
+                                      const vsg::dvec3& delta_pos)
 {
     assert((object_count > 0) && "Could not call move() when "
                                  "object count is 0");

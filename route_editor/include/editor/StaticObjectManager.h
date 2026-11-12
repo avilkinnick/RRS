@@ -40,7 +40,7 @@ public:
     bool select_object(const vsg::MatrixTransform* mat_transform);
 
     void set_position(std::size_t id, const vsg::dvec3& pos);
-    void move(std::size_t id, const vsg::dvec3& delta_pos);
+    void move_object(std::size_t id, const vsg::dvec3& delta_pos);
 
     std::size_t get_object_count() const;
 
