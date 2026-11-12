@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <functional>
+#include <vector>
 
 SparseSet::SparseSet(std::size_t max_size)
     : ids(max_size)
@@ -51,4 +52,14 @@ void SparseSet::for_each(std::function<void (std::size_t id)> func)
     {
         func(id);
     }
+}
+
+const std::vector<std::size_t>& SparseSet::get_ids() const
+{
+    return ids;
+}
+
+std::size_t SparseSet::get_size() const
+{
+    return size;
 }

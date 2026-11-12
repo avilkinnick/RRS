@@ -234,6 +234,11 @@ void StaticObjectManager::move_object(std::size_t id,
     matrix[3][2] += delta_pos.z;
 }
 
+const SparseSet& StaticObjectManager::get_selected_objects() const
+{
+    return selected_objects;
+}
+
 std::size_t StaticObjectManager::get_object_count() const
 {
     return object_count;

@@ -44,6 +44,8 @@ public:
     void set_position(std::size_t id, const vsg::dvec3& pos);
     void move_object(std::size_t id, const vsg::dvec3& delta_pos);
 
+    const SparseSet& get_selected_objects() const;
+
     std::size_t get_object_count() const;
 
 private:

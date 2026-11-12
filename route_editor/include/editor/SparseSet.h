@@ -19,6 +19,9 @@ public:
 
     void for_each(std::function<void (std::size_t id)> func);
 
+    const std::vector<std::size_t>& get_ids() const;
+    std::size_t get_size() const;
+
 private:
     std::vector<std::size_t> ids;
     std::vector<std::int64_t> id_to_idx;
