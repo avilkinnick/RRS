@@ -13,6 +13,7 @@ public:
 
     void add(std::size_t id);
     void remove(std::size_t id);
+    void remove_if_contains(std::size_t id);
 
     bool contains(std::size_t id) const;
 

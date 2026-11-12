@@ -45,8 +45,8 @@ StaticObjectManager::StaticObjectManager(EditorContext& editor_ctx,
     , outline_switches(max_object_count, nullptr)
     , paged_lods(max_object_count)
     , init_mats(max_object_count)
-    , is_hidden(max_object_count)
     , selected_objects(max_object_count)
+    , hidden_objects(max_object_count)
     , object_count(0)
     , max_object_count(max_object_count)
 {
@@ -56,7 +56,7 @@ StaticObjectManager::StaticObjectManager(EditorContext& editor_ctx,
 bool StaticObjectManager::add_object(
     const std::string& label, const std::string& rel_path,
     const vsg::ref_ptr<vsg::PagedLOD>& paged_lod, const vsg::dvec3& pos,
-    const vsg::dvec3& rot_deg, const vsg::dvec3& scale, bool is_hidden)
+    const vsg::dvec3& rot_deg, const vsg::dvec3& scale)
 {
     if (object_count >= max_object_count)
     {
@@ -93,10 +93,9 @@ bool StaticObjectManager::add_object(
 
     viewer->addUpdateOperation(MergeSwitch::create(observer_viewer,
                                                    editor_ctx.route,
-                                                   vsg::MASK_ALL, mat_transform,
+                                                   vsg::MASK_ALL,
+                                                   mat_transform,
                                                    compile_result));
-
-    this->is_hidden[object_count] = is_hidden;
 
     mat_transform_to_id[mat_transform.get()] = object_count;
 
@@ -129,16 +128,12 @@ void StaticObjectManager::remove_object(std::size_t id)
     outline_switches[id] = outline_switches[last_object_id];
     paged_lods[id] = paged_lods[last_object_id];
 
-    is_hidden[id] = is_hidden[last_object_id];
-
     mat_transform_to_id.erase(
         mat_transform_to_id.find(mat_transforms[id].get()));
     mat_transform_to_id[mat_transforms[last_object_id].get()] = id;
 
-    if (selected_objects.contains(id))
-    {
-        selected_objects.remove(id);
-    }
+    selected_objects.remove_if_contains(id);
+    hidden_objects.remove_if_contains(id);
 
     --object_count;
 }

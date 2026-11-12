@@ -32,6 +32,14 @@ void SparseSet::remove(std::size_t id)
     --size;
 }
 
+void SparseSet::remove_if_contains(std::size_t id)
+{
+    if (contains(id))
+    {
+        remove(id);
+    }
+}
+
 bool SparseSet::contains(std::size_t id) const
 {
     return id_to_idx[id] != -1;
