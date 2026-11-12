@@ -2,6 +2,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <functional>
 
 SparseSet::SparseSet(std::size_t max_size)
     : ids(max_size)
@@ -34,4 +35,12 @@ void SparseSet::remove(std::size_t id)
 bool SparseSet::contains(std::size_t id) const
 {
     return id_to_idx[id] != -1;
+}
+
+void SparseSet::for_each(std::function<void (std::size_t id)> func)
+{
+    for (std::size_t id : ids)
+    {
+        func(id);
+    }
 }

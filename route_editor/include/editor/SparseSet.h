@@ -3,6 +3,7 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <functional>
 #include <vector>
 
 class SparseSet
@@ -14,6 +15,8 @@ public:
     void remove(std::size_t id);
 
     bool contains(std::size_t id) const;
+
+    void for_each(std::function<void (std::size_t id)> func);
 
 private:
     std::vector<std::size_t> ids;

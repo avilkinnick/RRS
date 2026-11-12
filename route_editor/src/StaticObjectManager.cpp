@@ -135,6 +135,11 @@ void StaticObjectManager::remove_object(std::size_t id)
         mat_transform_to_id.find(mat_transforms[id].get()));
     mat_transform_to_id[mat_transforms[last_object_id].get()] = id;
 
+    if (selected_objects.contains(id))
+    {
+        selected_objects.remove(id);
+    }
+
     --object_count;
 }
 
@@ -199,9 +204,12 @@ bool StaticObjectManager::select_object(
     }
 }
 
-bool StaticObjectManager::set_position(std::size_t id, const vsg::dvec3& pos)
+void StaticObjectManager::set_position(std::size_t id, const vsg::dvec3& pos)
 {
-    // TODO
+    auto& matrix = mat_transforms[id]->matrix;
+    matrix[3][0] = pos.x;
+    matrix[3][1] = pos.y;
+    matrix[3][2] = pos.z;
 }
 
 std::size_t StaticObjectManager::get_object_count() const
