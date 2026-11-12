@@ -39,6 +39,8 @@ public:
     bool select_object(std::size_t id);
     bool select_object(const vsg::MatrixTransform* mat_transform);
 
+    void deselect_object(std::size_t id);
+
     void set_position(std::size_t id, const vsg::dvec3& pos);
     void move_object(std::size_t id, const vsg::dvec3& delta_pos);
 

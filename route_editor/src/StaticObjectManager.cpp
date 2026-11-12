@@ -146,8 +146,6 @@ bool StaticObjectManager::select_object(std::size_t id)
 
     if (selected_objects.contains(id))
     {
-        outline_switches[id]->mask = vsg::MASK_OFF;
-        selected_objects.remove(id);
         return true;
     }
 
@@ -195,6 +193,19 @@ bool StaticObjectManager::select_object(
     else
     {
         return select_object(found_it->second);
+    }
+}
+
+void StaticObjectManager::deselect_object(std::size_t id)
+{
+    assert((object_count > 0) && "Could not call deselect_object() when "
+                                 "object count is 0");
+    assert((id < object_count) && "id must be lower than object count");
+
+    if (selected_objects.contains(id))
+    {
+        outline_switches[id]->mask = vsg::MASK_OFF;
+        selected_objects.remove(id);
     }
 }
 
