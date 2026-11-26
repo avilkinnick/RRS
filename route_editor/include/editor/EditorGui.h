@@ -8,11 +8,11 @@
 
 #include <cstddef>
 #include <memory>
-#include <string>
 
 struct EditorContext;
 class RouteObject;
 class CameraSettingsWindow;
+class ObjectsRefWindow;
 
 namespace vsg
 {
@@ -30,7 +30,6 @@ public:
 
     void record(vsg::CommandBuffer& command_buffer) const override;
 
-    void show_objects_ref() const;
     void show_route_map() const;
     void show_stations_conf() const;
     void show_waypoints_conf() const;
@@ -42,9 +41,6 @@ public:
     void show_commands() const;
 
 private:
-    void add_object(const vsg::ref_ptr<vsg::PagedLOD>& paged_lod,
-                    const std::string& label) const;
-
     void save_objects_matrixes() const;
 
     void handle_translation_drag(std::size_t index,
@@ -62,9 +58,10 @@ private:
 private:
     EditorContext& editor_ctx;
 
-    ImGuiWindowFlags window_flags_;
+    ImGuiWindowFlags window_flags;
     ImGuiViewport* viewport;
     std::unique_ptr<CameraSettingsWindow> camera_settings_window;
+    std::unique_ptr<ObjectsRefWindow> objects_ref_window;
 
 private:
     void add_ttf_font(const char* filename, float size_pixels,

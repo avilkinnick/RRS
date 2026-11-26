@@ -17,6 +17,7 @@
 #include "editor/commands/ScaleObjectsCommand.h"
 #include "editor/commands/TranslateObjectsCommand.h"
 #include "editor/gui/CameraSettingsWindow.h"
+#include "editor/gui/ObjectsRefWindow.h"
 #include "editor/settings/GuiSettings.h"
 #include "editor/states/State.h"
 
@@ -100,20 +101,24 @@ EditorGui::EditorGui(EditorContext& context)
 
     if (!gui_settings.is_editable)
     {
-        window_flags_ |= ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+        window_flags |= ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
     }
 
     ImGuiStyle& style = ImGui::GetStyle();
     style.FrameBorderSize = 1.0f;
     // style.FrameRounding = 3.0f;
     // style.WindowRounding = 3.0f;
+    style.ScrollbarRounding = 0.0f;
     style.ScrollbarSize = 16.0f;
     style.GrabMinSize = 16.0f;
 
     viewport = ImGui::GetMainViewport();
 
-    camera_settings_window =
-        std::make_unique<CameraSettingsWindow>(editor_ctx, window_flags_);
+    camera_settings_window = std::make_unique<CameraSettingsWindow>(
+        editor_ctx, window_flags);
+
+    objects_ref_window = std::make_unique<ObjectsRefWindow>(
+        editor_ctx, window_flags);
 }
 
 EditorGui::~EditorGui()
@@ -140,8 +145,7 @@ void EditorGui::record(
         return;
     default:
         // ImGui::SetNextWindowPos(viewport->WorkPos);
-        ImGui::Begin("Settings", nullptr, window_flags_);
-        ImGui::Checkbox("Show objects.ref", &gui_settings.show_objects_ref);
+        ImGui::Begin("Settings", nullptr, window_flags);
         ImGui::Checkbox("Show route1.map", &gui_settings.show_route_map);
         ImGui::Checkbox("Show stations", &gui_settings.show_stations_conf);
         ImGui::Checkbox("Show waypoints", &gui_settings.show_waypoints_conf);
@@ -156,71 +160,18 @@ void EditorGui::record(
 
         // ImGui::ShowDemoWindow();
 
-        show_objects_ref();
         show_route_map();
         show_stations_conf();
         show_waypoints_conf();
         show_key_bindings();
         camera_settings_window->show();
+        objects_ref_window->show();
         show_topology();
         show_selected_objects_properties();
         show_commands();
 
         return;
     }
-}
-
-void EditorGui::show_objects_ref() const
-{
-    bool& show_objects_ref = editor_ctx.gui_settings.show_objects_ref;
-    if (!show_objects_ref)
-    {
-        return;
-    }
-
-    ImGui::Begin("objects_ref", &show_objects_ref, window_flags_);
-
-    static char search_buffer[256] = "";
-    ImGui::InputText("label", search_buffer, 256);
-
-    std::string search_lower = search_buffer;
-    std::transform(search_lower.begin(), search_lower.end(),
-                   search_lower.begin(), ::tolower);
-
-    if (ImGui::BeginTable("objects_ref_table", 2,
-                          ImGuiTableFlags_SizingFixedFit |
-                          ImGuiTableFlags_Borders |
-                          ImGuiTableFlags_RowBg))
-    {
-        for (const auto& [label, rel_path] : editor_ctx.objects_ref)
-        {
-            std::string label_lower = label;
-            std::transform(label_lower.begin(), label_lower.end(),
-                           label_lower.begin(), ::tolower);
-
-            if (search_buffer[0] != '\0'
-                && label_lower.find(search_lower) == std::string::npos)
-            {
-                continue;
-            }
-
-            ImGui::TableNextRow();
-            ImGui::TableNextColumn();
-
-            if (ImGui::Button(label.c_str()))
-            {
-                auto& paged_lods = editor_ctx.route->get_paged_lods();
-                add_object(paged_lods[label], label);
-            }
-
-            ImGui::TableNextColumn();
-            ImGui::Text("%s", rel_path.c_str());
-        }
-
-        ImGui::EndTable();
-    }
-
-    ImGui::End();
 }
 
 void EditorGui::show_route_map() const
@@ -233,7 +184,7 @@ void EditorGui::show_route_map() const
         return;
     }
 
-    ImGui::Begin("route1.map", &show_route_map, window_flags_);
+    ImGui::Begin("route1.map", &show_route_map, window_flags);
 
     if (ImGui::BeginTable("route_map_table", 7,
                           ImGuiTableFlags_SizingFixedFit |
@@ -324,7 +275,7 @@ void EditorGui::show_stations_conf() const
         return;
     }
 
-    ImGui::Begin("stations.conf", &show_stations_conf, window_flags_);
+    ImGui::Begin("stations.conf", &show_stations_conf, window_flags);
 
     static char search_buffer[256] = "";
     ImGui::InputText("label", search_buffer, 256);
@@ -388,7 +339,7 @@ void EditorGui::show_waypoints_conf() const
     const auto topology_guard = editor_ctx.topology.lock();
     const auto& topology = *topology_guard;
 
-    ImGui::Begin("waypoints.conf", &show_waypoints_conf, window_flags_);
+    ImGui::Begin("waypoints.conf", &show_waypoints_conf, window_flags);
 
     static char search_buffer[256] = "";
     ImGui::InputText("label", search_buffer, 256);
@@ -465,7 +416,7 @@ void EditorGui::show_key_bindings() const
         return;
     }
 
-    ImGui::Begin("Key Bindings", &show_key_bindings, window_flags_);
+    ImGui::Begin("Key Bindings", &show_key_bindings, window_flags);
 
     if (ImGui::BeginTable("key_bindings_table", 2,
                           ImGuiTableFlags_SizingFixedFit
@@ -514,7 +465,7 @@ void EditorGui::show_topology() const
         return;
     }
 
-    ImGui::Begin("Topology", &show_topology, window_flags_);
+    ImGui::Begin("Topology", &show_topology, window_flags);
 
     auto topology_guard = editor_ctx.topology.lock();
     auto& topology = *topology_guard;
@@ -702,7 +653,7 @@ void EditorGui::show_selected_objects_properties() const
     }
 
     ImGui::Begin("Selected objects", &show_selected_objects_properties,
-                 window_flags_);
+                 window_flags);
 
     static bool dragging = false;
 
@@ -731,7 +682,7 @@ void EditorGui::show_commands() const
         return;
     }
 
-    ImGui::Begin("Commands", &show_commands, window_flags_);
+    ImGui::Begin("Commands", &show_commands, window_flags);
 
     command_manager->for_each_command(
         [](const std::unique_ptr<::Command>& command) -> void
@@ -749,21 +700,6 @@ void EditorGui::show_commands() const
         });
 
     ImGui::End();
-}
-
-void EditorGui::add_object(const vsg::ref_ptr<vsg::PagedLOD>& paged_lod,
-                           const std::string& label) const
-{
-    const auto& camera = editor_ctx.camera;
-    const auto& command_manager = editor_ctx.command_manager;
-
-    const auto object = RouteObject::create(editor_ctx, paged_lod, label,
-                                            camera->get_look_at()->eye +
-                                            camera->get_front() * 20.0);
-
-    auto command = std::make_unique<AddObjectCommand>(editor_ctx, object);
-    command->execute();
-    command_manager->push(std::move(command));
 }
 
 void EditorGui::save_objects_matrixes() const
